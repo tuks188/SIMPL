@@ -294,7 +294,7 @@ void ParameterSettings::readJsonFloat(const QJsonValue& json, float& value, floa
 {
   value = getValueFloat(json);
   min = getMinFloat(json);
-  max = getMaxFloat(max);
+  max = getMaxFloat(json);
 }
 
 // -----------------------------------------------------------------------------
