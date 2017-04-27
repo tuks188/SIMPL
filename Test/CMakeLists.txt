@@ -87,6 +87,7 @@ set(TEST_NAMES
   GenerateColorTableTest
   ImportAsciDataArrayTest
   MatrixMathTest
+  ParameterSettingsTest
   QuaternionMathTest
   ReadASCIIDataTest
   RecursivePipelineTest
