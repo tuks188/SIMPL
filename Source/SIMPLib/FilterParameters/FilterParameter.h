@@ -46,6 +46,7 @@
 
 #include "SIMPLib/SIMPLib.h"
 #include "SIMPLib/Common/SIMPLibSetGetMacros.h"
+#include "SIMPLib/Utilities/ParameterSettings.h"
 
 
 /**
