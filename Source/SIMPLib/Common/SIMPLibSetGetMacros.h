@@ -38,6 +38,7 @@
 #include <string.h>
 #include <sstream>
 #include <stdexcept>
+#include <limits>
 
 /**
  * @file SIMPLibSetGetMacros.h
@@ -280,6 +281,26 @@
 
 
 //------------------------------------------------------------------------------
+// Method Detection
+#define SIMPL_HAS_METHOD(objType, returnType, mName, arguments)\
+template<typename className, typename ret, typename... args>\
+struct SIMPL_method_check<className, ret(args)>\
+{\
+  private:\
+    template<typename T>\
+    static constexpr auto check(T*)->typename\
+      std::is_same<decltype (std::declval<T>().mName(std::declval<args>()...)),\
+      ret>::type;\
+    template<typename>\
+    static constexpr std::false_type check(...);\
+    typedef decltype(check<className>(0)) type;\
+  public:\
+    static constexpr bool value = type::value;\
+}\
+SIMPL_method_check<objType, returnType(arguments)>::value;
+
+
+//------------------------------------------------------------------------------
 // Macros for Properties
 /**
 * @brief Creates a QString constant for the Property so that the property
@@ -301,6 +322,25 @@
   type get##prpty() const { return m_##prpty; }
 
 /**
+* @brief Creates a "setter" method to set the property.
+*/
+#define SIMPL_SET_CONSTRAINED_PROPERTY(type, prpty)\
+  void set##prpty(type value) { \
+    if(value < m_Min##prpty) { this->m_##prpty = this->m_Min##prpty; }\
+    else if(value > this->m_Max##prpty) { this->m_##prpty = this->m_Max##prpty; }\
+    else { this->m_##prpty = value; } }\
+  void setMin##prpty(type value) { this->m_Min##prpty = value;}\
+  void setMax##prpty(type value) { this->m_Max##prpty = value;}
+
+/**
+* @brief Creates a "getter" method to retrieve the value of the property.
+*/
+#define SIMPL_GET_CONSTRAINED_PROPERTY(type, prpty)\
+  type get##prpty() const { return m_##prpty; }\
+  type getMin##prpty() const { return m_Min##prpty; }\
+  type getMax##prpty() const { return m_Max##prpty; }
+
+/**
 * @brief
 */
 #define SIMPL_SET_FILTER_PARAMETER(type, prpty)\
@@ -312,13 +352,6 @@
 
 #define SIMPL_GET_PROPERTY_DECL(type, prpty)\
   type get##prpty() const;
-
-#define SIMPL_INSTANCE_PROPERTY_DECL(type, prpty)\
-  private:\
-  type   m_##prpty;\
-  public:\
-  SIMPL_SET_PROPERTY_DECL(type, prpty)\
-  SIMPL_GET_PROPERTY_DECL(type, prpty)
 
 #define SIMPL_INSTANCE_PROPERTY_DECL(type, prpty)\
   private:\
@@ -340,10 +373,6 @@
 
 #define SIMPL_GET_PROPERTY_DEF(class, type, prpty)\
   type class::get##prpty() const { return m_##prpty; }
-
-#define SIMPL_INSTANCE_PROPERTY_DEF(class, type, prpty)\
-      SIMPL_SET_PROPERTY_DEF(class, type, prpty)\
-      SIMPL_GET_PROPERTY_DEF(class, type, prpty)
 
 #define SIMPL_INSTANCE_PROPERTY_DEF(class, type, prpty)\
       SIMPL_SET_PROPERTY_DEF(class, type, prpty)\
@@ -378,6 +407,44 @@
   SIMPL_SET_PROPERTY(type, prpty)\
   public:\
   SIMPL_GET_PROPERTY(type, prpty)
+
+/**
+* @brief
+*/
+#define SIMPL_VIRTUAL_CONSTRAINED_INSTANCE_PROPERTY(type, prpty)\
+  private:\
+  type   m_##prpty;\
+  type   m_Min##prpty = numeric_limits<type>::min();\
+  type   m_Max##prpty = numeric_limits<type>::max();\
+  public:\
+  virtual SIMPL_SET_CONSTRAINED_PROPERTY(type, prpty)\
+  virtual SIMPL_GET_CONSTRAINED_PROPERTY(type, prpty)
+
+
+#define SIMPL_CONSTRAINED_INSTANCE_PROPERTY(type, prpty)\
+  private:\
+  type   m_##prpty;\
+  type   m_Min##prpty = numeric_limits<type>::min();\
+  type   m_Max##prpty = numeric_limits<type>::max();\
+  public:\
+  SIMPL_SET_CONSTRAINED_PROPERTY(type, prpty)\
+  SIMPL_GET_CONSTRAINED_PROPERTY(type, prpty)
+
+#define SIMPL_CONSTRAINED_PRIVATE_INSTANCE_PROPERTY(type, prpty)\
+  private:\
+  type   m_##prpty;\
+  type   m_Min##prpty = numeric_limits<type>::min();\
+  type   m_Max##prpty numeric_limits<type>::max();\
+  SIMPL_SET_CONSTRAINED_PROPERTY(type, prpty)\
+  public:\
+  SIMPL_GET_CONSTRAINED_PROPERTY(type, prpty)
+
+#define SIMPL_INITIALIZE_PROPERTY_CONSTRAINTS(type, prpty)\
+  setMin##prpty(numeric_limits<type>::min());\
+  setMax##prpty(numeric_limits<type>::max());
+
+#define SIMPL_IS_PROPERTY_CONSTRAINED(className, type, prpty)\
+  (SIMPL_HAS_METHOD(className, type, getMin##prpty, ) && SIMPL_HAS_METHOD(className, type, getMax##prpty, ))
 
 
 
