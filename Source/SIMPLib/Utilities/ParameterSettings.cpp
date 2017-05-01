@@ -257,14 +257,15 @@ bool ParameterSettings::GetValueLocked(const QJsonValue& json)
 // -----------------------------------------------------------------------------
 QJsonValue ParameterSettings::ToJson(int value, bool locked)
 {
-  QString outputStr = TAG_VALUE + ":" + QString::number(value);
-
   if(locked)
   {
-    outputStr += ", " + TAG_LOCKED + ":true";
+    QString outputStr = TAG_VALUE + ":" + QString::number(value) +
+      ", " + TAG_LOCKED + ":true";
+
+    return QJsonValue(outputStr);
   }
 
-  return QJsonValue(outputStr);
+  return QJsonValue(value);
 }
 
 // -----------------------------------------------------------------------------
@@ -272,9 +273,9 @@ QJsonValue ParameterSettings::ToJson(int value, bool locked)
 // -----------------------------------------------------------------------------
 QJsonValue ParameterSettings::ToJson(int value, int min, int max, bool locked)
 {
-  QString outputStr = TAG_VALUE + ":" + QString::number(value) + ", " + 
-    TAG_MINIMUM + ":" + QString::number(min) + ", " + 
-    TAG_MAXIMUM + ":" + QString::number(max);
+  QString outputStr = TAG_VALUE + ":" + QString("%1").arg(value) + ", " +
+    TAG_MINIMUM + ":" + QString("%1").arg(min) + ", " +
+    TAG_MAXIMUM + ":" + QString("%1").arg(max);
 
   if(locked)
   {
@@ -289,14 +290,15 @@ QJsonValue ParameterSettings::ToJson(int value, int min, int max, bool locked)
 // -----------------------------------------------------------------------------
 QJsonValue ParameterSettings::ToJson(double value, bool locked)
 {
-  QString outputStr = TAG_VALUE + ":" + QString::number(value);
-
   if(locked)
   {
-    outputStr += ", " + TAG_LOCKED + ":true";
+    QString outputStr = TAG_VALUE + ":" + QString("%1").arg(value) +
+      ", " + TAG_LOCKED + ":true";
+    
+    return QJsonValue(outputStr);
   }
 
-  return QJsonValue(outputStr);
+  return QJsonValue(value);
 }
 
 // -----------------------------------------------------------------------------
@@ -304,9 +306,9 @@ QJsonValue ParameterSettings::ToJson(double value, bool locked)
 // -----------------------------------------------------------------------------
 QJsonValue ParameterSettings::ToJson(double value, double min, double max, bool locked)
 {
-  QString outputStr = TAG_VALUE + ":" + QString::number(value) + ", " +
-    TAG_MINIMUM + ":" + QString::number(min) + ", " +
-    TAG_MAXIMUM + ":" + QString::number(max);
+  QString outputStr = TAG_VALUE + ":" + QString("%1").arg(value) + ", " +
+    TAG_MINIMUM + ":" + QString("%1").arg(min) + ", " +
+    TAG_MAXIMUM + ":" + QString("%1").arg(max);
 
   if(locked)
   {
