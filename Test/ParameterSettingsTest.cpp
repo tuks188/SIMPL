@@ -71,8 +71,7 @@ public:
   // -----------------------------------------------------------------------------
   QJsonValue GenerateStringJSonValue(double value)
   {
-    QString outputStr = QString::number(value);
-    return QJsonValue(outputStr);
+    return ParameterSettings::ToJson(value, false);
   }
 
   // -----------------------------------------------------------------------------
@@ -80,8 +79,7 @@ public:
   // -----------------------------------------------------------------------------
   QJsonValue GenerateConstrainedJSonValue(double value, double min, double max)
   {
-    QString outputStr = QString::number(value) + "," + QString::number(min) + "," + QString::number(max);
-    return QJsonValue(outputStr);
+    return ParameterSettings::ToJson(value, min, max);
   }
 
   // -----------------------------------------------------------------------------
@@ -89,10 +87,7 @@ public:
   // -----------------------------------------------------------------------------
   QJsonValue GenerateConstrainedJSonValue(double value, double min, double max, bool locked)
   {
-    QString outputStr = QString::number(value) + "," + QString::number(min) + "," + QString::number(max);
-    outputStr += locked ? ",true" : ",false";
-
-    return QJsonValue(outputStr);
+    return ParameterSettings::ToJson(value, min, max, locked);
   }
 
   // -----------------------------------------------------------------------------
@@ -103,16 +98,16 @@ public:
     int originalValue = 5;
 
     QJsonValue json = GenerateJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueInt(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueInt(json), originalValue)
 
     json = GenerateStringJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueInt(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueInt(json), originalValue)
 
     json = GenerateConstrainedJSonValue(originalValue, 0, 10);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueInt(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueInt(json), originalValue)
 
     json = GenerateConstrainedJSonValue(originalValue, 0, 10, false);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueInt(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueInt(json), originalValue)
   }
 
   // -----------------------------------------------------------------------------
@@ -123,16 +118,16 @@ public:
     float originalValue = 5.0f;
 
     QJsonValue json = GenerateJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueFloat(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueFloat(json), originalValue)
 
     json = GenerateStringJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueFloat(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueFloat(json), originalValue)
 
     json = GenerateConstrainedJSonValue(originalValue, 0, 10);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueFloat(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueFloat(json), originalValue)
 
     json = GenerateConstrainedJSonValue(originalValue, 0, 10, false);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueFloat(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueFloat(json), originalValue)
   }
 
   // -----------------------------------------------------------------------------
@@ -143,16 +138,16 @@ public:
     double originalValue = 5.0;
 
     QJsonValue json = GenerateJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueDouble(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueDouble(json), originalValue)
 
     json = GenerateStringJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueDouble(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueDouble(json), originalValue)
 
     json = GenerateConstrainedJSonValue(originalValue, 0, 10);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueDouble(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueDouble(json), originalValue)
 
     json = GenerateConstrainedJSonValue(originalValue, 0, 10, false);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getValueDouble(json), originalValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetValueDouble(json), originalValue)
   }
 
   // -----------------------------------------------------------------------------
@@ -165,16 +160,16 @@ public:
     int maxValue = 10;
     
     QJsonValue json = GenerateJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinInt(json), std::numeric_limits<int>::min())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinInt(json), std::numeric_limits<int>::min())
 
     json = GenerateStringJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinInt(json), std::numeric_limits<int>::min())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinInt(json), std::numeric_limits<int>::min())
 
     json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinInt(json), minValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinInt(json), minValue)
 
     json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue, false);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinInt(json), minValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinInt(json), minValue)
   }
 
   // -----------------------------------------------------------------------------
@@ -187,16 +182,16 @@ public:
     float maxValue = 10.0f;
 
     QJsonValue json = GenerateJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinFloat(json), std::numeric_limits<float>::min())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinFloat(json), std::numeric_limits<float>::min())
 
       json = GenerateStringJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinFloat(json), std::numeric_limits<float>::min())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinFloat(json), std::numeric_limits<float>::min())
 
       json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinFloat(json), minValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinFloat(json), minValue)
 
       json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue, false);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinFloat(json), minValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinFloat(json), minValue)
   }
 
   // -----------------------------------------------------------------------------
@@ -209,16 +204,16 @@ public:
     double maxValue = 10.0;
 
     QJsonValue json = GenerateJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinDouble(json), std::numeric_limits<double>::min())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinDouble(json), std::numeric_limits<double>::min())
 
     json = GenerateStringJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinDouble(json), std::numeric_limits<double>::min())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinDouble(json), std::numeric_limits<double>::min())
 
     json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinDouble(json), minValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinDouble(json), minValue)
 
     json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue, false);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMinDouble(json), minValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMinDouble(json), minValue)
   }
 
   // -----------------------------------------------------------------------------
@@ -231,16 +226,16 @@ public:
     int maxValue = 10;
 
     QJsonValue json = GenerateJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxInt(json), std::numeric_limits<int>::max())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxInt(json), std::numeric_limits<int>::max())
 
     json = GenerateStringJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxInt(json), std::numeric_limits<int>::max())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxInt(json), std::numeric_limits<int>::max())
 
     json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxInt(json), maxValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxInt(json), maxValue)
 
     json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue, false);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxInt(json), maxValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxInt(json), maxValue)
   }
 
   // -----------------------------------------------------------------------------
@@ -253,16 +248,16 @@ public:
     float maxValue = 10.0f;
 
     QJsonValue json = GenerateJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxFloat(json), std::numeric_limits<float>::max())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxFloat(json), std::numeric_limits<float>::max())
 
     json = GenerateStringJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxFloat(json), std::numeric_limits<float>::max())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxFloat(json), std::numeric_limits<float>::max())
 
     json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxFloat(json), maxValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxFloat(json), maxValue)
 
     json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue, false);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxFloat(json), maxValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxFloat(json), maxValue)
   }
 
   // -----------------------------------------------------------------------------
@@ -275,16 +270,16 @@ public:
     double maxValue = 10.0;
 
     QJsonValue json = GenerateJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxDouble(json), std::numeric_limits<double>::max())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxDouble(json), std::numeric_limits<double>::max())
 
     json = GenerateStringJSonValue(originalValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxDouble(json), std::numeric_limits<double>::max())
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxDouble(json), std::numeric_limits<double>::max())
 
     json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxDouble(json), maxValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxDouble(json), maxValue)
 
     json = GenerateConstrainedJSonValue(originalValue, minValue, maxValue, false);
-    DREAM3D_REQUIRE_EQUAL(ParameterSettings::getMaxDouble(json), maxValue)
+    DREAM3D_REQUIRE_EQUAL(ParameterSettings::GetMaxDouble(json), maxValue)
   }
 
   // -----------------------------------------------------------------------------
@@ -301,19 +296,19 @@ public:
     int maxValueRead;
 
     QJsonValue json = GenerateJSonValue(value);
-    ParameterSettings::readJsonInt(json, valueRead, minValueRead, maxValueRead);
+    ParameterSettings::ReadJsonInt(json, valueRead, minValueRead, maxValueRead);
     DREAM3D_REQUIRE_EQUAL(valueRead, value)
     DREAM3D_REQUIRE_EQUAL(minValueRead, std::numeric_limits<int>::min())
     DREAM3D_REQUIRE_EQUAL(maxValueRead, std::numeric_limits<int>::max())
 
     json = GenerateStringJSonValue(value);
-    ParameterSettings::readJsonInt(json, valueRead, minValueRead, maxValueRead);
+    ParameterSettings::ReadJsonInt(json, valueRead, minValueRead, maxValueRead);
     DREAM3D_REQUIRE_EQUAL(valueRead, value)
     DREAM3D_REQUIRE_EQUAL(minValueRead, std::numeric_limits<int>::min())
     DREAM3D_REQUIRE_EQUAL(maxValueRead, std::numeric_limits<int>::max())
 
     json = GenerateConstrainedJSonValue(value, minValue, maxValue);
-    ParameterSettings::readJsonInt(json, valueRead, minValueRead, maxValueRead);
+    ParameterSettings::ReadJsonInt(json, valueRead, minValueRead, maxValueRead);
     DREAM3D_REQUIRE_EQUAL(valueRead, value)
     DREAM3D_REQUIRE_EQUAL(minValueRead, minValue)
     DREAM3D_REQUIRE_EQUAL(maxValueRead, maxValue)
@@ -333,19 +328,19 @@ public:
     float maxValueRead;
 
     QJsonValue json = GenerateJSonValue(value);
-    ParameterSettings::readJsonFloat(json, valueRead, minValueRead, maxValueRead);
+    ParameterSettings::ReadJsonFloat(json, valueRead, minValueRead, maxValueRead);
     DREAM3D_REQUIRE_EQUAL(valueRead, value)
     DREAM3D_REQUIRE_EQUAL(minValueRead, std::numeric_limits<float>::min())
     DREAM3D_REQUIRE_EQUAL(maxValueRead, std::numeric_limits<float>::max())
 
     json = GenerateStringJSonValue(value);
-    ParameterSettings::readJsonFloat(json, valueRead, minValueRead, maxValueRead);
+    ParameterSettings::ReadJsonFloat(json, valueRead, minValueRead, maxValueRead);
     DREAM3D_REQUIRE_EQUAL(valueRead, value)
     DREAM3D_REQUIRE_EQUAL(minValueRead, std::numeric_limits<float>::min())
     DREAM3D_REQUIRE_EQUAL(maxValueRead, std::numeric_limits<float>::max())
 
     json = GenerateConstrainedJSonValue(value, minValue, maxValue);
-    ParameterSettings::readJsonFloat(json, valueRead, minValueRead, maxValueRead);
+    ParameterSettings::ReadJsonFloat(json, valueRead, minValueRead, maxValueRead);
     DREAM3D_REQUIRE_EQUAL(valueRead, value)
     DREAM3D_REQUIRE_EQUAL(minValueRead, minValue)
     DREAM3D_REQUIRE_EQUAL(maxValueRead, maxValue)
@@ -365,19 +360,19 @@ public:
     double maxValueRead;
 
     QJsonValue json = GenerateJSonValue(value);
-    ParameterSettings::readJsonDouble(json, valueRead, minValueRead, maxValueRead);
+    ParameterSettings::ReadJsonDouble(json, valueRead, minValueRead, maxValueRead);
     DREAM3D_REQUIRE_EQUAL(valueRead, value)
     DREAM3D_REQUIRE_EQUAL(minValueRead, std::numeric_limits<double>::min())
     DREAM3D_REQUIRE_EQUAL(maxValueRead, std::numeric_limits<double>::max())
 
     json = GenerateStringJSonValue(value);
-    ParameterSettings::readJsonDouble(json, valueRead, minValueRead, maxValueRead);
+    ParameterSettings::ReadJsonDouble(json, valueRead, minValueRead, maxValueRead);
     DREAM3D_REQUIRE_EQUAL(valueRead, value)
     DREAM3D_REQUIRE_EQUAL(minValueRead, std::numeric_limits<double>::min())
     DREAM3D_REQUIRE_EQUAL(maxValueRead, std::numeric_limits<double>::max())
 
     json = GenerateConstrainedJSonValue(value, minValue, maxValue);
-    ParameterSettings::readJsonDouble(json, valueRead, minValueRead, maxValueRead);
+    ParameterSettings::ReadJsonDouble(json, valueRead, minValueRead, maxValueRead);
     DREAM3D_REQUIRE_EQUAL(valueRead, value)
     DREAM3D_REQUIRE_EQUAL(minValueRead, minValue)
     DREAM3D_REQUIRE_EQUAL(maxValueRead, maxValue)

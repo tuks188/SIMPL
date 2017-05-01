@@ -49,38 +49,43 @@ class SIMPLib_EXPORT ParameterSettings
 public:
   virtual ~ParameterSettings();
 
-  static int getValueInt(const QJsonValue& json);
-  static float getValueFloat(const QJsonValue& json);
-  static double getValueDouble(const QJsonValue& json);
+  static int GetValueInt(const QJsonValue& json);
+  static float GetValueFloat(const QJsonValue& json);
+  static double GetValueDouble(const QJsonValue& json);
 
-  static int getMinInt(const QJsonValue& json);
-  static float getMinFloat(const QJsonValue& json);
-  static double getMinDouble(const QJsonValue& json);
+  static int GetMinInt(const QJsonValue& json);
+  static float GetMinFloat(const QJsonValue& json);
+  static double GetMinDouble(const QJsonValue& json);
 
-  static int getMaxInt(const QJsonValue& json);
-  static float getMaxFloat(const QJsonValue& json);
-  static double getMaxDouble(const QJsonValue& json);
+  static int GetMaxInt(const QJsonValue& json);
+  static float GetMaxFloat(const QJsonValue& json);
+  static double GetMaxDouble(const QJsonValue& json);
 
-  static void readJsonInt(const QJsonValue& json, int& value, int& min, int& max);
-  static void readJsonFloat(const QJsonValue& json, float& value, float& min, float& max);
-  static void readJsonDouble(const QJsonValue& json, double& value, double& min, double& max);
+  static void ReadJsonInt(const QJsonValue& json, int& value, int& min, int& max);
+  static void ReadJsonFloat(const QJsonValue& json, float& value, float& min, float& max);
+  static void ReadJsonDouble(const QJsonValue& json, double& value, double& min, double& max);
 
-  static bool getValueLocked(const QJsonValue& json);
+  static bool GetValueLocked(const QJsonValue& json);
 
-  static QJsonValue toJson(int value, bool locked = false);
-  static QJsonValue toJson(int value, int min, int max, bool locked = false);
+  static QJsonValue ToJson(int value, bool locked = false);
+  static QJsonValue ToJson(int value, int min, int max, bool locked = false);
   
-  static QJsonValue toJson(double value, bool locked = false);
-  static QJsonValue toJson(double value, double min, double max, bool locked = false);
+  static QJsonValue ToJson(double value, bool locked = false);
+  static QJsonValue ToJson(double value, double min, double max, bool locked = false);
 
-  static bool isLocked(const QJsonObject& json);
-  static void setLocked(bool locked, QJsonObject& json);
+  static bool IsLocked(const QJsonObject& json);
+  static void SetLocked(bool locked, QJsonObject& json);
 
-  static const QString LOCKED_ID;
+  static const QString TAG_VALUE;
+  static const QString TAG_MINIMUM;
+  static const QString TAG_MAXIMUM;
+  static const QString TAG_LOCKED;
 
 protected:
   ParameterSettings();
 
+  static QString GetTagValue(const QJsonValue& json, QString tagName);
+  
 private:
   ParameterSettings(const ParameterSettings&); // Copy Constructor Not Implemented
   void operator=(const ParameterSettings&); // Operator '=' Not Implemented
