@@ -233,7 +233,7 @@ void SVPipelineFilterWidget::setFilterIndex(int i, int numFilters)
 // -----------------------------------------------------------------------------
 void SVPipelineFilterWidget::changeStyle(int i)
 {
-
+  Q_UNUSED(i);
   QFont font = QtSStyles::GetHumanLabelFont();
   QString fontString;
   QTextStream fontStringStream(&fontString);
@@ -307,11 +307,11 @@ void SVPipelineFilterWidget::changeStyle(int i)
       labelColor ="color: rgb(190, 190, 190);";
       indexBackgroundColor = "background-color: rgb(6, 118, 6);";
       break;
-    default:
-      widgetBackgroundColor = "background-color: rgb(255, 0, 0);"; // Something obnoxious
-      labelColor ="color: rgb(0, 255, 0);"; // Something obnoxious
-      indexBackgroundColor = "background-color: rgb(0, 0, 255);"; // Something obnoxious
-      break;
+      //    default:
+      //      widgetBackgroundColor = "background-color: rgb(255, 0, 0);"; // Something obnoxious
+      //      labelColor ="color: rgb(0, 255, 0);"; // Something obnoxious
+      //      indexBackgroundColor = "background-color: rgb(0, 0, 255);"; // Something obnoxious
+      //      break;
   }
 
   switch(pState)
@@ -329,10 +329,10 @@ void SVPipelineFilterWidget::changeStyle(int i)
       widgetBackgroundColor = "background-color: rgb(160, 160, 160);";
       labelColor = "color: rgb(0, 0, 0);";
       break;
-    default:
-      widgetBackgroundColor = "background-color: rgb(255, 0, 0);"; // Something obnoxious
-      labelColor = "color: rgb(0, 255, 0);"; // Something obnoxious
-      break;
+      //    default:
+      //      widgetBackgroundColor = "background-color: rgb(255, 0, 0);"; // Something obnoxious
+      //      labelColor = "color: rgb(0, 255, 0);"; // Something obnoxious
+      //      break;
   }
 
   switch(eState)
@@ -346,11 +346,11 @@ void SVPipelineFilterWidget::changeStyle(int i)
     case ErrorState::Warning:
       indexBackgroundColor = "background-color: rgb(172, 168, 0);";
       break;
-    default:
-      widgetBackgroundColor = "background-color: rgb(0, 0, 225);"; // Something obnoxious
-      labelColor = "color: rgb(255, 0, 0);"; // Something obnoxious
-      indexBackgroundColor = "background-color: rgb(0, 255, 255);";
-      break;
+      //    default:
+      //      widgetBackgroundColor = "background-color: rgb(0, 0, 225);"; // Something obnoxious
+      //      labelColor = "color: rgb(255, 0, 0);"; // Something obnoxious
+      //      indexBackgroundColor = "background-color: rgb(0, 255, 255);";
+      //      break;
   }
 
 
@@ -363,11 +363,11 @@ void SVPipelineFilterWidget::changeStyle(int i)
   else if(isSelected() == false && hasRightClickTarget() == true)
   {
     svWidgetStyleStream << "border-style: dotted;";
-    svWidgetStyleStream << "margin: 1px;";
+    svWidgetStyleStream << "border: 2px solid " <<  QApplication::palette().highlight().color().name() << ";";
   }
   else
   {
-    svWidgetStyleStream << "margin: 1px;";
+    svWidgetStyleStream << "margin: 2px;";
   }
 
 
@@ -463,14 +463,6 @@ void SVPipelineFilterWidget::getGuiParametersFromFilter(AbstractFilter* filt)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void SVPipelineFilterWidget::on_deleteBtn_clicked()
-{
-  emit filterWidgetRemoved(this);
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
 void SVPipelineFilterWidget::filterInputWidget_filterParametersChanged()
 {
   emit parametersChanged(QUuid());
@@ -495,7 +487,6 @@ void SVPipelineFilterWidget::toReadyState()
 {
   PipelineFilterObject::toReadyState();
   getFilterInputWidget()->toRunningState();
-  deleteBtn->setDisabled(true);
   changeStyle(1);
 }
 
@@ -506,7 +497,6 @@ void SVPipelineFilterWidget::toExecutingState()
 {
   PipelineFilterObject::toExecutingState();
   getFilterInputWidget()->toRunningState();
-  deleteBtn->setDisabled(true);
   changeStyle(1);
 }
 
@@ -537,7 +527,6 @@ void SVPipelineFilterWidget::toStoppedState()
 {
   PipelineFilterObject::toStoppedState();
   getFilterInputWidget()->toIdleState();
-  deleteBtn->setEnabled(true);
   changeStyle(1);
 }
 
@@ -569,7 +558,6 @@ void SVPipelineFilterWidget::toErrorState()
 {
   PipelineFilterObject::toErrorState();
   qDebug() << getFilter()->getHumanLabel() << "\t toErrorState";
-  deleteBtn->setEnabled(true);
   changeStyle(1);
 }
 
