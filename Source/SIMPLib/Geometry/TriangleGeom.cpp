@@ -54,7 +54,7 @@
 #endif
 
 #include "SIMPLib/Geometry/DerivativeHelpers.h"
-#include "SIMPLib/Geometry/GeometryHelpers.hpp"
+#include "SIMPLib/Geometry/GeometryHelpers.h"
 
 /**
  * @brief The FindTriangleDerivativesImpl class implements a threaded algorithm that computes the
@@ -622,7 +622,10 @@ int TriangleGeom::writeXdmf(QTextStream& out, QString dcName, QString hdfFileNam
       << "\n";
   out << "  <Grid Name=\"" << dcName << "\" GridType=\"Uniform\">"
       << "\n";
-
+  if(getEnableTimeSeries())
+  {
+    out << "    <Time TimeType=\"Single\" Value=\"" << getTimeValue() << "\"/>\n";
+  }
   out << "    <Topology TopologyType=\"Triangle\" NumberOfElements=\"" << getNumberOfTris() << "\">"
       << "\n";
   out << "      <DataItem Format=\"HDF\" NumberType=\"Int\" Dimensions=\"" << getNumberOfTris() << " 3\">"
@@ -670,9 +673,10 @@ QString TriangleGeom::getInfoString(SIMPL::InfoStringFormat format)
 
   if(format == SIMPL::HtmlFormat)
   {
-    ss << "<tr bgcolor=\"#D3D8E0\"><th colspan=2>Triangle Geometry Info</th></tr>";
-    ss << "<tr bgcolor=\"#C3C8D0\"><th align=\"right\">Number of Triangles</th><td>" << getNumberOfTris() << "</td></tr>";
-    ss << "<tr bgcolor=\"#C3C8D0\"><th align=\"right\">Number of Vertices</th><td>" << getNumberOfVertices() << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th colspan=2>Geometry Info</th></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Type</th><td>" << GeometryHelpers::Translation::TypeToString(getGeometryType()) << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Number of Triangles</th><td>" << getNumberOfTris() << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Number of Vertices</th><td>" << getNumberOfVertices() << "</td></tr>";
   }
   else
   {
@@ -741,19 +745,29 @@ int TriangleGeom::readGeometryFromHDF5(hid_t parentId, bool preflight)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-IGeometry::Pointer TriangleGeom::deepCopy()
+IGeometry::Pointer TriangleGeom::deepCopy(bool forceNoAllocate)
 {
-  TriangleGeom::Pointer triCopy = TriangleGeom::CreateGeometry(getTriangles(), getVertices(), getName());
+  SharedTriList::Pointer tris = std::dynamic_pointer_cast<SharedTriList>((getTriangles().get() == nullptr) ? nullptr : getTriangles()->deepCopy(forceNoAllocate));
+  SharedVertexList::Pointer verts = std::dynamic_pointer_cast<SharedVertexList>((getVertices().get() == nullptr) ? nullptr : getVertices()->deepCopy(forceNoAllocate));
+  SharedEdgeList::Pointer edges = std::dynamic_pointer_cast<SharedEdgeList>((getEdges().get() == nullptr) ? nullptr : getEdges()->deepCopy(forceNoAllocate));
+  SharedEdgeList::Pointer unsharedEdges = std::dynamic_pointer_cast<SharedEdgeList>((getUnsharedEdges().get() == nullptr) ? nullptr : getUnsharedEdges()->deepCopy(forceNoAllocate));
+  ElementDynamicList::Pointer elementsContainingVert =
+      std::dynamic_pointer_cast<ElementDynamicList>((getElementsContainingVert().get() == nullptr) ? nullptr : getElementsContainingVert()->deepCopy(forceNoAllocate));
+  ElementDynamicList::Pointer elementNeighbors = std::dynamic_pointer_cast<ElementDynamicList>((getElementNeighbors().get() == nullptr) ? nullptr : getElementNeighbors()->deepCopy(forceNoAllocate));
+  FloatArrayType::Pointer elementCentroids = std::dynamic_pointer_cast<FloatArrayType>((getElementCentroids().get() == nullptr) ? nullptr : getElementCentroids()->deepCopy(forceNoAllocate));
+  FloatArrayType::Pointer elementSizes = std::dynamic_pointer_cast<FloatArrayType>((getElementSizes().get() == nullptr) ? nullptr : getElementSizes()->deepCopy(forceNoAllocate));
 
-  triCopy->setEdges(getEdges());
-  triCopy->setUnsharedEdges(getUnsharedEdges());
-  triCopy->setElementsContainingVert(getElementsContainingVert());
-  triCopy->setElementNeighbors(getElementNeighbors());
-  triCopy->setElementCentroids(getElementCentroids());
-  triCopy->setElementSizes(getElementSizes());
-  triCopy->setSpatialDimensionality(getSpatialDimensionality());
+  TriangleGeom::Pointer copy = TriangleGeom::CreateGeometry(tris, verts, getName());
 
-  return triCopy;
+  copy->setEdges(edges);
+  copy->setUnsharedEdges(unsharedEdges);
+  copy->setElementsContainingVert(elementsContainingVert);
+  copy->setElementNeighbors(elementNeighbors);
+  copy->setElementCentroids(elementCentroids);
+  copy->setElementSizes(elementSizes);
+  copy->setSpatialDimensionality(getSpatialDimensionality());
+
+  return copy;
 }
 
 // -----------------------------------------------------------------------------
@@ -761,6 +775,9 @@ IGeometry::Pointer TriangleGeom::deepCopy()
 // -----------------------------------------------------------------------------
 
 // Shared ops includes
+#ifdef GEOM_CLASS_NAME
+#undef GEOM_CLASS_NAME
+#endif
 #define GEOM_CLASS_NAME TriangleGeom
 #include "SIMPLib/Geometry/SharedEdgeOps.cpp"
 #include "SIMPLib/Geometry/SharedTriOps.cpp"

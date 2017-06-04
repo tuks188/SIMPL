@@ -53,7 +53,7 @@
 #endif
 
 #include "H5Support/H5Lite.h"
-#include "SIMPLib/Geometry/GeometryHelpers.hpp"
+#include "SIMPLib/Geometry/GeometryHelpers.h"
 #include "SIMPLib/HDF5/VTKH5Constants.h"
 
 /**
@@ -1026,6 +1026,10 @@ int RectGridGeom::writeXdmf(QTextStream& out, QString dcName, QString hdfFileNam
       << "\n";
   out << "  <Grid Name=\"" << dcName << "\" GridType=\"Uniform\">"
       << "\n";
+  if(getEnableTimeSeries())
+  {
+    out << "    <Time TimeType=\"Single\" Value=\"" << getTimeValue() << "\"/>\n";
+  }
   out << "    <Topology TopologyType=\"3DRectMesh\" Dimensions=\"" << volDims[2] + 1 << " " << volDims[1] + 1 << " " << volDims[0] + 1 << " \"></Topology>"
       << "\n";
   out << "    <Geometry Type=\"VxVyVz\">"
@@ -1063,9 +1067,10 @@ QString RectGridGeom::getInfoString(SIMPL::InfoStringFormat format)
 
   if(format == SIMPL::HtmlFormat)
   {
-    ss << "<tr bgcolor=\"#D3D8E0\"><th colspan=2>RectGrid Geometry Info</th></tr>";
-    ss << "<tr bgcolor=\"#C3C8D0\"><th align=\"right\">Dimensions:</th><td>" << volDims[0] << " x " << volDims[1] << " x " << volDims[2] << "</td></tr>";
-    ss << "<tr bgcolor=\"#C3C8D0\"><th align=\"right\">Resolution:</th><td>"
+    ss << "<tr bgcolor=\"#FFFCEA\"><th colspan=2>Geometry Info</th></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Type</th><td>" << GeometryHelpers::Translation::TypeToString(getGeometryType()) << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Dimensions:</th><td>" << volDims[0] << " x " << volDims[1] << " x " << volDims[2] << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Resolution:</th><td>"
        << "Variable"
        << "</td></tr>";
   }
@@ -1094,20 +1099,25 @@ int RectGridGeom::readGeometryFromHDF5(hid_t parentId, bool preflight)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-IGeometry::Pointer RectGridGeom::deepCopy()
+IGeometry::Pointer RectGridGeom::deepCopy(bool forceNoAllocate)
 {
-  RectGridGeom::Pointer rectGridCopy = RectGridGeom::CreateGeometry(getName());
+  FloatArrayType::Pointer xBounds = std::dynamic_pointer_cast<FloatArrayType>((getXBounds().get() == nullptr) ? nullptr : getXBounds()->deepCopy(forceNoAllocate));
+  FloatArrayType::Pointer yBounds = std::dynamic_pointer_cast<FloatArrayType>((getYBounds().get() == nullptr) ? nullptr : getYBounds()->deepCopy(forceNoAllocate));
+  FloatArrayType::Pointer zBounds = std::dynamic_pointer_cast<FloatArrayType>((getZBounds().get() == nullptr) ? nullptr : getZBounds()->deepCopy(forceNoAllocate));
+  FloatArrayType::Pointer elementSizes = std::dynamic_pointer_cast<FloatArrayType>((getElementSizes().get() == nullptr) ? nullptr : getElementSizes()->deepCopy(forceNoAllocate));
+
+  RectGridGeom::Pointer copy = RectGridGeom::CreateGeometry(getName());
 
   size_t volDims[3] = { 0, 0, 0 };
   getDimensions(volDims);
-  rectGridCopy->setDimensions(volDims);
-  rectGridCopy->setXBounds(getXBounds());
-  rectGridCopy->setYBounds(getYBounds());
-  rectGridCopy->setZBounds(getZBounds());
-  rectGridCopy->setElementSizes(getElementSizes());
-  rectGridCopy->setSpatialDimensionality(getSpatialDimensionality());
+  copy->setDimensions(volDims);
+  copy->setXBounds(xBounds);
+  copy->setYBounds(yBounds);
+  copy->setZBounds(zBounds);
+  copy->setElementSizes(elementSizes);
+  copy->setSpatialDimensionality(getSpatialDimensionality());
 
-  return rectGridCopy;
+  return copy;
 }
 
 // -----------------------------------------------------------------------------

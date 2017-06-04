@@ -63,6 +63,7 @@ class FilterParameter;
 class QPropertyAnimation;
 class QGraphicsOpacityEffect;
 class QTimer;
+class QLineEdit;
 
 /**
  * @brief The FilterParameterWidget class
@@ -75,6 +76,16 @@ class SVWidgetsLib_EXPORT FilterParameterWidget : public QFrame
     FilterParameterWidget(FilterParameter* parameter, AbstractFilter* filter = nullptr, QWidget* parent = nullptr);
 
     virtual ~FilterParameterWidget();
+
+    using EnumType = unsigned int;
+
+    enum class Style : EnumType
+    {
+      FS_STANDARD_STYLE = 0,
+      FS_DRAGGING_STYLE = 1,
+      FS_DOESNOTEXIST_STYLE = 2,
+      FS_WARNING_STYLE = 3
+    };
 
     SIMPL_VIRTUAL_INSTANCE_PROPERTY(AbstractFilter*, Filter)
     SIMPL_VIRTUAL_INSTANCE_PROPERTY(FilterParameter*, FilterParameter)
@@ -90,6 +101,8 @@ class SVWidgetsLib_EXPORT FilterParameterWidget : public QFrame
 
     QString wrapStringInHtml(const QString& message);
 
+    virtual void changeStyleSheet(Style style);
+
   public slots:
 
     void setLinkedConditionalState(int state);
@@ -98,8 +111,35 @@ class SVWidgetsLib_EXPORT FilterParameterWidget : public QFrame
     void fadeWidget(QWidget* widget, bool in);
     void animationFinished();
 
+    /**
+     * @brief showFileInFileSystem
+     */
+    virtual void showFileInFileSystem();
+
   protected:
+
+    /**
+     * @brief adjustedMenuPosition
+     * @param pushButton
+     * @return
+     */
     QPoint adjustedMenuPosition(QToolButton *pushButton);
+
+    /**
+     * @brief hasValidFilePath
+     * @param filePath
+     * @return
+     */
+    bool hasValidFilePath(const QString &filePath);
+
+    /**
+     * @brief verifyPathExists
+     * @param filePath
+     * @param lineEdit
+     * @return
+     */
+    bool verifyPathExists(QString filePath, QLineEdit* lineEdit);
+
 
   protected slots:
     void showBorder();
@@ -111,10 +151,11 @@ class SVWidgetsLib_EXPORT FilterParameterWidget : public QFrame
     float startValue;
     float endValue;
     bool fadeIn;
-    QTimer*                       m_Timer;
-    QPropertyAnimation* animation;
-    QGraphicsOpacityEffect* effect;
 
+    QTimer*                       m_Timer = nullptr;
+    QPropertyAnimation*           animation;
+    QGraphicsOpacityEffect*       effect;
+    QString                       m_CurrentlyValidPath;
 
     FilterParameterWidget(const FilterParameterWidget&); // Copy Constructor Not Implemented
     void operator=(const FilterParameterWidget&); // Operator '=' Not Implemented

@@ -46,6 +46,8 @@
 #include "SIMPLib/Common/FilterManager.h"
 #include "SIMPLib/Common/IFilterFactory.hpp"
 
+#include "SVWidgetsLib/QtSupport/QtSStyles.h"
+
 // Include the MOC generated CPP file which has all the QMetaObject methods/data
 #include "moc_FilterListToolboxWidget.cpp"
 
@@ -79,14 +81,15 @@ void FilterListToolboxWidget::setupGui()
 {
   setupSearchField();
 
-  QString css(" QToolTip {\
-              border: 2px solid #434343;\
-              padding: 2px;\
-              border-radius: 3px;\
-              opacity: 255;\
-              background-color: #FFFFFF;\
-              }");
-  filterList->setStyleSheet(css);
+//  QString css(" QToolTip {\
+//              border: 2px solid #434343;\
+//              padding: 2px;\
+//              border-radius: 3px;\
+//              opacity: 255;\
+//              background-color: #FFFFFF;\
+//              color: #000000;\
+//              }");
+  //filterList->setStyleSheet(css);
 
   filterList->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -247,6 +250,9 @@ void FilterListToolboxWidget::addItemToList(AbstractFilter::Pointer filter)
   QString humanName = filter->getHumanLabel();
   QString iconName(":/Groups/");
   iconName.append(filter->getGroupName());
+
+  QIcon icon = QtSStyles::IconForGroup(filter->getGroupName());
+#if 0
   iconName.append("_Icon.png");
 
   // Validate the icon is in the resource system
@@ -257,6 +263,7 @@ void FilterListToolboxWidget::addItemToList(AbstractFilter::Pointer filter)
   }
 
   QIcon icon(iconName);
+#endif
   // Create the QListWidgetItem and add it to the filterList
   QListWidgetItem* filterItem = new QListWidgetItem(icon, humanName, filterList);
   // Set an "internal" QString that is the name of the filter. We need this value

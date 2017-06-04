@@ -51,7 +51,6 @@
 #include "SIMPLib/HDF5/H5DataArrayReader.h"
 #include "SIMPLib/HDF5/VTKH5Constants.h"
 #include "SIMPLib/Math/SIMPLibMath.h"
-#include "SIMPLib/Utilities/SIMPLibRandom.h"
 #include "SIMPLib/DataContainers/AttributeMatrixProxy.h"
 #include "SIMPLib/DataContainers/DataContainerProxy.h"
 
@@ -72,6 +71,136 @@ AttributeMatrix::AttributeMatrix(QVector<size_t> tDims, const QString& name, Att
 AttributeMatrix::~AttributeMatrix()
 {
   // std::cout << "~AttributeMatrix" << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+QString AttributeMatrix::TypeToString(AttributeMatrix::Type t)
+{
+  QString out("Unknown");
+  switch(t)
+  {
+  case AttributeMatrix::Type::Vertex:
+    out = QString("Vertex");
+    break;
+  case AttributeMatrix::Type::Edge:
+    out = QString("Edge");
+    break;
+  case AttributeMatrix::Type::Face:
+    out = QString("Face");
+    break;
+  case AttributeMatrix::Type::Cell:
+    out = QString("Cell");
+    break;
+  case AttributeMatrix::Type::VertexFeature:
+    out = QString("VertexFeature");
+    break;
+  case AttributeMatrix::Type::EdgeFeature:
+    out = QString("EdgeFeature");
+    break;
+  case AttributeMatrix::Type::FaceFeature:
+    out = QString("FaceFeature");
+    break;
+  case AttributeMatrix::Type::CellFeature:
+    out = QString("CellFeature");
+    break;
+  case AttributeMatrix::Type::VertexEnsemble:
+    out = QString("VertexEnsemble");
+    break;
+  case AttributeMatrix::Type::EdgeEnsemble:
+    out = QString("EdgeEnsemble");
+    break;
+  case AttributeMatrix::Type::FaceEnsemble:
+    out = QString("FaceEnsemble");
+    break;
+  case AttributeMatrix::Type::CellEnsemble:
+    out = QString("CellEnsemble");
+    break;
+  case AttributeMatrix::Type::MetaData:
+    out = QString("MetaData");
+    break;
+  case AttributeMatrix::Type::Generic:
+    out = QString("Generic");
+    break;
+  case AttributeMatrix::Type::Unknown:
+    out = QString("Unknown");
+    break;
+  case AttributeMatrix::Type::Any:
+    out = QString("Any");
+    break;
+  }
+  return out;
+}
+
+// -----------------------------------------------------------------------------
+AttributeMatrix::Type AttributeMatrix::StringToType(const QString& str)
+{
+  AttributeMatrix::Type t = AttributeMatrix::Type::Unknown;
+  if(str.compare("Vertex") == 0)
+  {
+    return AttributeMatrix::Type::Vertex;
+  }
+  if(str.compare("Edge") == 0)
+  {
+    return AttributeMatrix::Type::Edge;
+  }
+  if(str.compare("Face") == 0)
+  {
+    return AttributeMatrix::Type::Face;
+  }
+  if(str.compare("Cell") == 0)
+  {
+    return AttributeMatrix::Type::Cell;
+  }
+  if(str.compare("VertexFeature") == 0)
+  {
+    return AttributeMatrix::Type::VertexFeature;
+  }
+  if(str.compare("EdgeFeature") == 0)
+  {
+    return AttributeMatrix::Type::EdgeFeature;
+  }
+  if(str.compare("FaceFeature") == 0)
+  {
+    return AttributeMatrix::Type::FaceFeature;
+  }
+  if(str.compare("CellFeature") == 0)
+  {
+    return AttributeMatrix::Type::CellFeature;
+  }
+  if(str.compare("VertexEnsemble") == 0)
+  {
+    return AttributeMatrix::Type::VertexEnsemble;
+  }
+  if(str.compare("EdgeEnsemble") == 0)
+  {
+    return AttributeMatrix::Type::EdgeEnsemble;
+  }
+  if(str.compare("FaceEnsemble") == 0)
+  {
+    return AttributeMatrix::Type::FaceEnsemble;
+  }
+  if(str.compare("CellEnsemble") == 0)
+  {
+    return AttributeMatrix::Type::CellEnsemble;
+  }
+  if(str.compare("MetaData") == 0)
+  {
+    return AttributeMatrix::Type::MetaData;
+  }
+  if(str.compare("Generic") == 0)
+  {
+    return AttributeMatrix::Type::Generic;
+  }
+  if(str.compare("Unknown") == 0)
+  {
+    return AttributeMatrix::Type::Unknown;
+  }
+  if(str.compare("Any") == 0)
+  {
+    return AttributeMatrix::Type::Any;
+  }
+
+  return t;
 }
 
 // -----------------------------------------------------------------------------
@@ -426,14 +555,14 @@ int AttributeMatrix::getNumAttributeArrays() const
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-AttributeMatrix::Pointer AttributeMatrix::deepCopy()
+AttributeMatrix::Pointer AttributeMatrix::deepCopy(bool forceNoAllocate)
 {
   AttributeMatrix::Pointer newAttrMat = AttributeMatrix::New(getTupleDimensions(), getName(), getType());
 
   for(QMap<QString, IDataArray::Pointer>::iterator iter = m_AttributeArrays.begin(); iter != m_AttributeArrays.end(); ++iter)
   {
     IDataArray::Pointer d = iter.value();
-    IDataArray::Pointer new_d = d->deepCopy();
+    IDataArray::Pointer new_d = d->deepCopy(forceNoAllocate);
     if(new_d.get() == nullptr)
     {
       return AttributeMatrix::NullPointer();
@@ -656,6 +785,7 @@ QString AttributeMatrix::getInfoString(SIMPL::InfoStringFormat format)
       break;
     case AttributeMatrix::Type::Generic:
       typeString = "Generic";
+      break;
     default:
       typeString = "Unknown";
       break;
@@ -676,7 +806,6 @@ QString AttributeMatrix::getInfoString(SIMPL::InfoStringFormat format)
 
     ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Attribute Array Count:</th><td>" << getNumAttributeArrays() << "</td></tr>";
     ss << "</tbody></table>\n";
-    ss << "<br/>";
     ss << "</body></html>";
   }
   else

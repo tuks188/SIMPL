@@ -107,6 +107,9 @@ SIMPLViewMenuItems::~SIMPLViewMenuItems()
   delete m_ActionRenameBookmark;
   delete m_ActionRemoveBookmark;
   delete m_ActionShowBookmarkInFileSystem;
+
+  delete m_ActionOpenBookmark;
+  delete m_ActionOpenExecuteBookmark;
 }
 
 // -----------------------------------------------------------------------------
@@ -176,14 +179,13 @@ void SIMPLViewMenuItems::createActions()
   m_ActionShowBookmarkInFileSystem->setText("Show in File System");
 #endif
 
+  m_ActionOpenBookmark = new QAction("Open Bookmark", this);
+  m_ActionOpenExecuteBookmark = new QAction("Execute Bookmark", this);
+
   m_ActionClearPipeline->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Backspace));
   m_ActionOpen->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
   m_ActionNew->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
-#if defined(Q_OS_WIN)
-  m_ActionExit->setShortcut(QKeySequence(Qt::ALT + Qt::Key_F4));
-#else
   m_ActionExit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
-#endif
   m_ActionShowSIMPLViewHelp->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_H));
   m_ActionCheckForUpdates->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_U));
   m_ActionPluginInformation->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));

@@ -54,7 +54,7 @@
 #endif
 
 #include "SIMPLib/Geometry/DerivativeHelpers.h"
-#include "SIMPLib/Geometry/GeometryHelpers.hpp"
+#include "SIMPLib/Geometry/GeometryHelpers.h"
 
 /**
  * @brief The FindQuadDerivativesImpl class implements a threaded algorithm that computes the
@@ -623,7 +623,10 @@ int QuadGeom::writeXdmf(QTextStream& out, QString dcName, QString hdfFileName)
       << "\n";
   out << "  <Grid Name=\"" << dcName << "\" GridType=\"Uniform\">"
       << "\n";
-
+  if(getEnableTimeSeries())
+  {
+    out << "    <Time TimeType=\"Single\" Value=\"" << getTimeValue() << "\"/>\n";
+  }
   out << "    <Topology TopologyType=\"Quadrilateral\" NumberOfElements=\"" << getNumberOfQuads() << "\">"
       << "\n";
   out << "      <DataItem Format=\"HDF\" NumberType=\"Int\" Dimensions=\"" << getNumberOfQuads() << " 4\">"
@@ -671,9 +674,10 @@ QString QuadGeom::getInfoString(SIMPL::InfoStringFormat format)
 
   if(format == SIMPL::HtmlFormat)
   {
-    ss << "<tr bgcolor=\"#D3D8E0\"><th colspan=2>Quad Geometry Info</th></tr>";
-    ss << "<tr bgcolor=\"#C3C8D0\"><th align=\"right\">Number of Quads</th><td>" << getNumberOfQuads() << "</td></tr>";
-    ss << "<tr bgcolor=\"#C3C8D0\"><th align=\"right\">Number of Vertices</th><td>" << getNumberOfVertices() << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th colspan=2>Geometry Info</th></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Type</th><td>" << GeometryHelpers::Translation::TypeToString(getGeometryType()) << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Number of Quads</th><td>" << getNumberOfQuads() << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Number of Vertices</th><td>" << getNumberOfVertices() << "</td></tr>";
     ss << "</tbody></table>";
   }
   else
@@ -743,19 +747,29 @@ int QuadGeom::readGeometryFromHDF5(hid_t parentId, bool preflight)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-IGeometry::Pointer QuadGeom::deepCopy()
+IGeometry::Pointer QuadGeom::deepCopy(bool forceNoAllocate)
 {
-  QuadGeom::Pointer quadCopy = QuadGeom::CreateGeometry(getQuads(), getVertices(), getName());
+  SharedQuadList::Pointer quads = std::dynamic_pointer_cast<SharedQuadList>((getQuads().get() == nullptr) ? nullptr : getQuads()->deepCopy(forceNoAllocate));
+  SharedVertexList::Pointer verts = std::dynamic_pointer_cast<SharedVertexList>((getVertices().get() == nullptr) ? nullptr : getVertices()->deepCopy(forceNoAllocate));
+  SharedEdgeList::Pointer edges = std::dynamic_pointer_cast<SharedEdgeList>((getEdges().get() == nullptr) ? nullptr : getEdges()->deepCopy(forceNoAllocate));
+  SharedEdgeList::Pointer unsharedEdges = std::dynamic_pointer_cast<SharedEdgeList>((getUnsharedEdges().get() == nullptr) ? nullptr : getUnsharedEdges()->deepCopy(forceNoAllocate));
+  ElementDynamicList::Pointer elementsContainingVert =
+      std::dynamic_pointer_cast<ElementDynamicList>((getElementsContainingVert().get() == nullptr) ? nullptr : getElementsContainingVert()->deepCopy(forceNoAllocate));
+  ElementDynamicList::Pointer elementNeighbors = std::dynamic_pointer_cast<ElementDynamicList>((getElementNeighbors().get() == nullptr) ? nullptr : getElementNeighbors()->deepCopy(forceNoAllocate));
+  FloatArrayType::Pointer elementCentroids = std::dynamic_pointer_cast<FloatArrayType>((getElementCentroids().get() == nullptr) ? nullptr : getElementCentroids()->deepCopy(forceNoAllocate));
+  FloatArrayType::Pointer elementSizes = std::dynamic_pointer_cast<FloatArrayType>((getElementSizes().get() == nullptr) ? nullptr : getElementSizes()->deepCopy(forceNoAllocate));
 
-  quadCopy->setEdges(getEdges());
-  quadCopy->setUnsharedEdges(getUnsharedEdges());
-  quadCopy->setElementsContainingVert(getElementsContainingVert());
-  quadCopy->setElementNeighbors(getElementNeighbors());
-  quadCopy->setElementCentroids(getElementCentroids());
-  quadCopy->setElementSizes(getElementSizes());
-  quadCopy->setSpatialDimensionality(getSpatialDimensionality());
+  QuadGeom::Pointer copy = QuadGeom::CreateGeometry(quads, verts, getName());
 
-  return quadCopy;
+  copy->setEdges(edges);
+  copy->setUnsharedEdges(unsharedEdges);
+  copy->setElementsContainingVert(elementsContainingVert);
+  copy->setElementNeighbors(elementNeighbors);
+  copy->setElementCentroids(elementCentroids);
+  copy->setElementSizes(elementSizes);
+  copy->setSpatialDimensionality(getSpatialDimensionality());
+
+  return copy;
 }
 
 // -----------------------------------------------------------------------------
@@ -763,6 +777,9 @@ IGeometry::Pointer QuadGeom::deepCopy()
 // -----------------------------------------------------------------------------
 
 // Shared ops includes
+#ifdef GEOM_CLASS_NAME
+#undef GEOM_CLASS_NAME
+#endif
 #define GEOM_CLASS_NAME QuadGeom
 #include "SIMPLib/Geometry/SharedEdgeOps.cpp"
 #include "SIMPLib/Geometry/SharedQuadOps.cpp"

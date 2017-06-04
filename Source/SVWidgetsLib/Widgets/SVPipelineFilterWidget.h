@@ -99,7 +99,7 @@ class SVWidgetsLib_EXPORT SVPipelineFilterWidget : public QFrame, public Pipelin
     /**
      * @brief changeStyle
      */
-    void changeStyle(int i = -1) override;
+    virtual void changeStyle() override;
 
     /**
      * @brief displayFilterParameterWidgetError
@@ -166,20 +166,18 @@ class SVWidgetsLib_EXPORT SVPipelineFilterWidget : public QFrame, public Pipelin
     virtual void toWarningState() override;
 
   protected slots:
+
     /**
      * @brief on_deleteBtn_clicked
      */
     void on_deleteBtn_clicked();
 
+    /**
+     * @brief filterInputWidget_filterParametersChanged
+     */
     void filterInputWidget_filterParametersChanged();
 
   signals:
-
-    /**
-     * @brief filterWidgetRemoved
-     * @param widget
-     */
-    void filterWidgetRemoved(PipelineFilterObject* widget);
 
     /**
      * @brief dragStarted
@@ -216,6 +214,13 @@ class SVWidgetsLib_EXPORT SVPipelineFilterWidget : public QFrame, public Pipelin
     * @brief filterWidgetPasted
     */
     void filterWidgetPasted();
+
+    /**
+     * @brief filterWidgetRemoved
+     * @param widget
+     */
+    void filterWidgetRemoved(PipelineFilterObject* widget);
+
 
     /**
     * @brief focusInEventStarted
@@ -262,8 +267,7 @@ class SVWidgetsLib_EXPORT SVPipelineFilterWidget : public QFrame, public Pipelin
     void focusOutEvent(QFocusEvent* event) override;
 
   private:
-    QRect                             m_DeleteRect;
-    QPoint                            dragStartPosition;
+    QPoint                            m_DragStartPosition;
     IObserver*                        m_Observer;
     bool                              m_HasRightClickTarget;
 

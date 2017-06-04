@@ -41,7 +41,11 @@
 
 #include <QtWidgets/QMessageBox>
 
+#include "SIMPLib/Common/AbstractFilter.h"
+
+
 #include "SVWidgetsLib/QtSupport/QtSStyles.h"
+#include "SVWidgetsLib/Widgets/SVPipelineFilterWidget.h"
 
 // Include the MOC generated CPP file which has all the QMetaObject methods/data
 #include "moc_SVPipelineFilterOutlineWidget.cpp"
@@ -49,8 +53,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-SVPipelineFilterOutlineWidget::SVPipelineFilterOutlineWidget(QWidget* parent)
-: QWidget(parent)
+SVPipelineFilterOutlineWidget::SVPipelineFilterOutlineWidget(AbstractFilter* filter, QWidget* parent)
+: QFrame(parent)
+, m_Filter(filter)
 {
   setupUi(this);
 
@@ -70,50 +75,209 @@ SVPipelineFilterOutlineWidget::~SVPipelineFilterOutlineWidget()
 // -----------------------------------------------------------------------------
 void SVPipelineFilterOutlineWidget::setupGui()
 {
-  updateWidgetFont();
+  changeStyle();
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void SVPipelineFilterOutlineWidget::updateWidgetFont()
+void SVPipelineFilterOutlineWidget::setFilter(AbstractFilter* filter)
 {
+  m_Filter = filter;
+  changeStyle();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void SVPipelineFilterOutlineWidget::changeStyle()
+{
+  QFont font = QtSStyles::GetHumanLabelFont();
   QString fontString;
   QTextStream fontStringStream(&fontString);
-  QFont font = QtSStyles::GetHumanLabelFont();
 
   fontStringStream << "font: " << font.weight() << " ";
 #if defined(Q_OS_MAC)
-  fontStringStream << font.pointSize() - 3;
+  fontStringStream << font.pointSize() - 4;
 #elif defined(Q_OS_WIN)
   fontStringStream << font.pointSize() - 3;
 #else
-  fontStringStream << font.pointSize();
+  fontStringStream << font.pointSize() - 1;
 #endif
-  fontStringStream <<  "pt \"" << font.family()  << "\";";
+
+  fontStringStream << "pt \"" << font.family()  << "\";";
+
 #if defined(Q_OS_WIN)
   if(font.bold()) {
     fontStringStream << "font-weight: bold;";
   }
 #endif
 
-  QString style = styleSheet();
-  style.replace("font: 13pt;", fontString);
-  setStyleSheet(style);
+  // Style the over all widget
+  QString svWidgetStyle;
+  QTextStream svWidgetStyleStream(&svWidgetStyle);
+  svWidgetStyleStream << "QFrame#frame {\n";
+  svWidgetStyleStream << "border-radius: 0 3 3 0px;";
+  svWidgetStyleStream << "padding: 0 0 0 0px;";
 
-  style = filterName->styleSheet();
-  style.replace("font: 13pt;", fontString);
-  filterName->setStyleSheet(style);
+  QString labelStyle;
+  QTextStream labelStyleStream(&labelStyle);
+  labelStyleStream << "QLabel {";
+  labelStyleStream << fontString;
+  labelStyleStream << "padding: 2 2 2 2px;";
 
-  style = filterIndex->styleSheet();
-  style.replace("font: 13pt;", fontString);
-  filterIndex->setStyleSheet(style);
+  //----------------------------------------------------
+  QString filterIndexStyle;
+  QTextStream filterIndexStyleStream(&filterIndexStyle);
+#if defined(Q_OS_LINUX)
+  fontStringStream << "font-weight: bold;";
+#endif
+  filterIndexStyleStream << "QLabel\n{";
+  filterIndexStyleStream << fontString;
+  filterIndexStyleStream << "color: rgb(242, 242, 242);"; // Always have a white'ish font
+  filterIndexStyleStream << "border-top-left-radius: 3px;";
+  filterIndexStyleStream << "border-bottom-left-radius: 3px;";
+
+  SVPipelineFilterWidget::WidgetState wState = SVPipelineFilterWidget::WidgetState::Ready;
+  SVPipelineFilterWidget::PipelineState pState = SVPipelineFilterWidget::PipelineState::Stopped;
+  SVPipelineFilterWidget::ErrorState eState = SVPipelineFilterWidget::ErrorState::Ok;
+
+  QString widgetBackgroundColor;
+  QString labelColor;
+  QString indexBackgroundColor;
+  QColor bgColor;
+//  if(m_Filter)
+//  {
+//    bgColor = QtSStyles::ColorForFilterGroup(m_Filter->getGroupName());
+//  }
+//  else
+  {
+    bgColor = QColor(150, 150, 150);
+  }
+
+  switch(wState)
+  {
+    case SVPipelineFilterWidget::WidgetState::Ready:
+      widgetBackgroundColor = QString("background-color: %1;").arg(bgColor.name());
+      labelColor = "color: rgb(190, 190, 190);";
+      indexBackgroundColor = "background-color: rgb(48, 48, 48);";
+      break;
+    case SVPipelineFilterWidget::WidgetState::Executing:
+      widgetBackgroundColor = "background-color: rgb(130, 130, 130);";
+      labelColor ="color: rgb(190, 190, 190);";
+      indexBackgroundColor = "background-color: rgb(6, 140, 190);";
+      break;
+    case SVPipelineFilterWidget::WidgetState::Completed:
+      widgetBackgroundColor = QString("background-color: %1;").arg(bgColor.name());
+      labelColor ="color: rgb(190, 190, 190);";
+      indexBackgroundColor = "background-color: rgb(6, 118, 6);";
+      break;
+  }
+
+  QColor selectedColor = QColor::fromHsv(bgColor.hue(), 100, 120);
+
+  switch(pState)
+  {
+    case SVPipelineFilterWidget::PipelineState::Running:
+      widgetBackgroundColor = QString("background-color: %1;").arg(selectedColor.name());
+      labelColor = "color: rgb(190, 190, 190);";
+      break;
+    case SVPipelineFilterWidget::PipelineState::Stopped:
+      widgetBackgroundColor = QString("background-color: %1;").arg(bgColor.name());
+      labelColor = "color: rgb(0, 0, 0);";
+      break;
+    case SVPipelineFilterWidget::PipelineState::Paused:
+      widgetBackgroundColor = "background-color: rgb(160, 160, 160);";
+      labelColor = "color: rgb(0, 0, 0);";
+      break;
+  }
+
+  switch(eState)
+  {
+    case SVPipelineFilterWidget::ErrorState::Ok:
+
+      break;
+    case SVPipelineFilterWidget::ErrorState::Error:
+      indexBackgroundColor = "background-color: rgb(179, 2, 5);";
+      break;
+    case SVPipelineFilterWidget::ErrorState::Warning:
+      indexBackgroundColor = "background-color: rgb(172, 168, 0);";
+      break;
+  }
+
+
+  if(isSelected() == true)
+  {
+    QColor selectedColor = QColor::fromHsv(bgColor.hue(), 180, 150);
+
+    svWidgetStyleStream << "border-top: 3px solid " <<  selectedColor.name() << ";";
+    svWidgetStyleStream << "border-right: 3px solid " <<  selectedColor.name() << ";";
+    svWidgetStyleStream << "border-bottom: 3px solid " <<  selectedColor.name() << ";";
+    svWidgetStyleStream << "padding-left: 3px;";
+    filterIndexStyleStream << "border-top: 3px solid " <<  selectedColor.name() << ";";
+    filterIndexStyleStream << "border-left: 3px solid " <<  selectedColor.name() << ";";
+    filterIndexStyleStream << "border-bottom: 3px solid " <<  selectedColor.name() << ";";
+    filterIndexStyleStream << "padding-right: 3px;";
+  }
+  else if(isSelected() == false && hasRightClickTarget() == true)
+  {
+    svWidgetStyleStream << "border-top: 3px solid " <<  selectedColor.name() << ";";
+    svWidgetStyleStream << "border-right: 3px solid " <<  selectedColor.name() << ";";
+    svWidgetStyleStream << "border-bottom: 3px solid " <<  selectedColor.name() << ";";
+    svWidgetStyleStream << "padding-left: 3px;";
+  }
+  else
+  {
+    svWidgetStyleStream << "padding: 3px;";
+    filterIndexStyleStream << "padding: 3px;";
+  }
+
+
+  svWidgetStyleStream << widgetBackgroundColor;
+  labelStyleStream << labelColor;
+  filterIndexStyleStream << indexBackgroundColor;
+
+  svWidgetStyleStream << "}\n";
+  labelStyleStream << "}";
+  filterIndexStyleStream << "}\n";
+
+  // Set the Style Sheet
+  frame->setStyleSheet(svWidgetStyle + labelStyle);
+  filterIndex->setStyleSheet(filterIndexStyle);
+
+#if defined(Q_OS_WIN)
+  if (isSelected() == true)
+  {
+    filterName->setStyleSheet("color: rgb(242, 242, 242);");
+  }
+  else
+  {
+    filterName->setStyleSheet("");
+  }
+#endif
+
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void SVPipelineFilterOutlineWidget::setFilterName(QString name)
+bool SVPipelineFilterOutlineWidget::isSelected()
+{
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool SVPipelineFilterOutlineWidget::hasRightClickTarget()
+{
+  return false;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void SVPipelineFilterOutlineWidget::setFilterTitle(QString name)
 {
   filterName->setText(name);
 }

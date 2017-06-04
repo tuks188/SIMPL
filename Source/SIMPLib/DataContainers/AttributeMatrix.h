@@ -117,6 +117,21 @@ class SIMPLib_EXPORT AttributeMatrix : public Observable
     using Types = QVector<Type>;
 
     /**
+     * @brief TypeToString Returns a String representation of the AttributeMatrix Type
+     * @param t The type to convert
+     * @return
+     */
+    static QString TypeToString(Type t);
+
+    /**
+     * @brief StringToType Returns the proper enumeration value for a given string or
+     * Unknown if a string type was not know to AttributeMatrix
+     * @param str The string to convert
+     * @return
+     */
+    static Type StringToType(const QString &str);
+
+    /**
      * @brief GetTypesAsStrings
      * @return
      */
@@ -570,7 +585,7 @@ class SIMPLib_EXPORT AttributeMatrix : public Observable
     * @brief creates and returns a copy of the attribute matrix
     * @return On error, will return a null pointer.  It is the responsibility of the calling function to check for errors and return an error message using the PipelineMessage
     */
-    virtual AttributeMatrix::Pointer deepCopy();
+    virtual AttributeMatrix::Pointer deepCopy(bool forceNoAllocate = false);
 
     /**
      * @brief writeAttributeArraysToHDF5

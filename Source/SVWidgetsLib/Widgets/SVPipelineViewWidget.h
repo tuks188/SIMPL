@@ -70,7 +70,7 @@ class QEvent;
 class QMenu;
 class QAction;
 class PipelineFilterObject;
-class DataBrowserWidget;
+class DataStructureWidget;
 /*
  *
  */
@@ -141,6 +141,12 @@ class SVWidgetsLib_EXPORT SVPipelineViewWidget : public QFrame, public PipelineV
     * @return
     */
     QList<PipelineFilterObject*> getSelectedFilterObjects() override;
+
+    /**
+    * @brief getSelectedIndexedFilterObject
+    * @return
+    */
+    QList<IndexedFilterObject> getSelectedIndexedFilterObjects() override;
 
     /**
      * @brief recheckWindowTitleAndModification
@@ -244,11 +250,16 @@ class SVWidgetsLib_EXPORT SVPipelineViewWidget : public QFrame, public PipelineV
     void resetLayout();
 
     /**
-     * @brief setDataBrowserWidget
+     * @brief setDataStructureWidget
      * @param w
      */
-    virtual void setDataBrowserWidget(DataBrowserWidget* w);
-    virtual DataBrowserWidget* getDataBrowserWidget();
+    virtual void setDataStructureWidget(DataStructureWidget* w) override;
+
+    /**
+     * @brief getDataStructureWidget
+     * @return
+     */
+    virtual DataStructureWidget* getDataStructureWidget();
 
   public slots:
 
@@ -380,13 +391,13 @@ class SVWidgetsLib_EXPORT SVPipelineViewWidget : public QFrame, public PipelineV
      * @brief removeFilterWidget
      * @param filterWidget
      */
-    void removeFilterObject(PipelineFilterObject* filterObject, bool deleteWidget = true) override;
+    void removeFilterObject(PipelineFilterObject* filterObject, bool deleteWidget) override;
 
     /**
-     * @brief slot_removeFilterObject
+     * @brief removeFilterObject
      * @param filterObject
      */
-    void slot_removeFilterObject(PipelineFilterObject* filterObject);
+    void removeFilterObject(PipelineFilterObject* filterObject);
 
     /**
      * @brief updateCurrentUndoText
@@ -434,7 +445,8 @@ class SVWidgetsLib_EXPORT SVPipelineViewWidget : public QFrame, public PipelineV
     QString                                           m_PreviousRedoText = "";
     bool                                              m_BlockPreflight = false;
     std::stack<bool>                                  m_BlockPreflightStack;
-    DataBrowserWidget*                                m_DataBrowserWidget = nullptr;
+    DataStructureWidget*                                m_DataStructureWidget = nullptr;
+    bool m_LoadingJson = false;
 
     /**
      * @brief addFilterObject
@@ -442,6 +454,12 @@ class SVWidgetsLib_EXPORT SVPipelineViewWidget : public QFrame, public PipelineV
      * @param value
      */
     virtual void addFilterObject(PipelineFilterObject* filterObject, QVariant value) override;
+
+    /**
+     * @brief removeFilterObjects
+     * @param filterObjects
+     */
+    void removeFilterObjects(QList<PipelineFilterObject*> filterObjects);
 
     QMenu* createPipelineFilterWidgetMenu(SVPipelineFilterWidget* filterWidget);
     void createPipelineViewWidgetMenu();

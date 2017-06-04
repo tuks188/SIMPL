@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>SVPipelineFilterOutlineWidget</class>
- <widget class="QWidget" name="SVPipelineFilterOutlineWidget">
+ <widget class="QFrame" name="SVPipelineFilterOutlineWidget">
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
   </property>
@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>274</width>
-    <height>36</height>
+    <width>285</width>
+    <height>30</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,29 +22,21 @@
   <property name="minimumSize">
    <size>
     <width>50</width>
-    <height>36</height>
+    <height>30</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>16777215</height>
+    <height>30</height>
    </size>
   </property>
-  <property name="windowTitle">
-   <string>SVPipelineFilterOutlineWidget</string>
+  <property name="frameShape">
+   <enum>QFrame::NoFrame</enum>
   </property>
-  <property name="styleSheet">
-   <string notr="true">QWidget#SVPipelineFilterOutlineWidget {
-padding: 0 0 0 0px;
-font: 13pt;
-border: 1px solid rgb(149, 195, 255);
-border-radius: 3px;
-}</string>
-  </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
    <property name="spacing">
-    <number>4</number>
+    <number>0</number>
    </property>
    <property name="leftMargin">
     <number>0</number>
@@ -53,7 +45,7 @@ border-radius: 3px;
     <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>4</number>
+    <number>0</number>
    </property>
    <property name="bottomMargin">
     <number>0</number>
@@ -62,23 +54,12 @@ border-radius: 3px;
     <widget class="QLabel" name="filterIndex">
      <property name="font">
       <font>
+       <family>Arial</family>
        <pointsize>13</pointsize>
        <weight>50</weight>
        <italic>false</italic>
        <bold>false</bold>
       </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel
-{
-	color: rgb(51, 141, 203);
-	border: 1px solid rgb(149, 195, 255);
-	padding: 3 3 3 3px;
-	font: 13pt;
-}</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="text">
       <string>01</string>
@@ -86,42 +67,99 @@ border-radius: 3px;
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="filterName">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
      </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-       <stylestrategy>PreferAntialias</stylestrategy>
-      </font>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
      </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel
-{
-	color: rgb(51, 141, 203);
-	font: 13pt;
-}</string>
-     </property>
-     <property name="lineWidth">
-      <number>0</number>
-     </property>
-     <property name="text">
-      <string>Filter Name</string>
-     </property>
-     <property name="indent">
-      <number>5</number>
-     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="filterName">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+          <stylestrategy>PreferAntialias</stylestrategy>
+         </font>
+        </property>
+        <property name="lineWidth">
+         <number>0</number>
+        </property>
+        <property name="text">
+         <string>Filter Name</string>
+        </property>
+        <property name="indent">
+         <number>5</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Click to remove filter from pipeline.</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../icons/images/Icons.qrc">
+          <normaloff>:/circle-x.png</normaloff>:/circle-x.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../icons/images/Icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

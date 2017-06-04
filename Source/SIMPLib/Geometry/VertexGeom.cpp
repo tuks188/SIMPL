@@ -359,14 +359,25 @@ int VertexGeom::writeXdmf(QTextStream& out, QString dcName, QString hdfFileName)
       << "\n";
   out << "  <Grid Name=\"" << dcName << "\" GridType=\"Uniform\">"
       << "\n";
+  if(getEnableTimeSeries())
+  {
+    out << "    <Time TimeType=\"Single\" Value=\"" << getTimeValue() << "\"/>\n";
+  }
 
 #if 0
   DataArrayPath dap = getTemporalDataPath();
   if(dap.isValid())
   {
-    IDataArray::Pointer timeValues = getAttributeMatrix(dap.getAttributeMatrixName())->getAttributeArray(dap.getDataArrayName());
-    Int32ArrayType::Pointer timeValuePtr = std::dynamic_pointer_cast<Int32ArrayType>(timeValues);
-    out << "    <Time TimeType=\"Single\" Value=\"" << timeValuePtr->getValue(0) << "\"/>\n";
+    AttributeMatrix::Pointer am = getAttributeMatrix(dap.getAttributeMatrixName());
+    if(nullptr != am.get())
+    {
+      IDataArray::Pointer timeValues = am->getAttributeArray(dap.getDataArrayName());
+      Int32ArrayType::Pointer timeValuePtr = std::dynamic_pointer_cast<Int32ArrayType>(timeValues);
+      if(nullptr != timeValuePtr.get())
+      {
+        out << "    <Time TimeType=\"Single\" Value=\"" << timeValuePtr->getValue(0) << "\"/>\n";
+      }
+    }
   }
 #endif
 
@@ -407,8 +418,9 @@ QString VertexGeom::getInfoString(SIMPL::InfoStringFormat format)
 
   if(format == SIMPL::HtmlFormat)
   {
-    ss << "<tr bgcolor=\"#D3D8E0\"><th colspan=2>Vertex Geometry Info</th></tr>";
-    ss << "<tr bgcolor=\"#C3C8D0\"><th align=\"right\">Number of Vertices</th><td>" << getNumberOfVertices() << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th colspan=2>Geometry Info</th></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Type</th><td>" << GeometryHelpers::Translation::TypeToString(getGeometryType()) << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Number of Vertices</th><td>" << getNumberOfVertices() << "</td></tr>";
     ss << "</tbody></table>";
   }
   else
@@ -443,11 +455,13 @@ int VertexGeom::readGeometryFromHDF5(hid_t parentId, bool preflight)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-IGeometry::Pointer VertexGeom::deepCopy()
+IGeometry::Pointer VertexGeom::deepCopy(bool forceNoAllocate)
 {
-  VertexGeom::Pointer vertexCopy = VertexGeom::CreateGeometry(getVertices(), getName());
+  SharedVertexList::Pointer verts = std::dynamic_pointer_cast<SharedVertexList>((getVertices().get() == nullptr) ? nullptr : getVertices()->deepCopy(forceNoAllocate));
+  FloatArrayType::Pointer elementSizes = std::dynamic_pointer_cast<FloatArrayType>((getElementSizes().get() == nullptr) ? nullptr : getElementSizes()->deepCopy(forceNoAllocate));
 
-  vertexCopy->setElementSizes(getElementSizes());
+  VertexGeom::Pointer vertexCopy = VertexGeom::CreateGeometry(verts, getName());
+  vertexCopy->setElementSizes(elementSizes);
   vertexCopy->setSpatialDimensionality(getSpatialDimensionality());
 
   return vertexCopy;
@@ -458,5 +472,9 @@ IGeometry::Pointer VertexGeom::deepCopy()
 // -----------------------------------------------------------------------------
 
 // Shared ops includes
+#ifdef GEOM_CLASS_NAME
+#undef GEOM_CLASS_NAME
+#endif
+
 #define GEOM_CLASS_NAME VertexGeom
 #include "SIMPLib/Geometry/SharedVertexOps.cpp"

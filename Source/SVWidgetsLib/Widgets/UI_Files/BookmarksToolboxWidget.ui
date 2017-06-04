@@ -50,11 +50,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">QDockWidget
-{
-color: white;
-}
-
+      <string notr="true">
 QDockWidget::title 
 {
 background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(93, 93, 93, 255), stop:0.00985222 rgba(166, 166, 166, 255), stop:0.433498 rgba(117, 117, 117, 255), stop:0.448276 rgba(103, 103, 103, 255), stop:0.985222 rgba(102, 102, 102, 255), stop:1 rgba(69, 69, 69, 255));
@@ -67,7 +63,7 @@ padding-left: 5px;
       <enum>Qt::ScrollBarAsNeeded</enum>
      </property>
      <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarAsNeeded</enum>
+      <enum>Qt::ScrollBarAlwaysOn</enum>
      </property>
      <property name="editTriggers">
       <set>QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
@@ -79,10 +75,13 @@ padding-left: 5px;
       <enum>QAbstractItemView::DragDrop</enum>
      </property>
      <property name="alternatingRowColors">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::ExtendedSelection</enum>
+     </property>
+     <property name="textElideMode">
+      <enum>Qt::ElideMiddle</enum>
      </property>
      <property name="verticalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -105,6 +104,9 @@ padding-left: 5px;
      <property name="headerHidden">
       <bool>false</bool>
      </property>
+     <attribute name="headerStretchLastSection">
+      <bool>false</bool>
+     </attribute>
     </widget>
    </item>
   </layout>

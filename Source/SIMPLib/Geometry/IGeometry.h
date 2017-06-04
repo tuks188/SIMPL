@@ -75,9 +75,9 @@ class SIMPLib_EXPORT IGeometry : public Observable
     using EnumType = unsigned int;
 
     /**
-     * @brief The Type enum
+     * @brief The VtkCellType enum
      */
-    enum class Type : EnumType
+    enum class VtkCellType : EnumType
     {
        Image = 11,
        RectGrid = 11,
@@ -90,12 +90,33 @@ class SIMPLib_EXPORT IGeometry : public Observable
        Any = 4294967295U
     };
 
+    /**
+     * @ brief The Type enum
+     */
+    enum class Type : EnumType
+    {
+      Image,
+      RectGrid,
+      Vertex,
+      Edge,
+      Triangle,
+      Quad,
+      Tetrahedral,
+      Unknown = 999,
+      Any = 4294967295U
+    };
+
+    using VtkCellTypes = QVector <VtkCellType>;
     using Types = QVector<Type>;
 
     /**
      * @brief AttributeMatrixMap_t
      */
     typedef QMap<QString, AttributeMatrix::Pointer> AttributeMatrixMap_t;
+
+
+    SIMPL_INSTANCE_PROPERTY(float, TimeValue)
+    SIMPL_INSTANCE_PROPERTY(bool, EnableTimeSeries)
 
 // -----------------------------------------------------------------------------
 // Connectivity
@@ -323,7 +344,7 @@ class SIMPLib_EXPORT IGeometry : public Observable
      * @brief deepCopy
      * @return
      */
-    virtual Pointer deepCopy() = 0;
+    virtual Pointer deepCopy(bool forceNoAllocate = false) = 0;
 
     /**
      * @brief initializeWithZeros

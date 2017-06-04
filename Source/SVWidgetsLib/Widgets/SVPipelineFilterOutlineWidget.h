@@ -33,37 +33,48 @@
 *
 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-#ifndef _SVPipelineFilterOutlineWidget_h_
-#define _SVPipelineFilterOutlineWidget_h_
+#ifndef _sVPipelineFilterOutlineWidget_h_
+#define _sVPipelineFilterOutlineWidget_h_
 
-#include <QtWidgets/QWidget>
+#include <QtWidgets/QFrame>
 
 #include "SVWidgetsLib/SVWidgetsLib.h"
 
 #include "ui_SVPipelineFilterOutlineWidget.h"
 
+class AbstractFilter;
 
-class SVWidgetsLib_EXPORT SVPipelineFilterOutlineWidget : public QWidget, public Ui::SVPipelineFilterOutlineWidget
+/**
+ * @brief The SVPipelineFilterOutlineWidget class
+ */
+class SVWidgetsLib_EXPORT SVPipelineFilterOutlineWidget : public QFrame, public Ui::SVPipelineFilterOutlineWidget
 {
     Q_OBJECT
 
   public:
-    SVPipelineFilterOutlineWidget(QWidget* parent = 0);
+    SVPipelineFilterOutlineWidget(AbstractFilter* filter, QWidget* parent = 0);
+
     virtual ~SVPipelineFilterOutlineWidget();
 
     void setupGui();
 
-    void setFilterName(QString name);
+    void setFilterTitle(QString name);
 
     void setFilterIndex(int i, int numFilters);
 
-  private:
+    void setFilter(AbstractFilter* filter);
 
-    void updateWidgetFont();
+    bool isSelected();
+
+    bool hasRightClickTarget();
+
+  private:
+    void changeStyle();
+
+    AbstractFilter*   m_Filter = nullptr;
 
     SVPipelineFilterOutlineWidget(const SVPipelineFilterOutlineWidget&); // Copy Constructor Not Implemented
     void operator=(const SVPipelineFilterOutlineWidget&); // Operator '=' Not Implemented
 };
 
-#endif /* _SVPipelineFilterOutlineWidget_H */
-
+#endif /* _sVPipelineFilterOutlineWidget_H */

@@ -35,11 +35,21 @@
 
 #include "QtSStyles.h"
 
+
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
+#include <QtCore/QFile>
 #include <QtCore/QTextStream>
+#include <QtCore/QJsonValue>
+
+#include <SIMPLib/Common/Constants.h>
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
+
+#include "SIMPLib/Common/Constants.h"
+
 
 #include "moc_QtSStyles.cpp"
 
@@ -73,8 +83,8 @@ QString QtSStyles::GetUIFont()
 #elif defined(Q_OS_WIN)
   return QString::fromUtf8("Arial");
 #else
-  QFont font("DejaVu Sans");
-  if(font.fromString("DejaVu Sans"))
+  QFont font("Arial");
+  if(font.fromString("Arial"))
   {
     return font.toString();
   }
@@ -142,11 +152,11 @@ QFont QtSStyles::GetCategoryFont()
   categoryFont.setFamily(GetUIFont());
 
 #if defined(Q_OS_MAC)
-  categoryFont.setPointSize(14);
+  categoryFont.setPointSize(11);
 #elif defined(Q_OS_WIN)
   categoryFont.setPointSize(10);
 #else
-  categoryFont.setPointSize(9);
+  categoryFont.setPointSize(10);
 #endif
 
   return categoryFont;
@@ -233,8 +243,9 @@ QString QtSStyles::QToolSelectionButtonStyle(bool exists)
 #elif defined(Q_OS_WIN)
   font.setPointSize(10);
 #else
-  font.setPointSize(10);
-  in << "font-weight:bold;";
+  font.setPointSize(11);
+  in << "color; #000000;\n";
+  in << "font-weight: Medium;";
 #endif
 
   in << "font: " << font.weight() << " " << font.pointSize() << "pt \"" << font.family()  << "\";";
@@ -249,7 +260,7 @@ QString QtSStyles::QToolSelectionButtonStyle(bool exists)
     ss << " border: 1px solid " << ::kErrorColor << ";\n";
   }
   ss << " border-radius: 4px;\n";
-  ss << " background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\nstop: 0 #DDDDDD, stop: 1 #FFFFFF);\n";
+  ss << " background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #DDDDDD, stop: 1 #FFFFFF);\n";
   ss << fontString << "\n";
   ss << " padding-left: 16px;\n";
   ss << " padding-right: 12px;\n";
@@ -273,6 +284,15 @@ QString QtSStyles::QToolSelectionButtonStyle(bool exists)
   ss << "QToolButton:flat {\n";
   ss << " border: none;\n";
   ss << "}\n";
+
+  ss << " QToolTip {\
+              border: 2px solid #434343;\
+              padding: 2px;\
+              border-radius: 3px;\
+              opacity: 255;\
+              background-color: #FFFCEA;\
+              color: #000000;\
+              }";
 //  ss << "QToolButton:hover {\n";
 //  if(exists)
 //  {
@@ -286,4 +306,132 @@ QString QtSStyles::QToolSelectionButtonStyle(bool exists)
 //  ss << "}\n";
 
   return str;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QColor QtSStyles::ColorForFilterGroup(const QString &grpName)
+{
+  QColor color("#6660ff");
+
+  QString jsonString;
+  QFile jsonFile;
+  jsonFile.setFileName(":/QtSupportResources/FilterStyle/SVFilterColors.json");
+
+  if(jsonFile.exists())
+  {
+    jsonFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    jsonString = jsonFile.readAll();
+    jsonFile.close();
+
+    QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
+    QJsonObject jsonObj = doc.object();
+    QJsonValue jsonValue = jsonObj.value("Filter Group Colors");
+
+    if(jsonValue.isObject())
+    {
+      QJsonValue jsonColor = jsonValue.toObject().value(grpName);
+      if(jsonColor.isString())
+      {
+        color.setNamedColor(jsonColor.toString());
+      }
+      else
+      {
+        jsonColor = jsonValue.toObject().value("Filter Group Not Found");
+        if(jsonColor.isString())
+        {
+          color.setNamedColor(jsonColor.toString());
+        }
+      }
+    }
+  }
+  else
+  {
+    int saturation = 110;
+    int brightness = 190;
+    if(grpName.compare(SIMPL::FilterGroups::Unsupported) == 0)
+    {
+      color = QColor::fromHsv(0, saturation, brightness);
+    }
+    else if(grpName.compare(SIMPL::FilterGroups::Generic) == 0)
+    {
+      color = QColor::fromHsv(30, saturation, brightness);
+    }
+    else if(grpName.compare(SIMPL::FilterGroups::ReconstructionFilters) == 0)
+    {
+      color = QColor::fromHsv(54, saturation, brightness);
+    }
+    else if(grpName.compare(SIMPL::FilterGroups::SamplingFilters) == 0)
+    {
+      color = QColor::fromHsv(84, saturation, brightness);
+    }
+    else if(grpName.compare(SIMPL::FilterGroups::StatisticsFilters) == 0)
+    {
+      color = QColor::fromHsv(120, saturation, brightness);
+    }
+    else if(grpName.compare(SIMPL::FilterGroups::SyntheticBuildingFilters) == 0)
+    {
+      color = QColor::fromHsv(150, saturation, brightness);
+    }
+    else if(grpName.compare(SIMPL::FilterGroups::SurfaceMeshingFilters) == 0)
+    {
+      color = QColor::fromHsv(180, saturation, brightness);
+    }
+    else if(grpName.compare(SIMPL::FilterGroups::ProcessingFilters) == 0)
+    {
+      color = QColor::fromHsv(210, saturation, brightness);
+    }
+    else if(grpName.compare(SIMPL::FilterGroups::CoreFilters) == 0)
+    {
+      color = QColor::fromHsv(240, saturation, brightness);
+    }
+    else if(grpName.compare(SIMPL::FilterGroups::IOFilters) == 0)
+    {
+      color = QColor::fromHsv(270, saturation, brightness);
+    }
+    else if(grpName.compare(SIMPL::FilterGroups::Utilities) == 0)
+    {
+      color = QColor::fromHsv(300, saturation, brightness);
+    }
+    else
+    {
+      color = QColor::fromHsv(330, saturation, brightness);
+    }
+  }
+
+
+  return color;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QIcon QtSStyles::IconForGroup(const QString &grpName)
+{
+  QColor color = ColorForFilterGroup(grpName);
+  QImage grpImage;
+
+  QIcon grpIcon(":/BlankGroup_Icon.png");
+  if(!grpIcon.isNull())
+  {
+    grpImage = grpIcon.pixmap(QSize(48, 48)).toImage();
+
+    QSize imageSize = grpImage.size();
+    for(int h = 0; h < imageSize.height(); h++)
+    {
+      for(int w = 0; w < imageSize.width(); w++)
+      {
+        QColor pixel = grpImage.pixelColor(w, h);
+        if( pixel.red() == 0 && pixel.green() == 0 && pixel.blue() == 0 && pixel.alpha() != 0)
+        {
+          pixel = color;
+          grpImage.setPixelColor(w, h, pixel);
+        }
+      }
+    }
+  }
+
+  return QIcon(QPixmap::fromImage(grpImage));
 }

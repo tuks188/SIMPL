@@ -193,7 +193,7 @@ void ReadASCIIDataWidget::on_editImportSettings_clicked()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void ReadASCIIDataWidget::on_importFileBtn_pressed()
+void ReadASCIIDataWidget::on_importFileBtn_clicked()
 {
   QStringList filterList;
   filterList.push_back("All Files(*.*)");
@@ -368,6 +368,10 @@ void ReadASCIIDataWidget::updateProgress(double percentage)
 // -----------------------------------------------------------------------------
 void ReadASCIIDataWidget::lineCountDidFinish()
 {
+  // This is needed to reset the DataContainer Array into a state that would
+  // represent it before this filter runs.
+  emit parametersChanged();
+
   loadingProgress->setText("0%");
   loadingProgress->hide();
 
@@ -408,7 +412,7 @@ void ReadASCIIDataWidget::lineCountDidFinish()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void ReadASCIIDataWidget::on_resetWizardBtn_pressed()
+void ReadASCIIDataWidget::on_resetWizardBtn_clicked()
 {
   delete m_ImportWizard;
   m_ImportWizard = nullptr;

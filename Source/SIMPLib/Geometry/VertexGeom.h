@@ -40,7 +40,7 @@
 #include "SIMPLib/Common/SIMPLibSetGetMacros.h"
 #include "SIMPLib/Common/Constants.h"
 #include "SIMPLib/Geometry/IGeometry.h"
-#include "SIMPLib/Geometry/GeometryHelpers.hpp"
+#include "SIMPLib/Geometry/GeometryHelpers.h"
 
 /**
  * @brief The VertexGeom class represents a point cloud
@@ -266,7 +266,7 @@ class SIMPLib_EXPORT VertexGeom : public IGeometry
      * @brief deepCopy
      * @return
      */
-    virtual IGeometry::Pointer deepCopy();
+    virtual IGeometry::Pointer deepCopy(bool forceNoAllocate = false) override;
 
     /**
      * @brief addAttributeMatrix

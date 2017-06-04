@@ -54,7 +54,7 @@
 #endif
 
 #include "SIMPLib/Geometry/DerivativeHelpers.h"
-#include "SIMPLib/Geometry/GeometryHelpers.hpp"
+#include "SIMPLib/Geometry/GeometryHelpers.h"
 
 /**
  * @brief The FindTriangleDerivativesImpl class implements a threaded algorithm that computes the
@@ -717,7 +717,10 @@ int TetrahedralGeom::writeXdmf(QTextStream& out, QString dcName, QString hdfFile
       << "\n";
   out << "  <Grid Name=\"" << dcName << "\" GridType=\"Uniform\">"
       << "\n";
-
+  if(getEnableTimeSeries())
+  {
+    out << "    <Time TimeType=\"Single\" Value=\"" << getTimeValue() << "\"/>\n";
+  }
   out << "    <Topology TopologyType=\"Tetrahedron\" NumberOfElements=\"" << getNumberOfTets() << "\">"
       << "\n";
   out << "      <DataItem Format=\"HDF\" NumberType=\"Int\" Dimensions=\"" << getNumberOfTets() << " 4\">"
@@ -765,9 +768,10 @@ QString TetrahedralGeom::getInfoString(SIMPL::InfoStringFormat format)
 
   if(format == SIMPL::HtmlFormat)
   {
-    ss << "<tr bgcolor=\"#D3D8E0\"><th colspan=2>Tetrahedral Geometry Info</th></tr>";
-    ss << "<tr bgcolor=\"#C3C8D0\"><th align=\"right\">Number of Tetrahedra</th><td>" << getNumberOfTets() << "</td></tr>";
-    ss << "<tr bgcolor=\"#C3C8D0\"><th align=\"right\">Number of Vertices</th><td>" << getNumberOfVertices() << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th colspan=2>Geometry Info</th></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Type</th><td>" << GeometryHelpers::Translation::TypeToString(getGeometryType()) << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Number of Tetrahedra</th><td>" << getNumberOfTets() << "</td></tr>";
+    ss << "<tr bgcolor=\"#FFFCEA\"><th align=\"right\">Number of Vertices</th><td>" << getNumberOfVertices() << "</td></tr>";
   }
   else
   {
@@ -847,21 +851,32 @@ int TetrahedralGeom::readGeometryFromHDF5(hid_t parentId, bool preflight)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-IGeometry::Pointer TetrahedralGeom::deepCopy()
+IGeometry::Pointer TetrahedralGeom::deepCopy(bool forceNoAllocate)
 {
-  TetrahedralGeom::Pointer tetCopy = TetrahedralGeom::CreateGeometry(getTetrahedra(), getVertices(), getName());
+  SharedTetList::Pointer tets = std::dynamic_pointer_cast<SharedTetList>((getTetrahedra().get() == nullptr) ? nullptr : getTetrahedra()->deepCopy(forceNoAllocate));
+  SharedVertexList::Pointer verts = std::dynamic_pointer_cast<SharedVertexList>((getVertices().get() == nullptr) ? nullptr : getVertices()->deepCopy(forceNoAllocate));
+  SharedTriList::Pointer tris = std::dynamic_pointer_cast<SharedTriList>((getTriangles().get() == nullptr) ? nullptr : getTriangles()->deepCopy(forceNoAllocate));
+  SharedEdgeList::Pointer edges = std::dynamic_pointer_cast<SharedEdgeList>((getEdges().get() == nullptr) ? nullptr : getEdges()->deepCopy(forceNoAllocate));
+  SharedEdgeList::Pointer unsharedEdges = std::dynamic_pointer_cast<SharedEdgeList>((getUnsharedEdges().get() == nullptr) ? nullptr : getUnsharedEdges()->deepCopy(forceNoAllocate));
+  ElementDynamicList::Pointer elementsContainingVert =
+      std::dynamic_pointer_cast<ElementDynamicList>((getElementsContainingVert().get() == nullptr) ? nullptr : getElementsContainingVert()->deepCopy(forceNoAllocate));
+  ElementDynamicList::Pointer elementNeighbors = std::dynamic_pointer_cast<ElementDynamicList>((getElementNeighbors().get() == nullptr) ? nullptr : getElementNeighbors()->deepCopy(forceNoAllocate));
+  FloatArrayType::Pointer elementCentroids = std::dynamic_pointer_cast<FloatArrayType>((getElementCentroids().get() == nullptr) ? nullptr : getElementCentroids()->deepCopy(forceNoAllocate));
+  FloatArrayType::Pointer elementSizes = std::dynamic_pointer_cast<FloatArrayType>((getElementSizes().get() == nullptr) ? nullptr : getElementSizes()->deepCopy(forceNoAllocate));
 
-  tetCopy->setEdges(getEdges());
-  tetCopy->setUnsharedEdges(getUnsharedEdges());
-  tetCopy->setTriangles(getTriangles());
-  tetCopy->setUnsharedFaces(getUnsharedFaces());
-  tetCopy->setElementsContainingVert(getElementsContainingVert());
-  tetCopy->setElementNeighbors(getElementNeighbors());
-  tetCopy->setElementCentroids(getElementCentroids());
-  tetCopy->setElementSizes(getElementSizes());
-  tetCopy->setSpatialDimensionality(getSpatialDimensionality());
+  TetrahedralGeom::Pointer copy = TetrahedralGeom::CreateGeometry(tets, verts, getName());
 
-  return tetCopy;
+  copy->setEdges(edges);
+  copy->setUnsharedEdges(unsharedEdges);
+  copy->setTriangles(tris);
+  copy->setUnsharedFaces(getUnsharedFaces());
+  copy->setElementsContainingVert(elementsContainingVert);
+  copy->setElementNeighbors(elementNeighbors);
+  copy->setElementCentroids(elementCentroids);
+  copy->setElementSizes(elementSizes);
+  copy->setSpatialDimensionality(getSpatialDimensionality());
+
+  return copy;
 }
 
 // -----------------------------------------------------------------------------
@@ -869,6 +884,9 @@ IGeometry::Pointer TetrahedralGeom::deepCopy()
 // -----------------------------------------------------------------------------
 
 // Shared ops includes
+#ifdef GEOM_CLASS_NAME
+#undef GEOM_CLASS_NAME
+#endif
 #define GEOM_CLASS_NAME TetrahedralGeom
 #include "SIMPLib/Geometry/SharedEdgeOps.cpp"
 #include "SIMPLib/Geometry/SharedTetOps.cpp"

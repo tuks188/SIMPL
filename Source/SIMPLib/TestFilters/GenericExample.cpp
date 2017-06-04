@@ -103,6 +103,17 @@ GenericExample::GenericExample()
   m_Origin.y = 0.0;
   m_Origin.z = 0.0;
 
+  FileListInfo_t flInfo;
+  flInfo.PaddingDigits = 2;
+  flInfo.Ordering = 0;
+  flInfo.StartIndex = 0;
+  flInfo.EndIndex = 1;
+  flInfo.InputPath = "";
+  flInfo.FilePrefix = "prefix_";
+  flInfo.FileSuffix = "_suffix";
+  flInfo.FileExtension = ".png";
+  setInputFileListInfo(flInfo);
+
   setupFilterParameters();
 }
 
@@ -215,7 +226,6 @@ void GenericExample::setupFilterParameters()
     AttributeMatrixCreationFilterParameter::RequirementType req;
     parameters.push_back(SIMPL_NEW_AM_CREATION_FP("Created Attribute Matrix", CreatedAttributeMatrix, FilterParameter::CreatedArray, GenericExample, req));
   }
-
   parameters.push_back(SeparatorFilterParameter::New("Linked Combo Box Example (1)", FilterParameter::Parameter));
   {
     LinkedChoicesFilterParameter::Pointer parameter = LinkedChoicesFilterParameter::New();
@@ -249,6 +259,8 @@ void GenericExample::setupFilterParameters()
     /*   For an input path use this code*/
     parameters.push_back(SIMPL_NEW_INPUT_PATH_FP("Input Path", InputPath, FilterParameter::Parameter, GenericExample, "*.txt", "", 2));
   }
+
+  //------------------
 
   parameters.push_back(SeparatorFilterParameter::New("Linked Combo Box Example (2)", FilterParameter::Parameter));
 
@@ -430,7 +442,7 @@ AbstractFilter::Pointer GenericExample::newFilterInstance(bool copyFilterParamet
 // -----------------------------------------------------------------------------
 const QString GenericExample::getCompiledLibraryName()
 {
-  return Test::TestBaseName;
+  return Core::CoreBaseName;
 }
 
 // -----------------------------------------------------------------------------
@@ -438,7 +450,7 @@ const QString GenericExample::getCompiledLibraryName()
 // -----------------------------------------------------------------------------
 const QString GenericExample::getGroupName()
 {
-  return SIMPL::FilterGroups::TestFilters;
+  return SIMPL::FilterGroups::Generic;
 }
 
 // -----------------------------------------------------------------------------
@@ -446,7 +458,7 @@ const QString GenericExample::getGroupName()
 // -----------------------------------------------------------------------------
 const QString GenericExample::getSubGroupName()
 {
-  return "Misc";
+  return "Test";
 }
 
 // -----------------------------------------------------------------------------
