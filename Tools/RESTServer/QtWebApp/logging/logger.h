@@ -15,7 +15,7 @@
 #include "logglobal.h"
 #include "logmessage.h"
 
-namespace stefanfrings {
+
 
 /**
   Decorates and writes log messages to the console, stderr.
@@ -183,6 +183,6 @@ private:
 
 };
 
-} // end of namespace
+
 
 #endif // LOGGER_H

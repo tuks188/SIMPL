@@ -5,7 +5,7 @@
 #include "templateglobal.h"
 #include "templateloader.h"
 
-namespace stefanfrings {
+
 
 /**
   Caching template loader, reduces the amount of I/O and improves performance
@@ -79,6 +79,6 @@ private:
     QMutex mutex;
 };
 
-} // end of namespace
+
 
 #endif // TEMPLATECACHE_H

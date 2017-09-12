@@ -11,7 +11,7 @@
 #include <QReadWriteLock>
 #include "httpglobal.h"
 
-namespace stefanfrings {
+
 
 /**
   This class stores data for a single HTTP session.
@@ -117,6 +117,6 @@ private:
 
 };
 
-} // end of namespace
+
 
 #endif // HTTPSESSION_H

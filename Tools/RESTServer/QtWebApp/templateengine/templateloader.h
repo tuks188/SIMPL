@@ -13,7 +13,7 @@
 #include "templateglobal.h"
 #include "template.h"
 
-namespace stefanfrings {
+
 
 /**
   Loads localized versions of template files. If the caller requests a file with the
@@ -82,6 +82,6 @@ protected:
     QTextCodec* textCodec;
 };
 
-} // end of namespace
+
 
 #endif // TEMPLATELOADER_H

@@ -16,7 +16,7 @@
 #include <QUuid>
 #include "httpglobal.h"
 
-namespace stefanfrings {
+
 
 /**
   This object represents a single HTTP request. It reads the request
@@ -234,6 +234,6 @@ private:
 
 };
 
-} // end of namespace
+
 
 #endif // HTTPREQUEST_H

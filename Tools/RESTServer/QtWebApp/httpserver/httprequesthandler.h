@@ -10,7 +10,7 @@
 #include "httprequest.h"
 #include "httpresponse.h"
 
-namespace stefanfrings {
+
 
 /**
    The request handler generates a response for each HTTP request. Web Applications
@@ -48,6 +48,6 @@ public:
 
 };
 
-} // end of namespace
+
 
 #endif // HTTPREQUESTHANDLER_H

@@ -13,7 +13,7 @@
 #include "httpresponse.h"
 #include "httprequesthandler.h"
 
-namespace stefanfrings {
+
 
 /**
   Delivers static files. It is usually called by the applications main request handler when
@@ -86,6 +86,6 @@ private:
     void setContentType(QString file, HttpResponse& response) const;
 };
 
-} // end of namespace
+
 
 #endif // STATICFILECONTROLLER_H

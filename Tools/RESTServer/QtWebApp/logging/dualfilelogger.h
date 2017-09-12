@@ -13,7 +13,7 @@
 #include "logger.h"
 #include "filelogger.h"
 
-namespace stefanfrings {
+
 
 /**
   Logs messages into two log files simultaneously.
@@ -69,6 +69,6 @@ private:
 
 };
 
-} // end of namespace
+
 
 #endif // DUALFILELOGGER_H

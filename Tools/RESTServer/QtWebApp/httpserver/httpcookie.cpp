@@ -5,7 +5,7 @@
 
 #include "httpcookie.h"
 
-using namespace stefanfrings;
+
 
 HttpCookie::HttpCookie()
 {

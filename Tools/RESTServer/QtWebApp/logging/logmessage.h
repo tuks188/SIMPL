@@ -11,7 +11,7 @@
 #include <QHash>
 #include "logglobal.h"
 
-namespace stefanfrings {
+
 
 /**
   Represents a single log message together with some data
@@ -92,6 +92,6 @@ private:
 
 };
 
-} // end of namespace
+
 
 #endif // LOGMESSAGE_H

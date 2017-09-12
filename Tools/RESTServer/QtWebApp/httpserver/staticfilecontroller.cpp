@@ -8,7 +8,7 @@
 #include <QDir>
 #include <QDateTime>
 
-using namespace stefanfrings;
+
 
 StaticFileController::StaticFileController(QSettings* settings, QObject* parent)
     :HttpRequestHandler(parent)

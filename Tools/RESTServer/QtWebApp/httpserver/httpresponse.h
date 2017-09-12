@@ -12,7 +12,7 @@
 #include "httpglobal.h"
 #include "httpcookie.h"
 
-namespace stefanfrings {
+
 
 /**
   This object represents a HTTP response, used to return something to the web client.
@@ -158,6 +158,6 @@ private:
 
 };
 
-} // end of namespace
+
 
 #endif // HTTPRESPONSE_H

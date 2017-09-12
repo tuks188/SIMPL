@@ -15,7 +15,7 @@
 #include "httpresponse.h"
 #include "httprequest.h"
 
-namespace stefanfrings {
+
 
 /**
   Stores HTTP sessions and deletes them when they have expired.
@@ -105,6 +105,6 @@ private slots:
     void sessionTimerEvent();
 };
 
-} // end of namespace
+
 
 #endif // HTTPSESSIONSTORE_H

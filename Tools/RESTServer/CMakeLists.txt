@@ -1,5 +1,6 @@
 project(SIMPLRestServer)
 
+INCLUDE_DIRECTORIES(${SIMPLRestServer_SOURCE_DIR})
 
 
 set(QtWebApp_SRCS

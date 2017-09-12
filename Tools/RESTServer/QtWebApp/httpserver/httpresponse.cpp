@@ -5,7 +5,7 @@
 
 #include "httpresponse.h"
 
-using namespace stefanfrings;
+
 
 HttpResponse::HttpResponse(QTcpSocket* socket)
 {

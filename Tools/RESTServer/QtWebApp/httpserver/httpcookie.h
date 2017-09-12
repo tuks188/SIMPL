@@ -10,7 +10,7 @@
 #include <QByteArray>
 #include "httpglobal.h"
 
-namespace stefanfrings {
+
 
 /**
   HTTP cookie as defined in RFC 2109. This class can also parse
@@ -118,6 +118,6 @@ private:
 
 };
 
-} // end of namespace
+
 
 #endif // HTTPCOOKIE_H

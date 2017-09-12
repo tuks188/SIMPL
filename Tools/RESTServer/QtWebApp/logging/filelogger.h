@@ -14,7 +14,7 @@
 #include "logglobal.h"
 #include "logger.h"
 
-namespace stefanfrings {
+
 
 /**
   Logger that uses a text file for output. Settings are read from a
@@ -122,6 +122,6 @@ private:
 
 };
 
-} // end of namespace
+
 
 #endif // FILELOGGER_H
