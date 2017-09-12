@@ -33,20 +33,10 @@ SIMPLRequestMapper::~SIMPLRequestMapper()
 void SIMPLRequestMapper::service(HttpRequest& request, HttpResponse& response)
 {
     QMultiMap<QByteArray, QByteArray> headerMap = request.getHeaderMap();
-    
-    QByteArray method = request.getMethod();
-    
-    QString content_type = request.getHeader(QByteArray("content-type"));
-    
-    if(content_type.compare("application/json") == 0)
-    {
-      QByteArray jsonRequest = request.getBody();
-      QJsonParseError parseError;
-      QJsonDocument requestJson = QJsonDocument::fromJson(jsonRequest, &parseError);
-    }
+
     QByteArray path=request.getPath();
     qDebug("SIMPLRequestMapper: path=%s",path.data());
-    
+
     
     // For the following pathes, each request gets its own new instance of the related controller.
 

@@ -29,7 +29,7 @@ void NumFiltersController::service(HttpRequest& request, HttpResponse& response)
   response.setHeader("Content-Type", "application/json");
 
   
-  if(content_type.compare("application/json") == 0)
+  if(content_type.compare("application/json") != 0)
   {
     // Form Error response
     rootObj["Error"] = "Content Type is not application/json"; 
