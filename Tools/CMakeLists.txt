@@ -169,4 +169,5 @@ if (FALSE)
 endif()
 
 
-add_subdirectory(${SIMPLTools_SOURCE_DIR}/RESTServer ${SIMPLTools_BINARY_DIR}/RESTServer)
+#add_subdirectory(${SIMPLTools_SOURCE_DIR}/RESTServer ${SIMPLTools_BINARY_DIR}/RESTServer)
+add_subdirectory(${SIMPLTools_SOURCE_DIR}/RESTClient ${SIMPLTools_BINARY_DIR}/RESTClient)
