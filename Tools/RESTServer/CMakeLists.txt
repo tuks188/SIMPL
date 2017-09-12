@@ -1,65 +1,76 @@
-project(RESTServer)
-
-
-
-
-
+project(SIMPLRestServer)
 
 
 
 set(QtWebApp_SRCS
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandler.cpp     
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httprequesthandler.cpp
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandlerpool.cpp 
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpresponse.cpp
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpcookie.cpp                
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpsession.cpp
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpglobal.cpp                
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpsessionstore.cpp
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httplistener.cpp              
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/staticfilecontroller.cpp
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httprequest.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandler.cpp     
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httprequesthandler.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandlerpool.cpp 
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpresponse.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpcookie.cpp                
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpsession.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpglobal.cpp                
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpsessionstore.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httplistener.cpp              
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/staticfilecontroller.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httprequest.cpp
   
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/dualfilelogger.cpp 
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/filelogger.cpp     
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logger.cpp         
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logmessage.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/dualfilelogger.cpp 
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/filelogger.cpp     
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/logger.cpp         
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/logmessage.cpp
 )
 
 set(QtWebApp_HDRS
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandler.h     
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httprequesthandler.h
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandlerpool.h 
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpresponse.h
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpcookie.h                
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpsession.h
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpglobal.h                
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpsessionstore.h
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httplistener.h              
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/staticfilecontroller.h
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httprequest.h
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandler.h     
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httprequesthandler.h
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandlerpool.h 
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpresponse.h
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpcookie.h                
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpsession.h
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpglobal.h                
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpsessionstore.h
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httplistener.h              
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/staticfilecontroller.h
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httprequest.h
 
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/dualfilelogger.h 
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/filelogger.h     
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logger.h         
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logmessage.h
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/dualfilelogger.h 
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/filelogger.h     
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/logger.h         
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/logmessage.h
 )
 
-QT5_WRAP_CPP( QtWebApp_MOC_SRCS 
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandler.h     
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httprequesthandler.h
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandlerpool.h 
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpsessionstore.h
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httplistener.h              
-  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/staticfilecontroller.h
-
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/dualfilelogger.h 
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/filelogger.h     
-  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logger.h         
+set(SIMPLRestServer_SRCS
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLSIMPLRestServer/SIMPLRequestMapper.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLSIMPLRestServer/Controllers/NumFiltersController.cpp
   )
 
-set(RESTServer_SRCS
-  ${RESTServer_SOURCE_DIR}/main.cpp
+set(SIMPLRestServer_HDRS
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLSIMPLRestServer/SIMPLRequestMapper.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLSIMPLRestServer/Controllers/NumFiltersController.h
+  )
+
+QT5_WRAP_CPP( QtWebApp_MOC_SRCS 
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandler.h     
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httprequesthandler.h
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandlerpool.h 
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpsessionstore.h
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httplistener.h              
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/staticfilecontroller.h
+
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/dualfilelogger.h 
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/filelogger.h     
+  ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/logger.h
+
+  ${SIMPLRestServer_HDRS}
+  )
+
+
+
+
+set(SIMPLRestServer_SRCS
+  ${SIMPLRestServer_SOURCE_DIR}/main.cpp
+
   ${QtWebApp_SRCS}
   ${QtWebApp_HDRS}
   ${QtWebApp_MOC_SRCS}
@@ -78,13 +89,13 @@ elseif(WIN32)
 endif()
 
 
-add_executable(RESTServer ${RESTServer_SRCS})
-target_link_libraries(RESTServer Qt5::Core Qt5::Network )
+add_executable(SIMPLRestServer ${SIMPLRestServer_SRCS})
+target_link_libraries(SIMPLRestServer Qt5::Core Qt5::Network )
 
 if(0)
 BuildToolBundle(
-    TARGET RESTServer
-    SOURCES ${RESTServer_SRCS}
+    TARGET SIMPLRestServer
+    SOURCES ${SIMPLRestServer_SRCS}
     DEBUG_EXTENSION ${EXE_DEBUG_EXTENSION}
     VERSION_MAJOR ${SIMPL_VER_MAJOR}
     VERSION_MINOR ${SIMPL_VER_MINOR}
