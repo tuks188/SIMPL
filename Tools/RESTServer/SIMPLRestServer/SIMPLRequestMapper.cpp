@@ -9,19 +9,13 @@
 
 
 #include "SIMPLRequestMapper.h"
-#include "filelogger.h"
-#include "staticfilecontroller.h"
-#include "controller/dumpcontroller.h"
-#include "controller/templatecontroller.h"
-#include "controller/formcontroller.h"
-#include "controller/fileuploadcontroller.h"
-#include "controller/sessioncontroller.h"
+
+#include "QtWebApp/logging/filelogger.h"
+
+#include "SIMPLRestServer/Controllers/NumFiltersController.h"
 
 /** Redirects log messages to a file */
 extern FileLogger* logger;
-
-/** Controller for static files */
-extern StaticFileController* staticFileController;
 
 SIMPLRequestMapper::SIMPLRequestMapper(QObject* parent)
     :HttpRequestHandler(parent)
@@ -49,9 +43,6 @@ void SIMPLRequestMapper::service(HttpRequest& request, HttpResponse& response)
       QByteArray jsonRequest = request.getBody();
       QJsonParseError parseError;
       QJsonDocument requestJson = QJsonDocument::fromJson(jsonRequest, &parseError);
-       
-               staticFileController->service(request, response);
-
     }
     QByteArray path=request.getPath();
     qDebug("SIMPLRequestMapper: path=%s",path.data());
@@ -59,43 +50,23 @@ void SIMPLRequestMapper::service(HttpRequest& request, HttpResponse& response)
     
     // For the following pathes, each request gets its own new instance of the related controller.
 
-    if (path.startsWith("/dump"))
+    if (path.startsWith("/api/v1/NumFilters"))
     {
-        DumpController().service(request, response);
-    }
-
-    else if (path.startsWith("/template"))
-    {
-        TemplateController().service(request, response);
-    }
-
-    else if (path.startsWith("/form"))
-    {
-        FormController().service(request, response);
-    }
-
-    else if (path.startsWith("/file"))
-    {
-        FileUploadController().service(request, response);
-    }
-
-    else if (path.startsWith("/session"))
-    {
-        SessionController().service(request, response);
+        //NumFiltersController().service(request, response);
     }
 
     // All other pathes are mapped to the static file controller.
     // In this case, a single instance is used for multiple requests.
     else
     {
-        staticFileController->service(request, response);
+        //staticFileController->service(request, response);
     }
 
     qDebug("SIMPLRequestMapper: finished request");
 
     // Clear the log buffer
-    if (logger)
-    {
-       logger->clear();
-    }
+//    if (logger)
+//    {
+//       logger->clear();
+//    }
 }

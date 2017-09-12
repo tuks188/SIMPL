@@ -92,7 +92,7 @@ endif()
 
 
 add_executable(SIMPLRestServer ${SIMPLRestServer_SRCS})
-target_link_libraries(SIMPLRestServer Qt5::Core Qt5::Network )
+target_link_libraries(SIMPLRestServer Qt5::Core Qt5::Network SIMPLib)
 
 if(0)
 BuildToolBundle(
