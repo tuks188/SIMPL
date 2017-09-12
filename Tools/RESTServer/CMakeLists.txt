@@ -92,6 +92,10 @@ set(SIMPLRestServer_SRCS
   ${QtWebApp_MOC_SRCS}
   )
 
+configure_file(${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer.ini
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SIMPLRestServer.ini)
+
+
 set(install_dir "bin")
 set(lib_install_dir "lib")
 
@@ -104,11 +108,11 @@ elseif(WIN32)
   set(lib_install_dir ".")
 endif()
 
-
+if(0)
 add_executable(SIMPLRestServer ${SIMPLRestServer_SRCS})
 target_link_libraries(SIMPLRestServer Qt5::Core Qt5::Network SIMPLib)
+else()
 
-if(0)
 BuildToolBundle(
     TARGET SIMPLRestServer
     SOURCES ${SIMPLRestServer_SRCS}

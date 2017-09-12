@@ -89,16 +89,16 @@ QString searchConfigFile()
 
   QStringList searchList;
   searchList.append(binDir);
-  searchList.append(binDir + "/etc");
-  searchList.append(binDir + "/../etc");
-  searchList.append(binDir + "/../../etc");                          // for development without shadow build
-  searchList.append(binDir + "/../" + appName + "/etc");             // for development with shadow build
-  searchList.append(binDir + "/../../" + appName + "/etc");          // for development with shadow build
-  searchList.append(binDir + "/../../../" + appName + "/etc");       // for development with shadow build
-  searchList.append(binDir + "/../../../../" + appName + "/etc");    // for development with shadow build
-  searchList.append(binDir + "/../../../../../" + appName + "/etc"); // for development with shadow build
-  searchList.append(QDir::rootPath() + "etc/opt");
-  searchList.append(QDir::rootPath() + "etc");
+//  searchList.append(binDir + "/etc");
+//  searchList.append(binDir + "/../etc");
+//  searchList.append(binDir + "/../../etc");                          // for development without shadow build
+//  searchList.append(binDir + "/../" + appName + "/etc");             // for development with shadow build
+//  searchList.append(binDir + "/../../" + appName + "/etc");          // for development with shadow build
+//  searchList.append(binDir + "/../../../" + appName + "/etc");       // for development with shadow build
+//  searchList.append(binDir + "/../../../../" + appName + "/etc");    // for development with shadow build
+//  searchList.append(binDir + "/../../../../../" + appName + "/etc"); // for development with shadow build
+//  searchList.append(QDir::rootPath() + "etc/opt");
+//  searchList.append(QDir::rootPath() + "etc");
 
   foreach(QString dir, searchList)
   {
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
 {
   QCoreApplication app(argc, argv);
 
-  app.setApplicationName("SIMPLRESTServer");
+  app.setApplicationName("SIMPLRestServer");
   app.setOrganizationName("BlueQuartz Software");
 
   // Find the configuration file
