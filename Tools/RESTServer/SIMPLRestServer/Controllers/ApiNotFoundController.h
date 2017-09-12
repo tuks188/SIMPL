@@ -33,24 +33,29 @@
 #define ApiNotFoundController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
-#include "QtWebApp/httpserver/httpresponse.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
-
+#include "QtWebApp/httpserver/httpresponse.h"
 
 /**
-  This controller dumps the received HTTP request in the response.
+  @brief This class responds to REST API endpoint
 */
 
-class ApiNotFoundController : public HttpRequestHandler {
-    Q_OBJECT
-    Q_DISABLE_COPY(ApiNotFoundController)
+class ApiNotFoundController : public HttpRequestHandler
+{
+  Q_OBJECT
+  Q_DISABLE_COPY(ApiNotFoundController)
 public:
+  /** Constructor */
+  ApiNotFoundController();
 
-    /** Constructor */
-    ApiNotFoundController();
+  /** Generates the response */
+  void service(HttpRequest& request, HttpResponse& response);
 
-    /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
+  /**
+   * @brief Returns the name of the end point that is controller uses
+   * @return
+   */
+  static QString getEndPoint();
 };
 
 #endif // ApiNotFoundController_H_

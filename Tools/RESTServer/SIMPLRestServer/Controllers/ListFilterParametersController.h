@@ -33,24 +33,29 @@
 #define ListFilterParametersController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
-#include "QtWebApp/httpserver/httpresponse.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
-
+#include "QtWebApp/httpserver/httpresponse.h"
 
 /**
-  This controller dumps the received HTTP request in the response.
+  @brief This class responds to REST API endpoint
 */
 
-class ListFilterParametersController : public HttpRequestHandler {
-    Q_OBJECT
-    Q_DISABLE_COPY(ListFilterParametersController)
+class ListFilterParametersController : public HttpRequestHandler
+{
+  Q_OBJECT
+  Q_DISABLE_COPY(ListFilterParametersController)
 public:
+  /** Constructor */
+  ListFilterParametersController();
 
-    /** Constructor */
-    ListFilterParametersController();
+  /** Generates the response */
+  void service(HttpRequest& request, HttpResponse& response);
 
-    /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
+  /**
+   * @brief Returns the name of the end point that is controller uses
+   * @return
+   */
+  static QString getEndPoint();
 };
 
 #endif // ListFilterParametersController_H_

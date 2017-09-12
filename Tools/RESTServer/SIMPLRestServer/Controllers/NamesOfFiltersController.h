@@ -33,24 +33,41 @@
 #define NamesOfFiltersController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
-#include "QtWebApp/httpserver/httpresponse.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
-
+#include "QtWebApp/httpserver/httpresponse.h"
 
 /**
-  This controller dumps the received HTTP request in the response.
+  @brief This class responds to REST API endpoint NamesOfFilters
+
+  The returned JSON is the following on success
+
+  {
+    "FilterClassNames": ["Name1", "Name2"....],
+    "FilterHumanLabels": ["Name1", "Name2"....]
+  }
+
+  On Error the following JSON is returned.
+  {
+    "Error": "Error Message ...."
+  }
 */
 
-class NamesOfFiltersController : public HttpRequestHandler {
-    Q_OBJECT
-    Q_DISABLE_COPY(NamesOfFiltersController)
+class NamesOfFiltersController : public HttpRequestHandler
+{
+  Q_OBJECT
+  Q_DISABLE_COPY(NamesOfFiltersController)
 public:
+  /** Constructor */
+  NamesOfFiltersController();
 
-    /** Constructor */
-    NamesOfFiltersController();
+  /** Generates the response */
+  void service(HttpRequest& request, HttpResponse& response);
 
-    /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
+  /**
+   * @brief Returns the name of the end point that is controller uses
+   * @return
+   */
+  static QString getEndPoint();
 };
 
 #endif // NamesOfFiltersController_H_

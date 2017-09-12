@@ -83,9 +83,6 @@ QT5_WRAP_CPP( QtWebApp_MOC_SRCS
   ${SIMPLRestServerController_HDRS}
   )
 
-
-
-
 set(SIMPLRestServer_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/main.cpp
   ${SIMPLRestServerController_SRCS}

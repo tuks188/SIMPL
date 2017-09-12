@@ -33,24 +33,40 @@
 #define NumFiltersController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
-#include "QtWebApp/httpserver/httpresponse.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
-
+#include "QtWebApp/httpserver/httpresponse.h"
 
 /**
-  This controller dumps the received HTTP request in the response.
+  @brief This class responds to REST API endpoint NumFilters
+
+  The returned JSON is the following on success
+
+  {
+    "NumFilters": 45
+  }
+
+  On Error the following JSON is returned.
+  {
+    "Error": "Error Message ...."
+  }
 */
 
-class NumFiltersController : public HttpRequestHandler {
-    Q_OBJECT
-    Q_DISABLE_COPY(NumFiltersController)
+class NumFiltersController : public HttpRequestHandler
+{
+  Q_OBJECT
+  Q_DISABLE_COPY(NumFiltersController)
 public:
+  /** Constructor */
+  NumFiltersController();
 
-    /** Constructor */
-    NumFiltersController();
+  /** Generates the response */
+  void service(HttpRequest& request, HttpResponse& response);
 
-    /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
+  /**
+   * @brief Returns the name of the end point that is controller uses
+   * @return
+   */
+  static QString getEndPoint();
 };
 
 #endif // NumFiltersController_H_

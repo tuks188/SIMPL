@@ -35,47 +35,67 @@
 #include "SIMPLib/Plugin/PluginManager.h"
 #include "SIMPLib/Plugin/SIMPLibPluginLoader.h"
 
-#include <QtCore/QVariant>
 #include <QtCore/QDateTime>
+#include <QtCore/QVariant>
 
-#include <QtCore/QJsonObject>
 #include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 PluginInfoController::PluginInfoController()
-{}
+{
+}
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void PluginInfoController::service(HttpRequest& request, HttpResponse& response)
 {
-  
-  
   QString content_type = request.getHeader(QByteArray("content-type"));
-  
+
   QJsonObject rootObj;
-  
   response.setHeader("Content-Type", "application/json");
 
-  
   if(content_type.compare("application/json") != 0)
   {
     // Form Error response
-    rootObj["Error"] = "Content Type is not application/json"; 
+    rootObj["Error"] = "Content Type is not application/json";
     QJsonDocument jdoc(rootObj);
-    
-    response.write(jdoc.toJson(),true);
+
+    response.write(jdoc.toJson(), true);
     return;
   }
-  
+  QJsonParseError jsonParseError;
+  QByteArray jsonBytes = request.getBody();
+  QJsonDocument requestJsonDoc = QJsonDocument::fromJson(jsonBytes, &jsonParseError);
+  QString pluginName;
+  QJsonObject rootObject = requestJsonDoc.object();
+  QJsonValue nameValue = rootObj["PluginName"];
+  if(nameValue.isString())
+  {
+    pluginName = nameValue.toString();
+  }
+
   //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
   //   response.setCookie(HttpCookie("secondCookie","world",600));
-  
+
   // Register all the filters including trying to load those from Plugins
-  FilterManager* fm = FilterManager::Instance();
- 
-  
-  FilterManager::Collection factories = fm->getFactories();
-  
-  rootObj["ERROR"] = "THIS API IS NOT IMPLEMENTED";
+  PluginManager* pm = PluginManager::Instance();
+  ISIMPLibPlugin* plugin = pm->findPlugin(pluginName);
+
+  // rootObj["CompatibilityVersion]
+
   QJsonDocument jdoc(rootObj);
-  
-  response.write(jdoc.toJson(),true);
+
+  response.write(jdoc.toJson(), true);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QString PluginInfoController::getEndPoint()
+{
+  return QString("PluginInfo");
 }

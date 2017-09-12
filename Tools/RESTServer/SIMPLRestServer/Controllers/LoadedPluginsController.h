@@ -33,24 +33,40 @@
 #define LoadedPluginsController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
-#include "QtWebApp/httpserver/httpresponse.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
-
+#include "QtWebApp/httpserver/httpresponse.h"
 
 /**
-  This controller dumps the received HTTP request in the response.
+  @brief This class responds to REST API endpoint LoadedPlugins
+
+  The returned JSON is the following on success
+
+  {
+    "PluginNames": ["Name1", "Name2"....]
+  }
+
+  On Error the following JSON is returned.
+  {
+    "Error": "Error Message ...."
+  }
 */
 
-class LoadedPluginsController : public HttpRequestHandler {
-    Q_OBJECT
-    Q_DISABLE_COPY(LoadedPluginsController)
+class LoadedPluginsController : public HttpRequestHandler
+{
+  Q_OBJECT
+  Q_DISABLE_COPY(LoadedPluginsController)
 public:
+  /** Constructor */
+  LoadedPluginsController();
 
-    /** Constructor */
-    LoadedPluginsController();
+  /** Generates the response */
+  void service(HttpRequest& request, HttpResponse& response);
 
-    /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
+  /**
+   * @brief Returns the name of the end point that is controller uses
+   * @return
+   */
+  static QString getEndPoint();
 };
 
 #endif // LoadedPluginsController_H_
