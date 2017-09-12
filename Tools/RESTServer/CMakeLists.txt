@@ -44,12 +44,29 @@ set(QtWebApp_HDRS
 set(SIMPLRestServerController_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/SIMPLRequestMapper.cpp
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NumFiltersController.cpp
+
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ExecutePipelineController.cpp      
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NumFiltersController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ListFilterParametersController.cpp 
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/PluginInfoController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/LoadedPluginsController.cpp        
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/PreflightPipelineController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NamesOfFiltersController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ApiNotFoundController.cpp
   )
 
 set(SIMPLRestServerController_HDRS
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/SIMPLRequestMapper.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ExecutePipelineController.h      
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NumFiltersController.h
-  )
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ListFilterParametersController.h 
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/PluginInfoController.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/LoadedPluginsController.h        
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/PreflightPipelineController.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NamesOfFiltersController.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ApiNotFoundController.h
+
+)
 
 QT5_WRAP_CPP( QtWebApp_MOC_SRCS 
   ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandler.h     
