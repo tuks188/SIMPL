@@ -168,3 +168,5 @@ if (FALSE)
   )
 endif()
 
+
+add_subdirectory(${SIMPLTools_SOURCE_DIR}/RESTServer ${SIMPLTools_BINARY_DIR}/RESTServer)
