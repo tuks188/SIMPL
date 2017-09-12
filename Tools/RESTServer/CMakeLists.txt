@@ -40,14 +40,14 @@ set(QtWebApp_HDRS
   ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/logmessage.h
 )
 
-set(SIMPLRestServer_SRCS
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLSIMPLRestServer/SIMPLRequestMapper.cpp
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLSIMPLRestServer/Controllers/NumFiltersController.cpp
+set(SIMPLRestServerController_SRCS
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/SIMPLRequestMapper.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NumFiltersController.cpp
   )
 
-set(SIMPLRestServer_HDRS
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLSIMPLRestServer/SIMPLRequestMapper.h
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLSIMPLRestServer/Controllers/NumFiltersController.h
+set(SIMPLRestServerController_HDRS
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/SIMPLRequestMapper.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NumFiltersController.h
   )
 
 QT5_WRAP_CPP( QtWebApp_MOC_SRCS 
@@ -62,7 +62,7 @@ QT5_WRAP_CPP( QtWebApp_MOC_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/filelogger.h     
   ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/logger.h
 
-  ${SIMPLRestServer_HDRS}
+  ${SIMPLRestServerController_HDRS}
   )
 
 
@@ -70,7 +70,8 @@ QT5_WRAP_CPP( QtWebApp_MOC_SRCS
 
 set(SIMPLRestServer_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/main.cpp
-
+  ${SIMPLRestServerController_SRCS}
+  ${SIMPLRestServerController_HDRS}
   ${QtWebApp_SRCS}
   ${QtWebApp_HDRS}
   ${QtWebApp_MOC_SRCS}
