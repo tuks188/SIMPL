@@ -52,7 +52,7 @@ void SIMPLRequestMapper::service(HttpRequest& request, HttpResponse& response)
 
     if (path.startsWith("/api/v1/NumFilters"))
     {
-        //NumFiltersController().service(request, response);
+        NumFiltersController().service(request, response);
     }
 
     // All other pathes are mapped to the static file controller.
