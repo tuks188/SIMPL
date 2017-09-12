@@ -1,11 +1,9 @@
 #ifndef TEMPLATECACHE_H
 #define TEMPLATECACHE_H
 
-#include <QCache>
 #include "templateglobal.h"
 #include "templateloader.h"
-
-
+#include <QCache>
 
 /**
   Caching template loader, reduces the amount of I/O and improves performance
@@ -41,44 +39,41 @@
   @see TemplateLoader
 */
 
-class DECLSPEC TemplateCache : public TemplateLoader {
-    Q_OBJECT
-    Q_DISABLE_COPY(TemplateCache)
+class DECLSPEC TemplateCache : public TemplateLoader
+{
+  Q_OBJECT
+  Q_DISABLE_COPY(TemplateCache)
 public:
-
-    /**
-      Constructor.
-      @param settings configurations settings
-      @param parent Parent object
-    */
-    TemplateCache(QSettings* settings, QObject* parent=0);
+  /**
+    Constructor.
+    @param settings configurations settings
+    @param parent Parent object
+  */
+  TemplateCache(QSettings* settings, QObject* parent = 0);
 
 protected:
-
-    /**
-      Try to get a file from cache or filesystem.
-      @param localizedName Name of the template with locale to find
-      @return The template document, or empty string if not found
-    */
-    virtual QString tryFile(QString localizedName);
+  /**
+    Try to get a file from cache or filesystem.
+    @param localizedName Name of the template with locale to find
+    @return The template document, or empty string if not found
+  */
+  virtual QString tryFile(QString localizedName);
 
 private:
+  struct CacheEntry
+  {
+    QString document;
+    qint64 created;
+  };
 
-    struct CacheEntry {
-        QString document;
-        qint64 created;
-    };
+  /** Timeout for each cached file */
+  int cacheTimeout;
 
-    /** Timeout for each cached file */
-    int cacheTimeout;
+  /** Cache storage */
+  QCache<QString, CacheEntry> cache;
 
-    /** Cache storage */
-    QCache<QString,CacheEntry> cache;
-
-    /** Used to synchronize threads */
-    QMutex mutex;
+  /** Used to synchronize threads */
+  QMutex mutex;
 };
-
-
 
 #endif // TEMPLATECACHE_H
