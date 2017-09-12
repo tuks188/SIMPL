@@ -42,13 +42,23 @@ void NamesOfFiltersController::service(HttpRequest& request, HttpResponse& respo
   //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
   //   response.setCookie(HttpCookie("secondCookie","world",600));
   
-  // Register all the filters including trying to load those from Plugins
   FilterManager* fm = FilterManager::Instance();
  
   
   FilterManager::Collection factories = fm->getFactories();
+
+  QJsonArray filters;
+  QJsonArray humanLabels;
+  QMap<QString, IFilterFactory::Pointer>::const_iterator i = factories.constBegin();
+  while (i != factories.constEnd()) 
+  {
+    filters.append(i.value()->getNameOfClass());
+    humanLabels.append(i.value()->getFilterHumanLabel());
+    ++i;
+  }
   
-  rootObj["ERROR"] = "THIS API IS NOT IMPLEMENTED";
+  rootObj["FilterClassNames"] = filters;
+  rootObj["FilterHumanLabels"] = humanLabels;
   QJsonDocument jdoc(rootObj);
   
   response.write(jdoc.toJson(),true);

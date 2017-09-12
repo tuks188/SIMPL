@@ -56,7 +56,7 @@ void LoadedPluginsController::service(HttpRequest& request, HttpResponse& respon
   {
     pluginNames.append(plugin->getPluginName());  
   }
-  rootObj["Plugin Names"] = pluginNames;
+  rootObj["PluginNames"] = pluginNames;
     
   QJsonDocument jdoc(rootObj);
   
