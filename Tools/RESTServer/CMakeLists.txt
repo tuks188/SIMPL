@@ -24,7 +24,6 @@ set(QtWebApp_SRCS
   ${RESTServer_SOURCE_DIR}/QtWebApp/logging/filelogger.cpp     
   ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logger.cpp         
   ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logmessage.cpp
-
 )
 
 set(QtWebApp_HDRS
@@ -40,19 +39,20 @@ set(QtWebApp_HDRS
   ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/staticfilecontroller.h
   ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httprequest.h
 
-  
   ${RESTServer_SOURCE_DIR}/QtWebApp/logging/dualfilelogger.h 
   ${RESTServer_SOURCE_DIR}/QtWebApp/logging/filelogger.h     
   ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logger.h         
   ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logmessage.h
 )
 
+QT5_WRAP_CPP( QtWebApp_MOC_SRCS ${QtWebApp_SRCS})
+message(STATUS "QtWebApp_MOC_SRCS: ${QtWebApp_MOC_SRCS}")
 
 set(RESTServer_SRCS
   ${RESTServer_SOURCE_DIR}/main.cpp
   ${QtWebApp_SRCS}
   ${QtWebApp_HDRS}
-
+  ${QtWebApp_MOC_SRCS}
   )
 
 set(install_dir "bin")
@@ -68,6 +68,10 @@ elseif(WIN32)
 endif()
 
 
+add_executable(RESTServer ${RESTServer_SRCS})
+target_link_libraries(RESTServer Qt5::Core Qt5::Network )
+
+if(0)
 BuildToolBundle(
     TARGET RESTServer
     SOURCES ${RESTServer_SRCS}
@@ -82,4 +86,7 @@ BuildToolBundle(
     INSTALL_DEST  "${install_dir}"
     SOLUTION_FOLDER "Applications"
 )
+endif()
+
+
 
