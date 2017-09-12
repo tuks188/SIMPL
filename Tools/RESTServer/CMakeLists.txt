@@ -45,8 +45,18 @@ set(QtWebApp_HDRS
   ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logmessage.h
 )
 
-QT5_WRAP_CPP( QtWebApp_MOC_SRCS ${QtWebApp_SRCS})
-message(STATUS "QtWebApp_MOC_SRCS: ${QtWebApp_MOC_SRCS}")
+QT5_WRAP_CPP( QtWebApp_MOC_SRCS 
+  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandler.h     
+  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httprequesthandler.h
+  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpconnectionhandlerpool.h 
+  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httpsessionstore.h
+  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/httplistener.h              
+  ${RESTServer_SOURCE_DIR}/QtWebApp/httpserver/staticfilecontroller.h
+
+  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/dualfilelogger.h 
+  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/filelogger.h     
+  ${RESTServer_SOURCE_DIR}/QtWebApp/logging/logger.h         
+  )
 
 set(RESTServer_SRCS
   ${RESTServer_SOURCE_DIR}/main.cpp
