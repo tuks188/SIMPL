@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <QMutex>
-#include <QDateTime>
+#include <QtCore/QDateTime>
 #include <QThread>
 #include <QObject>
 

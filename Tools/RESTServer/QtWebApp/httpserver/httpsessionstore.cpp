@@ -4,7 +4,7 @@
 */
 
 #include "httpsessionstore.h"
-#include <QDateTime>
+#include <QtCore/QDateTime>
 #include <QUuid>
 
 

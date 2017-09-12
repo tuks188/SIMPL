@@ -7,7 +7,7 @@
 #define HTTPSESSION_H
 
 #include <QByteArray>
-#include <QVariant>
+#include <QtCore/QVariant>
 #include <QReadWriteLock>
 #include "httpglobal.h"
 

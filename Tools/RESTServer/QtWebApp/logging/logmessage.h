@@ -7,7 +7,7 @@
 #define LOGMESSAGE_H
 
 #include <QtGlobal>
-#include <QDateTime>
+#include <QtCore/QDateTime>
 #include <QHash>
 #include "logglobal.h"
 

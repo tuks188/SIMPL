@@ -6,7 +6,7 @@
 #include "staticfilecontroller.h"
 #include <QFileInfo>
 #include <QDir>
-#include <QDateTime>
+#include <QtCore/QDateTime>
 
 
 
