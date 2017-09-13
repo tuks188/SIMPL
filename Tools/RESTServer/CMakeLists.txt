@@ -44,6 +44,7 @@ set(QtWebApp_HDRS
 set(SIMPLRestServerController_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/SIMPLRequestMapper.cpp
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/PipelineListener.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/SIMPLDirectoryListing.cpp
 
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/NumFiltersController.cpp
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/V1RequestMapper.cpp
@@ -61,6 +62,7 @@ set(SIMPLRestServerController_SRCS
 set(SIMPLRestServerController_HDRS
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/SIMPLRequestMapper.h
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/PipelineListener.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/SIMPLDirectoryListing.h
 
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/V1RequestMapper.h
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/ExecutePipelineController.h      
