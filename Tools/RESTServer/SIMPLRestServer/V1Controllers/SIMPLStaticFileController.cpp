@@ -4,6 +4,8 @@
 #include <QDir>
 #include <QDateTime>
 
+#include "SIMPLRestServer/SIMPLDirectoryListing.h"
+
 SIMPLStaticFileController* SIMPLStaticFileController::m_Instance = nullptr;
 
 // -----------------------------------------------------------------------------
@@ -95,7 +97,10 @@ void SIMPLStaticFileController::service(HttpRequest& request, HttpResponse& resp
         // If the filename is a directory, append index.html.
         if (QFileInfo(docroot+path).isDir())
         {
-            path+="/index.html";
+            QDir dir(docroot + path);
+            QString html = SIMPLDirectoryListing::ParseDirForTable(dir);
+            response.write(html.toUtf8(), true);
+            return;
         }
         // Try to open the file
         QFile file(docroot+path);

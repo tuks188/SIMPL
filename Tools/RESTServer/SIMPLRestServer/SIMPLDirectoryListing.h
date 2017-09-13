@@ -38,14 +38,15 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QString>
-#include <QtCore/QDate>
+#include <QtCore/QDateTime>
 #include <QtCore/QVector>
 
 class SIMPLDirectoryListing
 {
 public:
-    static void ParseDir(QDir directory, QVector<QString>& fileNames, QVector<QDate>& dates);
+    static void ParseDir(QDir directory, QVector<QString>& fileNames, QVector<QDateTime>& dates);
     static QString CreateHTMLTable(QVector<QString> fileNames, QVector<QDateTime> dates);
+    static QString ParseDirForTable(QDir directory);
 };
 
 #endif

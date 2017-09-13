@@ -40,9 +40,17 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void SIMPLDirectoryListing::ParseDir(QDir directory, QVector<QString>& fileNames, QVector<QDate>& dates)
+void SIMPLDirectoryListing::ParseDir(QDir directory, QVector<QString>& fileNames, QVector<QDateTime>& dates)
 {
-  // NOT IMPLEMENTED
+  QFileInfoList fiList = directory.entryInfoList();
+
+  int count = fiList.size();
+  for(int i = 0; i < count; i++)
+  {
+    QFileInfo fi = fiList[i];
+    fileNames.push_back(fi.fileName());
+    dates.push_back(fi.lastModified());
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -78,4 +86,15 @@ QString SIMPLDirectoryListing::CreateHTMLTable(QVector<QString> fileNames, QVect
   ss << "</table>\n";
 
   return html;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QString SIMPLDirectoryListing::ParseDirForTable(QDir directory)
+{
+  QVector<QString> fileNames;
+  QVector<QDateTime> dates;
+  ParseDir(directory, fileNames, dates);
+  return CreateHTMLTable(fileNames, dates);
 }
