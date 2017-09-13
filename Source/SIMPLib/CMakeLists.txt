@@ -164,6 +164,14 @@ cmpReplaceFileIfDifferent(OLD_FILE_PATH  ${SIMPLib_BINARY_DIR}/SIMPLibFilters.h
 cmpReplaceFileIfDifferent(OLD_FILE_PATH  ${SIMPLib_BINARY_DIR}/RegisterKnownFilters.cpp
                           NEW_FILE_PATH  ${RegisterKnownFiltersFile} )
 
+set(Project_SRCS 
+      ${Project_SRCS} 
+      ${SIMPLib_BINARY_DIR}/RegisterKnownFilters.cpp 
+      ${SIMPLib_BINARY_DIR}/SIMPLibFilters.h
+)
+set_source_files_properties( ${SIMPLib_BINARY_DIR}/RegisterKnownFilters.cpp PROPERTIES GENERATED TRUE)
+set_source_files_properties( ${SIMPLib_BINARY_DIR}/RegisterKnownFilters.cpp PROPERTIES HEADER_FILE_ONLY TRUE)
+
 #--------------------------
 include_directories( ${HDF5_INCLUDE_DIR} )
 include_directories( ${PROJECT_CODE_DIR} )

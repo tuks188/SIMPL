@@ -32,12 +32,32 @@ SOFTWARE.
 #include <QLoggingCategory>
 #include <QDebug>
 
-SIMPLClientRequest::SIMPLClientRequest(QUrl url, Type type)
-    : MRestRequest()
+SIMPLClientRequest::SIMPLClientRequest(QUrl url, Command command, SIMPLClientRequest::Type msgType)
+    : MRestRequest(msgType)
 {
-    setAddress(url);
-    mPriority = Priority::High;
-    mType = type;
+    QString serverUrlStr = url.toString();
+    if (serverUrlStr.endsWith('/') == false)
+    {
+        serverUrlStr.append('/');
+    }
+    mServerUrl = QUrl(serverUrlStr);
+
+    QUrl cmdUrl = generateCommandUrl(command);
+    setAddress(cmdUrl);
+}
+
+QUrl SIMPLClientRequest::generateCommandUrl(Command command)
+{
+    QString ipAddressPath = mServerUrl.toString();
+    if (ipAddressPath.endsWith('/') == false)
+    {
+        ipAddressPath.append('/');
+    }
+
+    QString commandStr = m_CommandMap[command];
+    QString urlStr = QObject::tr("%1api/v1/%2").arg(ipAddressPath).arg(commandStr);
+
+    return QUrl(urlStr);
 }
 
 void SIMPLClientRequest::parseReplyData()

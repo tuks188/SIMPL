@@ -43,30 +43,33 @@ set(QtWebApp_HDRS
 
 set(SIMPLRestServerController_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/SIMPLRequestMapper.cpp
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NumFiltersController.cpp
-
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ExecutePipelineController.cpp      
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NumFiltersController.cpp
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ListFilterParametersController.cpp 
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/PluginInfoController.cpp
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/LoadedPluginsController.cpp        
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/PreflightPipelineController.cpp
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NamesOfFiltersController.cpp
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ApiNotFoundController.cpp
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/PipelineListener.cpp
-  )
+
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/NumFiltersController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/V1RequestMapper.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/ExecutePipelineController.cpp      
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/NumFiltersController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/ListFilterParametersController.cpp 
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/PluginInfoController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/LoadedPluginsController.cpp        
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/PreflightPipelineController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/NamesOfFiltersController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/ApiNotFoundController.cpp
+)
 
 set(SIMPLRestServerController_HDRS
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/SIMPLRequestMapper.h
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ExecutePipelineController.h      
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NumFiltersController.h
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ListFilterParametersController.h 
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/PluginInfoController.h
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/LoadedPluginsController.h        
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/PreflightPipelineController.h
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NamesOfFiltersController.h
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ApiNotFoundController.h
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/PipelineListener.h
+
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/V1RequestMapper.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/ExecutePipelineController.h      
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/NumFiltersController.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/ListFilterParametersController.h 
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/PluginInfoController.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/LoadedPluginsController.h        
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/PreflightPipelineController.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/NamesOfFiltersController.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/ApiNotFoundController.h
 )
 
 QT5_WRAP_CPP( QtWebApp_MOC_SRCS 
@@ -82,12 +85,7 @@ QT5_WRAP_CPP( QtWebApp_MOC_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/logger.h
 
   ${SIMPLRestServerController_HDRS}
-
-  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/PipelineListener.h
   )
-
-
-
 
 set(SIMPLRestServer_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/main.cpp
@@ -97,6 +95,10 @@ set(SIMPLRestServer_SRCS
   ${QtWebApp_HDRS}
   ${QtWebApp_MOC_SRCS}
   )
+
+configure_file(${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer.ini
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SIMPLRestServer.ini)
+
 
 set(install_dir "bin")
 set(lib_install_dir "lib")
@@ -110,11 +112,11 @@ elseif(WIN32)
   set(lib_install_dir ".")
 endif()
 
-
+if(0)
 add_executable(SIMPLRestServer ${SIMPLRestServer_SRCS})
 target_link_libraries(SIMPLRestServer Qt5::Core Qt5::Network SIMPLib)
+else()
 
-if(0)
 BuildToolBundle(
     TARGET SIMPLRestServer
     SOURCES ${SIMPLRestServer_SRCS}

@@ -86,8 +86,8 @@ class SIMPLib_EXPORT FilterParameter
 
     SIMPL_VIRTUAL_INSTANCE_PROPERTY(QVariant, DefaultValue)
     SIMPL_INSTANCE_PROPERTY(Category, Category)
-    SIMPL_INSTANCE_PROPERTY(bool, ReadOnly)
     SIMPL_INSTANCE_PROPERTY(int, GroupIndex)
+    SIMPL_INSTANCE_PROPERTY(bool, ReadOnly)
 
     /**
      * @brief readJson

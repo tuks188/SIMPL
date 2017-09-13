@@ -1,3 +1,35 @@
+/* ============================================================================
+ * Copyright (c) 2017 BlueQuartz Softwae, LLC
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice, this
+ * list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ *
+ * Neither the names of any of the BlueQuartz Software contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+ * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
 // C Includes
 #include <assert.h>
 #include <stdlib.h>
@@ -37,7 +69,7 @@
 #include "SIMPLRestServer/SIMPLRequestMapper.h"
 
 /** Cache for template files */
-//TemplateCache* templateCache;
+// TemplateCache* templateCache;
 
 /** Storage for session cookies */
 HttpSessionStore* sessionStore;
@@ -48,100 +80,101 @@ StaticFileController* staticFileController;
 /** Redirects log messages to a file */
 FileLogger* logger;
 
-
 /** Search the configuration file */
 QString searchConfigFile()
 {
-    QString binDir=QCoreApplication::applicationDirPath();
-    QString appName=QCoreApplication::applicationName();
-    QString fileName(appName+".ini");
+  QString binDir = QCoreApplication::applicationDirPath();
+  QString appName = QCoreApplication::applicationName();
+  QString fileName(appName + ".ini");
 
-    QStringList searchList;
-    searchList.append(binDir);
-    searchList.append(binDir+"/etc");
-    searchList.append(binDir+"/../etc");
-    searchList.append(binDir+"/../../etc"); // for development without shadow build
-    searchList.append(binDir+"/../"+appName+"/etc"); // for development with shadow build
-    searchList.append(binDir+"/../../"+appName+"/etc"); // for development with shadow build
-    searchList.append(binDir+"/../../../"+appName+"/etc"); // for development with shadow build
-    searchList.append(binDir+"/../../../../"+appName+"/etc"); // for development with shadow build
-    searchList.append(binDir+"/../../../../../"+appName+"/etc"); // for development with shadow build
-    searchList.append(QDir::rootPath()+"etc/opt");
-    searchList.append(QDir::rootPath()+"etc");
+  QStringList searchList;
+  searchList.append(binDir);
+//  searchList.append(binDir + "/etc");
+//  searchList.append(binDir + "/../etc");
+//  searchList.append(binDir + "/../../etc");                          // for development without shadow build
+//  searchList.append(binDir + "/../" + appName + "/etc");             // for development with shadow build
+//  searchList.append(binDir + "/../../" + appName + "/etc");          // for development with shadow build
+//  searchList.append(binDir + "/../../../" + appName + "/etc");       // for development with shadow build
+//  searchList.append(binDir + "/../../../../" + appName + "/etc");    // for development with shadow build
+//  searchList.append(binDir + "/../../../../../" + appName + "/etc"); // for development with shadow build
+//  searchList.append(QDir::rootPath() + "etc/opt");
+//  searchList.append(QDir::rootPath() + "etc");
 
-    foreach (QString dir, searchList)
+  foreach(QString dir, searchList)
+  {
+    QFile file(dir + "/" + fileName);
+    if(file.exists())
     {
-        QFile file(dir+"/"+fileName);
-        if (file.exists())
-        {
-            // found
-            fileName=QDir(file.fileName()).canonicalPath();
-            qDebug("Using config file %s",qPrintable(fileName));
-            return fileName;
-        }
+      // found
+      fileName = QDir(file.fileName()).canonicalPath();
+      qDebug("Using config file %s", qPrintable(fileName));
+      return fileName;
     }
+  }
 
-    // not found
-    foreach (QString dir, searchList)
-    {
-        qWarning("%s/%s not found",qPrintable(dir),qPrintable(fileName));
-    }
-    qFatal("Cannot find config file %s",qPrintable(fileName));
-    return 0;
+  // not found
+  foreach(QString dir, searchList)
+  {
+    qWarning("%s/%s not found", qPrintable(dir), qPrintable(fileName));
+  }
+  qFatal("Cannot find config file %s", qPrintable(fileName));
+  return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    QCoreApplication app(argc,argv);
+  QCoreApplication app(argc, argv);
 
-    app.setApplicationName("SIMPL REST Server");
-    app.setOrganizationName("BlueQuartz Software");
+  app.setApplicationName("SIMPLRestServer");
+  app.setOrganizationName("BlueQuartz Software");
 
-    // Find the configuration file
-    QString configFileName=searchConfigFile();
+  //
+  // Register all the filters including trying to load those from Plugins
+  FilterManager* fm = FilterManager::Instance();
+  SIMPLibPluginLoader::LoadPluginFilters(fm);
+  //
+  QMetaObjectUtilities::RegisterMetaTypes();
 
-    // Configure logging into a file
-    /*
-      QSettings* logSettings=new QSettings(configFileName,QSettings::IniFormat,&app);
-      logSettings->beginGroup("logging");
-      FileLogger* logger=new FileLogger(logSettings,10000,&app);
-      logger->installMsgHandler();
-      */
+  // Find the configuration file
+  QString configFileName = searchConfigFile();
 
-    // Configure template loader and cache
-//    QSettings* templateSettings=new QSettings(configFileName,QSettings::IniFormat,&app);
-//    templateSettings->beginGroup("templates");
-//    templateCache=new TemplateCache(templateSettings,&app);
+  // Configure logging into a file
+  /*
+    QSettings* logSettings=new QSettings(configFileName,QSettings::IniFormat,&app);
+    logSettings->beginGroup("logging");
+    FileLogger* logger=new FileLogger(logSettings,10000,&app);
+    logger->installMsgHandler();
+    */
 
-    // Configure session store
-    QSettings* sessionSettings=new QSettings(configFileName,QSettings::IniFormat,&app);
-    sessionSettings->beginGroup("sessions");
-    sessionStore=new HttpSessionStore(sessionSettings,&app);
+  // Configure template loader and cache
+  //    QSettings* templateSettings=new QSettings(configFileName,QSettings::IniFormat,&app);
+  //    templateSettings->beginGroup("templates");
+  //    templateCache=new TemplateCache(templateSettings,&app);
 
-    // Configure static file controller
-    QSettings* fileSettings=new QSettings(configFileName,QSettings::IniFormat,&app);
-    fileSettings->beginGroup("docroot");
-    staticFileController=new StaticFileController(fileSettings,&app);
+  // Configure session store
+  QSettings* sessionSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
+  sessionSettings->beginGroup("sessions");
+  sessionStore = new HttpSessionStore(sessionSettings, &app);
 
-    // Configure and start the TCP listener
-    QSettings* listenerSettings=new QSettings(configFileName,QSettings::IniFormat,&app);
-    listenerSettings->beginGroup("listener");
-    new HttpListener(listenerSettings,new SIMPLRequestMapper(&app),&app);
+  // Configure static file controller
+  QSettings* fileSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
+  fileSettings->beginGroup("docroot");
+  staticFileController = new StaticFileController(fileSettings, &app);
 
-    //
-    // Register all the filters including trying to load those from Plugins
-    FilterManager* fm = FilterManager::Instance();
-    SIMPLibPluginLoader::LoadPluginFilters(fm);
-    //
+  // Configure and start the TCP listener
+  QSettings* listenerSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
+  listenerSettings->beginGroup("listener");
+  new HttpListener(listenerSettings, new SIMPLRequestMapper(&app), &app);
 
-    qWarning("Application has started");
 
-    app.exec();
+  qWarning("Application has started");
 
-    qWarning("Application has stopped");
+  app.exec();
 
-    ////////
+  qWarning("Application has stopped");
 
-    qDebug() << "Goodbye World";
-    return 0;
+  ////////
+
+  qDebug() << "Goodbye World";
+  return 0;
 }

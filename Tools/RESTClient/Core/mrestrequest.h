@@ -40,7 +40,10 @@ public:
     enum class Type {None, Put, Post, Get, Delete};
     Q_ENUM(Type)
 
-    explicit MRestRequest(const QUrl& url = QUrl());
+    enum class Command {None, APINotFound, ExecutePipeline, ListFilterParameters, LoadedPlugins, NamesOfFilters, NumFilters, PluginInfo, PreflightPipeline};
+    Q_ENUM(Command)
+
+    explicit MRestRequest(MRestRequest::Type msgType);
     virtual ~MRestRequest();
     void setAddress(const QUrl& url);
     void setRequestTimeout(quint32 msec = 5000);
@@ -65,9 +68,11 @@ protected:
     virtual void retry();
     virtual void parseReplyData() = 0;
 
-    Priority mPriority = Priority::Normal;
-    Type mType = Type::Get;
-    QUrl mUrl;
+    Priority                                      mPriority = Priority::Normal;
+    Type                                          mType = Type::Get;
+    QMap<Command, QString>      m_CommandMap;
+    QUrl                                          mServerUrl;
+    QUrl                                          m_RequestUrl;
     QNetworkReply *mActiveReply;
     int mRequestRetryCounter;
     int mRequestTimeout;
@@ -80,8 +85,14 @@ private slots:
     void onReplyError(QNetworkReply::NetworkError code);
     void onReadyRead();
     void onReplyFinished();
+
 private:
     QString mLastError;
     QTimer *mRequestTimer;
     QNetworkAccessManager *mNetworkManager = nullptr;
+
+    /**
+     * @brief createCommandMap
+     */
+    void createCommandMap();
 };

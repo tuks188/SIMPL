@@ -34,7 +34,7 @@ class SIMPLClientRequest : public MRestRequest
     Q_OBJECT
 
 public:
-    SIMPLClientRequest(QUrl url, Type type);
+    SIMPLClientRequest(QUrl url, Command command, Type msgType);
 
 signals:
     void replyInfo(const QString &cityName,
@@ -43,6 +43,9 @@ signals:
 
 protected:
     void parseReplyData() override;
+
+private:
+    QUrl generateCommandUrl(Command command);
 };
 
 #endif // SIMPLClientRequest_H

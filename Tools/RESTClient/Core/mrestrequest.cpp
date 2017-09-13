@@ -54,11 +54,10 @@ Q_LOGGING_CATEGORY(crequest, "request")
  * If you don't, your subclass will not work! It will print an error when
  * MRestRequest::Send() is used.
  */
-MRestRequest::MRestRequest(const QUrl& url) :
+MRestRequest::MRestRequest(Type msgType) :
     QObject(),
     mPriority(Priority::Normal),
-    mType(Type::None),
-    mUrl(url)
+    mType(msgType)
 {
     mRequestTimeout = 5000;
     mRequestTimer = new QTimer(this);
@@ -66,10 +65,27 @@ MRestRequest::MRestRequest(const QUrl& url) :
     mRequestTimer->setInterval(mRequestTimeout);
     connect(mRequestTimer, &QTimer::timeout,
             this, &MRestRequest::retry);
+
+    createCommandMap();
 }
 
 MRestRequest::~MRestRequest()
 {
+}
+
+/**
+ * @brief createCommandMap
+ */
+void MRestRequest::createCommandMap()
+{
+  m_CommandMap.insert(Command::APINotFound, "ApiNotFound");
+  m_CommandMap.insert(Command::ExecutePipeline, "ExecutePipeline");
+  m_CommandMap.insert(Command::ListFilterParameters, "ListFilterParameters");
+  m_CommandMap.insert(Command::LoadedPlugins, "LoadedPlugins");
+  m_CommandMap.insert(Command::NamesOfFilters, "NamesOfFilters");
+  m_CommandMap.insert(Command::NumFilters, "NumFilters");
+  m_CommandMap.insert(Command::PluginInfo, "PluginInfo");
+  m_CommandMap.insert(Command::PreflightPipeline, "PreflightPipeline");
 }
 
 /*!
@@ -78,7 +94,7 @@ MRestRequest::~MRestRequest()
  */
 void MRestRequest::setAddress(const QUrl &url)
 {
-    mUrl = url;
+    m_RequestUrl = url;
 }
 
 /*!
@@ -95,7 +111,7 @@ void MRestRequest::setRequestTimeout(quint32 msec)
  */
 QUrl MRestRequest::address() const
 {
-    return mUrl;
+    return m_RequestUrl;
 }
 
 /*!
@@ -160,9 +176,9 @@ QByteArray MRestRequest::rawData() const
 void MRestRequest::send()
 {
     Q_ASSERT(mNetworkManager);
-    qCInfo(crequest) << mType << mUrl.toDisplayString() << mRequestRetryCounter;
+    qCInfo(crequest) << mType << m_RequestUrl.toDisplayString() << mRequestRetryCounter;
     mReplyData.clear();
-    QNetworkRequest request(mUrl);
+    QNetworkRequest request(m_RequestUrl);
     request.setOriginatingObject(this);
 
     switch (mType) {
