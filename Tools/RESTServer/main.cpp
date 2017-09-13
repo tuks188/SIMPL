@@ -64,22 +64,10 @@
 #include "QtWebApp/httpserver/httplistener.h"
 //#include "QtWebApp/templateengine/templatecache.h"
 #include "QtWebApp/httpserver/httpsessionstore.h"
-#include "QtWebApp/httpserver/staticfilecontroller.h"
+
 #include "QtWebApp/logging/filelogger.h"
 #include "SIMPLRestServer/SIMPLRequestMapper.h"
 #include "SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h"
-
-/** Cache for template files */
-// TemplateCache* templateCache;
-
-/** Storage for session cookies */
-HttpSessionStore* sessionStore;
-
-/** Controller for static files */
-//StaticFileController* staticFileController;
-
-/** Redirects log messages to a file */
-FileLogger* logger;
 
 /** Search the configuration file */
 QString searchConfigFile()
@@ -155,12 +143,13 @@ int main(int argc, char* argv[])
   // Configure session store
   QSettings* sessionSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
   sessionSettings->beginGroup("sessions");
-  sessionStore = new HttpSessionStore(sessionSettings, &app);
+  HttpSessionStore* sessionStore =  HttpSessionStore::CreateInstance(sessionSettings, &app);
 
   // Configure static file controller
   QSettings* fileSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
   fileSettings->beginGroup("docroot");
   SIMPLStaticFileController::CreateInstance(fileSettings, &app);
+
 
   // Configure and start the TCP listener
   QSettings* listenerSettings = new QSettings(configFileName, QSettings::IniFormat, &app);

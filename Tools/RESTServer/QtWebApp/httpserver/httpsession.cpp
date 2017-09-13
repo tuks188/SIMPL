@@ -4,9 +4,13 @@
 */
 
 #include "httpsession.h"
-#include <QUuid>
+
+#include <QtCore/QUuid>
 #include <QtCore/QDateTime>
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpSession::HttpSession(bool canStore)
 {
   if(canStore)
@@ -14,7 +18,24 @@ HttpSession::HttpSession(bool canStore)
     dataPtr = new HttpSessionData();
     dataPtr->refCount = 1;
     dataPtr->lastAccess = QDateTime::currentMSecsSinceEpoch();
-    dataPtr->id = QUuid::createUuid().toString().toLocal8Bit();
+    #if 1
+        uint l = 100;
+    ushort w1 = 200;
+    ushort w2 = 500;
+    uchar b1 = 'S';
+    uchar b2 = 'I';
+    uchar b3 = 'M';
+    uchar b4 = 'P';
+    uchar b5 = 'L';
+    uchar b6 = 'i';
+    uchar b7 = 'b';
+    uchar b8 = '1';
+    QUuid uuid = QUuid(l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8);
+    QUuid p1 = QUuid::createUuidV5(uuid, QString::number(dataPtr->lastAccess, 10));
+    dataPtr->m_SessionId = p1.toByteArray();
+   #else
+    dataPtr->m_SessionId = QUuid::createUuid().toString().toLocal8Bit();
+    #endif
 #ifdef SUPERVERBOSE
     qDebug("HttpSession: created new session data with id %s", dataPtr->id.data());
 #endif
@@ -25,6 +46,9 @@ HttpSession::HttpSession(bool canStore)
   }
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpSession::HttpSession(const HttpSession& other)
 {
   dataPtr = other.dataPtr;
@@ -39,6 +63,9 @@ HttpSession::HttpSession(const HttpSession& other)
   }
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpSession& HttpSession::operator=(const HttpSession& other)
 {
   HttpSessionData* oldPtr = dataPtr;
@@ -70,6 +97,9 @@ HttpSession& HttpSession::operator=(const HttpSession& other)
   return *this;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpSession::~HttpSession()
 {
   if(dataPtr)
@@ -89,11 +119,14 @@ HttpSession::~HttpSession()
   }
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 QByteArray HttpSession::getId() const
 {
   if(dataPtr)
   {
-    return dataPtr->id;
+    return dataPtr->m_SessionId;
   }
   else
   {
@@ -101,11 +134,17 @@ QByteArray HttpSession::getId() const
   }
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 bool HttpSession::isNull() const
 {
   return dataPtr == 0;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void HttpSession::set(const QByteArray& key, const QVariant& value)
 {
   if(dataPtr)
@@ -116,6 +155,9 @@ void HttpSession::set(const QByteArray& key, const QVariant& value)
   }
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void HttpSession::remove(const QByteArray& key)
 {
   if(dataPtr)
@@ -126,6 +168,9 @@ void HttpSession::remove(const QByteArray& key)
   }
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 QVariant HttpSession::get(const QByteArray& key) const
 {
   QVariant value;
@@ -138,6 +183,9 @@ QVariant HttpSession::get(const QByteArray& key) const
   return value;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 bool HttpSession::contains(const QByteArray& key) const
 {
   bool found = false;
@@ -150,6 +198,9 @@ bool HttpSession::contains(const QByteArray& key) const
   return found;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 QMap<QByteArray, QVariant> HttpSession::getAll() const
 {
   QMap<QByteArray, QVariant> values;
@@ -162,6 +213,9 @@ QMap<QByteArray, QVariant> HttpSession::getAll() const
   return values;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 qint64 HttpSession::getLastAccess() const
 {
   qint64 value = 0;
@@ -174,6 +228,9 @@ qint64 HttpSession::getLastAccess() const
   return value;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void HttpSession::setLastAccess()
 {
   if(dataPtr)

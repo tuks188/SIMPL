@@ -25,6 +25,14 @@ void SIMPLStaticFileController::CreateInstance(QSettings* settings, QObject* par
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
+QString SIMPLStaticFileController::getDocRoot() const
+{
+  return docroot;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 SIMPLStaticFileController::SIMPLStaticFileController(QSettings* settings, QObject* parent)
     :HttpRequestHandler(parent)
 {

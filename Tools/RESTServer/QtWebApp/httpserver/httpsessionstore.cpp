@@ -4,42 +4,103 @@
 */
 
 #include "httpsessionstore.h"
-#include <QUuid>
-#include <QtCore/QDateTime>
 
+#include <QtCore/QUuid>
+#include <QtCore/QDateTime>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
+#include <QtCore/QJsonValue>
+
+HttpSessionStore* HttpSessionStore::self = nullptr;
+
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpSessionStore::HttpSessionStore(QSettings* settings, QObject* parent)
 : QObject(parent)
 {
   this->settings = settings;
   connect(&cleanupTimer, SIGNAL(timeout()), this, SLOT(sessionTimerEvent()));
   cleanupTimer.start(60000);
-  cookieName = settings->value("cookieName", "sessionid").toByteArray();
-  expirationTime = settings->value("expirationTime", 3600000).toInt();
-  qDebug("HttpSessionStore: Sessions expire after %i milliseconds", expirationTime);
+  if(settings) 
+  {
+    cookieName = settings->value("cookieName", "sessionid").toByteArray();
+    expirationTime = settings->value("expirationTime", 3600000).toInt();
+  }
+  qDebug() << "HttpSessionStore: Sessions expire after " << expirationTime << " milliseconds";
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpSessionStore::~HttpSessionStore()
 {
   cleanupTimer.stop();
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+HttpSessionStore* HttpSessionStore::CreateInstance(QSettings* settings, QObject* parent)
+{
+  if(self == nullptr)
+  {
+    self = new HttpSessionStore(settings, parent);
+  }
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+HttpSessionStore* HttpSessionStore::Instance()
+{
+  if(self == nullptr)
+  {
+    self = new HttpSessionStore(nullptr, nullptr);
+  }
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 QByteArray HttpSessionStore::getSessionId(HttpRequest& request, HttpResponse& response)
 {
+  Q_UNUSED(response);
   // The session ID in the response has priority because this one will be used in the next request.
   mutex.lock();
-  // Get the session ID from the response cookie
-  QByteArray sessionId = response.getCookies().value(cookieName).getValue();
-  if(sessionId.isEmpty())
+  QByteArray sessionId;
+   
+  QByteArray requestBody = request.bodyData;
+  QJsonParseError jsonParseError;
+  QJsonDocument requestJsonDoc = QJsonDocument::fromJson(requestBody, &jsonParseError);
+  if (jsonParseError.error != QJsonParseError::NoError)
   {
-    // Get the session ID from the request cookie
-    sessionId = request.getCookie(cookieName);
+    return sessionId;
   }
+ 
+  // Get the session ID from the request JSON Payload
+  QJsonObject requestJsonObj = requestJsonDoc.object();
+  QJsonValue sessionIdValue = requestJsonObj["SessionID"];
+  if(sessionIdValue.isString())
+  {
+    sessionId = sessionIdValue.toString().toLatin1();
+  }
+  
+  //QByteArray sessionId = response.getCookies().value(cookieName).getValue();
+//  if(sessionId.isEmpty())
+//  {
+//    // Get the session ID from the request cookie
+//    sessionId = request.getCookie(cookieName);
+//  }
   // Clear the session ID if there is no such session in the storage.
   if(!sessionId.isEmpty())
   {
     if(!sessions.contains(sessionId))
     {
-      qDebug("HttpSessionStore: received invalid session cookie with ID %s", sessionId.data());
+      qDebug() << "HttpSessionStore: received invalid session cookie with ID " << sessionId.data();
       sessionId.clear();
     }
   }
@@ -47,6 +108,9 @@ QByteArray HttpSessionStore::getSessionId(HttpRequest& request, HttpResponse& re
   return sessionId;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpSession HttpSessionStore::getSession(HttpRequest& request, HttpResponse& response, bool allowCreate)
 {
   QByteArray sessionId = getSessionId(request, response);
@@ -57,12 +121,13 @@ HttpSession HttpSessionStore::getSession(HttpRequest& request, HttpResponse& res
     if(!session.isNull())
     {
       mutex.unlock();
-      // Refresh the session cookie
-      QByteArray cookieName = settings->value("cookieName", "sessionid").toByteArray();
-      QByteArray cookiePath = settings->value("cookiePath").toByteArray();
-      QByteArray cookieComment = settings->value("cookieComment").toByteArray();
-      QByteArray cookieDomain = settings->value("cookieDomain").toByteArray();
-      response.setCookie(HttpCookie(cookieName, session.getId(), expirationTime / 1000, cookiePath, cookieComment, cookieDomain));
+//      // Refresh the session cookie
+//      QByteArray cookieName = settings->value("cookieName", "sessionid").toByteArray();
+//      QByteArray cookiePath = settings->value("cookiePath").toByteArray();
+//      QByteArray cookieComment = settings->value("cookieComment").toByteArray();
+//      QByteArray cookieDomain = settings->value("cookieDomain").toByteArray();
+//      response.setCookie(HttpCookie(cookieName, session.getId(), expirationTime / 1000, cookiePath, cookieComment, cookieDomain));
+      
       session.setLastAccess();
       return session;
     }
@@ -70,22 +135,26 @@ HttpSession HttpSessionStore::getSession(HttpRequest& request, HttpResponse& res
   // Need to create a new session
   if(allowCreate)
   {
-    QByteArray cookieName = settings->value("cookieName", "sessionid").toByteArray();
-    QByteArray cookiePath = settings->value("cookiePath").toByteArray();
-    QByteArray cookieComment = settings->value("cookieComment").toByteArray();
-    QByteArray cookieDomain = settings->value("cookieDomain").toByteArray();
+//    QByteArray cookieName = settings->value("cookieName", "sessionid").toByteArray();
+//    QByteArray cookiePath = settings->value("cookiePath").toByteArray();
+//    QByteArray cookieComment = settings->value("cookieComment").toByteArray();
+//    QByteArray cookieDomain = settings->value("cookieDomain").toByteArray();
+    
     HttpSession session(true);
-    qDebug("HttpSessionStore: create new session with ID %s", session.getId().data());
+    qDebug() << "HttpSessionStore: create new session with ID " << session.getId().data();
     sessions.insert(session.getId(), session);
-    response.setCookie(HttpCookie(cookieName, session.getId(), expirationTime / 1000, cookiePath, cookieComment, cookieDomain));
+    //response.setCookie(HttpCookie(cookieName, session.getId(), expirationTime / 1000, cookiePath, cookieComment, cookieDomain));
     mutex.unlock();
     return session;
   }
   // Return a null session
   mutex.unlock();
-  return HttpSession();
+  return HttpSession(true);
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpSession HttpSessionStore::getSession(const QByteArray id)
 {
   mutex.lock();
@@ -95,6 +164,9 @@ HttpSession HttpSessionStore::getSession(const QByteArray id)
   return session;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void HttpSessionStore::sessionTimerEvent()
 {
   mutex.lock();
@@ -115,7 +187,9 @@ void HttpSessionStore::sessionTimerEvent()
   mutex.unlock();
 }
 
-/** Delete a session */
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void HttpSessionStore::removeSession(HttpSession session)
 {
   mutex.lock();

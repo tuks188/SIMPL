@@ -93,7 +93,7 @@ private:
   {
 
     /** Unique ID */
-    QByteArray id;
+    QByteArray m_SessionId;
 
     /** Timestamp of last access, set by the HttpSessionStore */
     qint64 lastAccess;

@@ -46,6 +46,8 @@ public:
 
     /** Generates the response */
     void service(HttpRequest& request, HttpResponse& response);
+    
+    QString getDocRoot() const;
 
 private:
 

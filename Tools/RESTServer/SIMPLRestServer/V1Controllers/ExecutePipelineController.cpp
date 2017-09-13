@@ -31,6 +31,17 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 #include "ExecutePipelineController.h"
 
+
+#include <QtCore/QDateTime>
+#include <QtCore/QVariant>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
+#include <QtCore/QDir>
+
+#include "SIMPLib/Common/FilterManager.h"
+#include "SIMPLib/Common/FilterPipeline.h"
+#include "SIMPLib/Plugin/PluginManager.h"
+#include "SIMPLib/Plugin/SIMPLibPluginLoader.h"
 #include "SIMPLib/Common/FilterManager.h"
 #include "SIMPLib/Common/FilterPipeline.h"
 #include "SIMPLib/Plugin/PluginManager.h"
@@ -40,13 +51,11 @@
 #include "SIMPLib/FilterParameters/InputFileFilterParameter.h"
 #include "SIMPLib/FilterParameters/InputPathFilterParameter.h"
 
-#include <QtCore/QDateTime>
-#include <QtCore/QVariant>
 
-#include <QtCore/QJsonDocument>
-#include <QtCore/QJsonObject>
-
+#include "SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h"
 #include "SIMPLRestServer/PipelineListener.h"
+#include "QtWebApp/httpserver/httpsessionstore.h"
+
 
 // -----------------------------------------------------------------------------
 //
@@ -61,10 +70,14 @@ ExecutePipelineController::ExecutePipelineController()
 void ExecutePipelineController::service(HttpRequest& request, HttpResponse& response)
 {
   
+    // Get current session, or create a new one
+  HttpSessionStore* sessionStore = HttpSessionStore::Instance();
+  HttpSession session = sessionStore->getSession(request, response);
+  
   QString content_type = request.getHeader(QByteArray("content-type"));
   
   QJsonObject rootObj;
-  
+  rootObj["SessionID"] = QString(session.getId());
   response.setHeader("Content-Type", "application/json");
   
   if(content_type.compare("application/json") != 0)
@@ -78,6 +91,8 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
     return;
   }
 
+
+    
   QString requestBody = request.getBody();
   QJsonDocument requestDoc = QJsonDocument::fromJson(requestBody.toUtf8());
   QJsonObject requestObj = requestDoc.object();
@@ -102,9 +117,13 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
       InputPathFilterParameter* inPathParam = dynamic_cast<InputPathFilterParameter*>(parameter);
 
       QString newFilePath = "Foo";
+      SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
+      QString docRoot = staticFileController->getDocRoot();
       if(outFileParam != nullptr)
       {
-        outFileParam->getSetterCallback()(newFilePath);
+        QString existingPath = outFileParam->getGetterCallback()();
+        existingPath = docRoot + QDir::separator() + QString(session.getId()) + QDir::separator() + existingPath; 
+        outFileParam->getSetterCallback()(existingPath);
       }
       else if(outPathParam != nullptr)
       {
@@ -125,7 +144,7 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
   pipeline->addMessageReceiver(listener);
   pipeline->execute();
   
-     response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
+   //  response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
   //   response.setCookie(HttpCookie("secondCookie","world",600));
 
   std::vector<PipelineMessage> errorMessages = listener->getErrorMessages();
@@ -166,6 +185,8 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
   delete listener;
 
   rootObj["Completed"] = completed;
+  
+  
   QJsonDocument jdoc(rootObj);
   
   response.write(jdoc.toJson(), true);

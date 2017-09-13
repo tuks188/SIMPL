@@ -72,8 +72,6 @@ void NamesOfFiltersController::service(HttpRequest& request, HttpResponse& respo
     return;
   }
   
-  //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
-  //   response.setCookie(HttpCookie("secondCookie","world",600));
   
   FilterManager* fm = FilterManager::Instance();
   
