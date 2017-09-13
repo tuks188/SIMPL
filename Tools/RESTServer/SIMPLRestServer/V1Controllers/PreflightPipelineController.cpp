@@ -112,7 +112,7 @@ void PreflightPipelineController::service(HttpRequest& request, HttpResponse& re
   for(int i = 0; i < numWarnings; i++)
   {
     QJsonObject warning;
-    warning["Code"] = warningMessages[i].generateErrorString();
+    warning["Code"] = warningMessages[i].generateWarningString();
     warning["Message"] = warningMessages[i].getText();
     warning["FilterHumanLabel"] = warningMessages[i].getFilterHumanLabel();
     warning["FilterIndex"] = warningMessages[i].getPipelineIndex();
