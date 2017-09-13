@@ -75,7 +75,7 @@ void V1RequestMapper::service(HttpRequest& request, HttpResponse& response)
   QMultiMap<QByteArray, QByteArray> headerMap = request.getHeaderMap();
 
   QString path(request.getPath());
-  qDebug("V1RequestMapper: path=%s", path.data());
+  qDebug() << "V1RequestMapper: path=" << path.data();
 
   // For the following pathes, each request gets its own new instance of the related controller.
 

@@ -104,6 +104,7 @@ void MRestRequest::setAddress(const QUrl &url)
 void MRestRequest::setRequestTimeout(quint32 msec)
 {
     mRequestTimeout = msec;
+    mRequestTimer->setInterval(mRequestTimeout);
 }
 
 /*!

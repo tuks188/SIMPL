@@ -26,6 +26,7 @@ SOFTWARE.
 #define SIMPLClientRequest_H
 
 #include <QObject>
+#include <QtCore/QJsonObject>
 
 #include "Core/mrestrequest.h"
 
@@ -34,7 +35,7 @@ class SIMPLClientRequest : public MRestRequest
     Q_OBJECT
 
 public:
-    SIMPLClientRequest(QUrl url, Command command, Type msgType);
+    SIMPLClientRequest(QUrl url, Command command, Type msgType, QJsonObject jsonMsg = QJsonObject());
 
 signals:
     void replyInfo(const QString &cityName,

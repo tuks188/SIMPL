@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "SIMPLClientRequest.h"
 
+#include <iostream>
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -32,7 +34,7 @@ SOFTWARE.
 #include <QLoggingCategory>
 #include <QDebug>
 
-SIMPLClientRequest::SIMPLClientRequest(QUrl url, Command command, SIMPLClientRequest::Type msgType)
+SIMPLClientRequest::SIMPLClientRequest(QUrl url, Command command, SIMPLClientRequest::Type msgType, QJsonObject jsonMsg)
     : MRestRequest(msgType)
 {
     QString serverUrlStr = url.toString();
@@ -41,6 +43,8 @@ SIMPLClientRequest::SIMPLClientRequest(QUrl url, Command command, SIMPLClientReq
         serverUrlStr.append('/');
     }
     mServerUrl = QUrl(serverUrlStr);
+
+    mRequestDocument = QJsonDocument(jsonMsg);
 
     QUrl cmdUrl = generateCommandUrl(command);
     setAddress(cmdUrl);
@@ -64,7 +68,11 @@ void SIMPLClientRequest::parseReplyData()
 {
     const QJsonObject object(mReplyDocument.object());
 
-    qDebug() << object;
+    QByteArray out = mReplyDocument.toJson(QJsonDocument::Indented);
+   // qDebug() << out;
+    std::cout << out.data() << std::endl;
+
+    emit finished();
 
 //    emit replyInfo(cityName, humidity, pressure, temp);
 }
