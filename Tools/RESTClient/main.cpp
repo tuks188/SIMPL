@@ -78,15 +78,55 @@ int main(int argc, char *argv[])
 ////        weatherInLublin.setTemp(temp);
 //    };
 
-    QUrl serverUrl = QUrl("http://10.0.1.109:8080/api/v1/NumFilters");
-    SIMPLClientRequest::Type msgType = SIMPLClientRequest::Type::Put;
+    QUrl serverUrl = QUrl("http://10.0.1.142:8080/");
 
-    auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, msgType);
+//    {
+//      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::APINotFound;
+//      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
+//      client.send(clientRequest);
+//    }
+
+//    {
+//      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::ExecutePipeline;
+//      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
+//      client.send(clientRequest);
+//    }
+
+//    {
+//      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::ListFilterParameters;
+//      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
+//      client.send(clientRequest);
+//    }
+
+    {
+      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::LoadedPlugins;
+      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
+      client.send(clientRequest);
+    }
+
+    {
+      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::NamesOfFilters;
+      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
+      client.send(clientRequest);
+    }
+
+    {
+      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::NumFilters;
+      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
+      client.send(clientRequest);
+    }
+
+//    SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::PluginInfo;
+//    clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
+//    client.send(clientRequest);
+
+//    SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::PreflightPipeline;
+//    clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
+//    client.send(clientRequest);
+
+
 //    QObject::connect(clientRequest.data(), &SIMPLClientRequest::replyError, replyErrorLambda);
 //    QObject::connect(clientRequest.data(), &SIMPLClientRequest::replyInfo, replyInfoLambda);
-
-    // send request
-    client.send(clientRequest);
 
     return app.exec();
 }
