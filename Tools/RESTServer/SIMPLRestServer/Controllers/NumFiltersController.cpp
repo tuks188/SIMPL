@@ -48,7 +48,7 @@ void NumFiltersController::service(HttpRequest& request, HttpResponse& response)
   
   FilterManager::Collection factories = fm->getFactories();
   
-  rootObj["NumFilters"] = factories.size(); 
+  rootObj["NumFilters"] = factories.size();
   QJsonDocument jdoc(rootObj);
   
   response.write(jdoc.toJson(),true);

@@ -53,6 +53,7 @@ set(SIMPLRestServerController_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/PreflightPipelineController.cpp
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NamesOfFiltersController.cpp
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ApiNotFoundController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/PipelineListener.cpp
   )
 
 set(SIMPLRestServerController_HDRS
@@ -65,7 +66,7 @@ set(SIMPLRestServerController_HDRS
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/PreflightPipelineController.h
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/NamesOfFiltersController.h
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/Controllers/ApiNotFoundController.h
-
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/PipelineListener.h
 )
 
 QT5_WRAP_CPP( QtWebApp_MOC_SRCS 
@@ -81,6 +82,8 @@ QT5_WRAP_CPP( QtWebApp_MOC_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/QtWebApp/logging/logger.h
 
   ${SIMPLRestServerController_HDRS}
+
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/PipelineListener.h
   )
 
 
