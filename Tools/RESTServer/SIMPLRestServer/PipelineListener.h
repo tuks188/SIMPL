@@ -15,6 +15,8 @@ public:
     std::vector<PipelineMessage> getMessages();
     std::vector<PipelineMessage> getErrorMessages();
     std::vector<PipelineMessage> getWarningMessages();
+    std::vector<PipelineMessage> getStatusMessages();
+    std::vector<PipelineMessage> getStandardOutputMessages();
 
 public slots:
     void processPipelineMessage(const PipelineMessage&);

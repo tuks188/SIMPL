@@ -55,6 +55,7 @@ set(SIMPLRestServerController_SRCS
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/PreflightPipelineController.cpp
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/NamesOfFiltersController.cpp
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/ApiNotFoundController.cpp
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/SIMPLStaticFileController.cpp
 )
 
 set(SIMPLRestServerController_HDRS
@@ -70,6 +71,7 @@ set(SIMPLRestServerController_HDRS
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/PreflightPipelineController.h
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/NamesOfFiltersController.h
   ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/ApiNotFoundController.h
+  ${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h
 )
 
 QT5_WRAP_CPP( QtWebApp_MOC_SRCS 
@@ -97,7 +99,13 @@ set(SIMPLRestServer_SRCS
   )
 
 configure_file(${SIMPLRestServer_SOURCE_DIR}/SIMPLRestServer.ini
-                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SIMPLRestServer.ini)
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SIMPLRestServer.ini )
+
+add_custom_target(DocRootFolderCopy ALL
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${SIMPLRestServer_SOURCE_DIR}/docroot
+            ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/docroot/
+            COMMENT "Copying Data Folder into Binary Directory")
+set_target_properties(DocRootFolderCopy PROPERTIES FOLDER ZZ_COPY_FILES)
 
 
 set(install_dir "bin")

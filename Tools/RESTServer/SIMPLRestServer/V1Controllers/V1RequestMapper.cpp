@@ -46,6 +46,7 @@
 #include "SIMPLRestServer/V1Controllers/NumFiltersController.h"
 #include "SIMPLRestServer/V1Controllers/PluginInfoController.h"
 #include "SIMPLRestServer/V1Controllers/PreflightPipelineController.h"
+#include "SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h"
 
 /** Redirects log messages to a file */
 extern FileLogger* logger;
@@ -111,7 +112,8 @@ void V1RequestMapper::service(HttpRequest& request, HttpResponse& response)
   // In this case, a single instance is used for multiple requests.
   else
   {
-    ApiNotFoundController().service(request, response);
+    SIMPLStaticFileController::Instance()->service(request, response);
+    //ApiNotFoundController().service(request, response);
   }
 
   qDebug("V1RequestMapper: finished request");

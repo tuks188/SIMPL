@@ -39,6 +39,7 @@
 #include "QtWebApp/logging/filelogger.h"
 
 #include "SIMPLRestServer/V1Controllers/V1RequestMapper.h"
+#include "SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h"
 
 /** Redirects log messages to a file */
 extern FileLogger* logger;
@@ -79,15 +80,17 @@ void SIMPLRequestMapper::service(HttpRequest& request, HttpResponse& response)
   }
   else if(content_type.compare("application/json") != 0)
   {
-    QJsonObject rootObj;
-    QString msg;
-    QTextStream ss(&msg);
-    ss << "The content-type was not set to 'application/json'.";
+    SIMPLStaticFileController::Instance()->service(request, response);
+
+//    QJsonObject rootObj;
+//    QString msg;
+//    QTextStream ss(&msg);
+//    ss << "The content-type was not set to 'application/json'.";
     
-    rootObj["ErrorCode"] = -2;
-    rootObj["ErrorMessage"] = msg;
-    QJsonDocument jdoc(rootObj);
-    response.write(jdoc.toJson(), true);
+//    rootObj["ErrorCode"] = -2;
+//    rootObj["ErrorMessage"] = msg;
+//    QJsonDocument jdoc(rootObj);
+//    response.write(jdoc.toJson(), true);
   }
   else
   { 

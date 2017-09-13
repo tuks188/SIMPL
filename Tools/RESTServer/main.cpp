@@ -67,6 +67,7 @@
 #include "QtWebApp/httpserver/staticfilecontroller.h"
 #include "QtWebApp/logging/filelogger.h"
 #include "SIMPLRestServer/SIMPLRequestMapper.h"
+#include "SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h"
 
 /** Cache for template files */
 // TemplateCache* templateCache;
@@ -75,7 +76,7 @@
 HttpSessionStore* sessionStore;
 
 /** Controller for static files */
-StaticFileController* staticFileController;
+//StaticFileController* staticFileController;
 
 /** Redirects log messages to a file */
 FileLogger* logger;
@@ -159,7 +160,7 @@ int main(int argc, char* argv[])
   // Configure static file controller
   QSettings* fileSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
   fileSettings->beginGroup("docroot");
-  staticFileController = new StaticFileController(fileSettings, &app);
+  SIMPLStaticFileController::CreateInstance(fileSettings, &app);
 
   // Configure and start the TCP listener
   QSettings* listenerSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
