@@ -32,7 +32,10 @@ HttpSession::HttpSession(bool canStore)
     uchar b8 = '1';
     QUuid uuid = QUuid(l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8);
     QUuid p1 = QUuid::createUuidV5(uuid, QString::number(dataPtr->lastAccess, 10));
-    dataPtr->m_SessionId = p1.toByteArray();
+    QByteArray p1Bytes = p1.toByteArray();
+    p1Bytes.chop(1);
+    p1Bytes = p1Bytes.mid(1);
+    dataPtr->m_SessionId = p1Bytes;
    #else
     dataPtr->m_SessionId = QUuid::createUuid().toString().toLocal8Bit();
     #endif
