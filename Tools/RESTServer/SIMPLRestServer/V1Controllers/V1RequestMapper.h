@@ -29,33 +29,41 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#ifndef ApiNotFoundController_H_
-#define ApiNotFoundController_H_
 
-#include "QtWebApp/httpserver/httprequest.h"
+#ifndef SIMPLV1RequestMapper_H_
+#define SIMPLV1RequestMapper_H_
+
+#include <QtCore/QObject>
+
 #include "QtWebApp/httpserver/httprequesthandler.h"
-#include "QtWebApp/httpserver/httpresponse.h"
 
 /**
-  @brief This class responds to REST API endpoint
+  The request mapper dispatches incoming HTTP requests to controller classes
+  depending on the requested path.
 */
 
-class ApiNotFoundController : public HttpRequestHandler
+class V1RequestMapper : public HttpRequestHandler
 {
   Q_OBJECT
-  Q_DISABLE_COPY(ApiNotFoundController)
+  Q_DISABLE_COPY(V1RequestMapper)
 public:
-  /** Constructor */
-  ApiNotFoundController();
-
-  /** Generates the response */
-  void service(HttpRequest& request, HttpResponse& response);
+  /**
+    Constructor.
+    @param parent Parent object
+  */
+  V1RequestMapper(QObject* parent = 0);
 
   /**
-   * @brief Returns the name of the end point that is controller uses
-   * @return
-   */
-  static QString getEndPoint();
+    Destructor.
+  */
+  virtual ~V1RequestMapper();
+
+  /**
+    Dispatch incoming HTTP requests to different controllers depending on the URL.
+    @param request The received HTTP request
+    @param response Must be used to return the response
+  */
+  void service(HttpRequest& request, HttpResponse& response);
 };
 
-#endif // ApiNotFoundController_H_
+#endif // SIMPLV1RequestMapper_H_

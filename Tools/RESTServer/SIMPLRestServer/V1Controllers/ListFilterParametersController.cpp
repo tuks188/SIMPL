@@ -29,7 +29,7 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#include "PluginInfoController.h"
+#include "ListFilterParametersController.h"
 
 #include "SIMPLib/Common/FilterManager.h"
 #include "SIMPLib/Plugin/PluginManager.h"
@@ -44,58 +44,100 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-PluginInfoController::PluginInfoController()
+ListFilterParametersController::ListFilterParametersController()
 {
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void PluginInfoController::service(HttpRequest& request, HttpResponse& response)
+void ListFilterParametersController::createFilterParametersJson(const QString &filterName, QJsonObject &rootObject)
 {
+  // Register all the filters including trying to load those from Plugins
+  FilterManager* fm = FilterManager::Instance();
+  
+  IFilterFactory::Pointer factory = fm->getFactoryForFilter(filterName);
+  AbstractFilter::Pointer filter = factory->create();
+  
+  QVector<FilterParameter::Pointer> parameters = filter->getFilterParameters();
+  QJsonArray jsonParameters;
+  
+  for(int i = 0; i < parameters.size(); i++)
+  {
+    FilterParameter::Pointer parameter = parameters[i];
+    QJsonObject filterObj;
+    filterObj["FilterParameterName"] = parameter->getNameOfClass();
+    filterObj["FilterParameterWidget"] = parameter->getWidgetType();
+    filterObj["FilterParameterCategory"] = parameter->getCategory();
+    filterObj["FilterParameterGroupIndex"] = parameter->getGroupIndex();
+    filterObj["FilterParameterWidget"] = parameter->getWidgetType();
+    filterObj["FilterParameterHumanLabel"] = parameter->getHumanLabel();
+    filterObj["FilterParameterPropertyName"] = parameter->getPropertyName();
+    filterObj["FilterParameterReadOnly"] = parameter->getReadOnly();
+    jsonParameters.append(filterObj);
+  }
+  rootObject["FilterParameters"] = jsonParameters;
+  rootObject["ClassName"] = filterName;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void ListFilterParametersController::service(HttpRequest& request, HttpResponse& response)
+{
+  
   QString content_type = request.getHeader(QByteArray("content-type"));
-
-  QJsonObject rootObj;
+  
+  QJsonObject responseJsonRootObj;
+  
   response.setHeader("Content-Type", "application/json");
-
+  
   if(content_type.compare("application/json") != 0)
   {
     // Form Error response
-    rootObj["Error"] = "Content Type is not application/json";
-    QJsonDocument jdoc(rootObj);
-
+    responseJsonRootObj["ErrorMessage"] = EndPoint() + ": Content Type is not application/json";
+    responseJsonRootObj["ErrorCode"]= -20;
+    QJsonDocument jdoc(responseJsonRootObj);
+    
     response.write(jdoc.toJson(), true);
     return;
   }
-  QJsonParseError jsonParseError;
-  QByteArray jsonBytes = request.getBody();
-  QJsonDocument requestJsonDoc = QJsonDocument::fromJson(jsonBytes, &jsonParseError);
-  QString pluginName;
-  QJsonObject rootObject = requestJsonDoc.object();
-  QJsonValue nameValue = rootObj["PluginName"];
-  if(nameValue.isString())
+    
+  QString filterName;
+  
   {
-    pluginName = nameValue.toString();
+    QJsonParseError jsonParseError;
+    QByteArray jsonBytes = request.getBody();
+    QJsonDocument requestJsonDoc = QJsonDocument::fromJson(jsonBytes, &jsonParseError);
+    QJsonObject rootObject = requestJsonDoc.object();
+    QJsonValue nameValue = rootObject["ClassName"];
+    if(nameValue.isString())
+    {
+      filterName = nameValue.toString();
+    }
   }
-
   //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
   //   response.setCookie(HttpCookie("secondCookie","world",600));
+  
+  if(filterName.isEmpty())
+  {
+    responseJsonRootObj["ErrorCode"] = -30;
+    responseJsonRootObj["ErrorMessage"] = "Filter with name " + filterName + " was not loaded or does not exist"; 
+  }
+  else
+  {
+    createFilterParametersJson(filterName, responseJsonRootObj);
+  }
 
-  // Register all the filters including trying to load those from Plugins
-  PluginManager* pm = PluginManager::Instance();
-  ISIMPLibPlugin* plugin = pm->findPlugin(pluginName);
-
-  // rootObj["CompatibilityVersion]
-
-  QJsonDocument jdoc(rootObj);
-
+  QJsonDocument jdoc(responseJsonRootObj);
+  
   response.write(jdoc.toJson(), true);
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QString PluginInfoController::getEndPoint()
+QString ListFilterParametersController::EndPoint()
 {
-  return QString("PluginInfo");
+  return QString("ListFilterParameters");
 }

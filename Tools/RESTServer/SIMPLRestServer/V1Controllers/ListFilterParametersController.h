@@ -29,24 +29,25 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#ifndef PreflightPipelineController_H_
-#define PreflightPipelineController_H_
+#ifndef ListFilterParametersController_H_
+#define ListFilterParametersController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
 #include "QtWebApp/httpserver/httpresponse.h"
 
+
 /**
   @brief This class responds to REST API endpoint
 */
 
-class PreflightPipelineController : public HttpRequestHandler
+class ListFilterParametersController : public HttpRequestHandler
 {
   Q_OBJECT
-  Q_DISABLE_COPY(PreflightPipelineController)
+  Q_DISABLE_COPY(ListFilterParametersController)
 public:
   /** Constructor */
-  PreflightPipelineController();
+  ListFilterParametersController();
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);
@@ -55,7 +56,14 @@ public:
    * @brief Returns the name of the end point that is controller uses
    * @return
    */
-  static QString getEndPoint();
+  static QString EndPoint();
+  
+  /**
+   * @brief createFilterParametersJson
+   * @param plugin
+   * @param rootObject
+   */
+  void createFilterParametersJson(const QString &filterName, QJsonObject &rootObject);
 };
 
-#endif // PreflightPipelineController_H_
+#endif // ListFilterParametersController_H_

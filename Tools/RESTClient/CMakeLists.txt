@@ -42,6 +42,7 @@ set_source_files_properties( ${RESTClient_Generated_MOC_SRCS} PROPERTIES GENERAT
 cmp_IDE_SOURCE_PROPERTIES( "Generated/Qt_Moc" "" "${RESTClient_Generated_MOC_SRCS}" "0")
 
 set(RESTClient_SRCS_Compiled
+  ${RESTClient_MOC_HDRS}
   ${RESTClient_SRCS}
   ${RESTClient_HDRS}
   ${RESTClient_Generated_MOC_SRCS}

@@ -239,7 +239,7 @@ class SIMPLib_EXPORT ISIMPLibPlugin
      * @param prefs
      */
     virtual void readSettings(QSettings& prefs) = 0;
-
+    
 };
 
 

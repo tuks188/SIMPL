@@ -29,16 +29,23 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#include "SIMPLRequestMapper.h"
+#include "V1RequestMapper.h"
 
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QJsonDocument>
-#include <QtCore/QJsonObject>
+
 
 #include "QtWebApp/logging/filelogger.h"
 
-#include "SIMPLRestServer/V1Controllers/V1RequestMapper.h"
+#include "SIMPLRestServer/V1Controllers/ApiNotFoundController.h"
+#include "SIMPLRestServer/V1Controllers/ExecutePipelineController.h"
+#include "SIMPLRestServer/V1Controllers/ListFilterParametersController.h"
+#include "SIMPLRestServer/V1Controllers/LoadedPluginsController.h"
+#include "SIMPLRestServer/V1Controllers/NamesOfFiltersController.h"
+#include "SIMPLRestServer/V1Controllers/NumFiltersController.h"
+#include "SIMPLRestServer/V1Controllers/PluginInfoController.h"
+#include "SIMPLRestServer/V1Controllers/PreflightPipelineController.h"
 
 /** Redirects log messages to a file */
 extern FileLogger* logger;
@@ -46,64 +53,69 @@ extern FileLogger* logger;
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-SIMPLRequestMapper::SIMPLRequestMapper(QObject* parent)
-  : HttpRequestHandler(parent)
+V1RequestMapper::V1RequestMapper(QObject* parent)
+: HttpRequestHandler(parent)
 {
-  qDebug("SIMPLRequestMapper: created");
+  qDebug("V1RequestMapper: created");
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-SIMPLRequestMapper::~SIMPLRequestMapper()
+V1RequestMapper::~V1RequestMapper()
 {
-  qDebug("SIMPLRequestMapper: deleted");
+  qDebug("V1RequestMapper: deleted");
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void SIMPLRequestMapper::service(HttpRequest& request, HttpResponse& response)
+void V1RequestMapper::service(HttpRequest& request, HttpResponse& response)
 {
   QMultiMap<QByteArray, QByteArray> headerMap = request.getHeaderMap();
-  QString content_type = request.getHeader(QByteArray("content-type"));
 
-  QByteArray path = request.getPath();
-  qDebug("SIMPLRequestMapper: path=%s", path.data());
-  
+  QString path(request.getPath());
+  qDebug("V1RequestMapper: path=%s", path.data());
+
   // For the following pathes, each request gets its own new instance of the related controller.
-  if(path.startsWith("/api/v1"))
+
+  if(path.endsWith(ExecutePipelineController::EndPoint()))
   {
-    V1RequestMapper v1RequestMapper;
-    v1RequestMapper.service(request, response);
+    ExecutePipelineController().service(request, response);
   }
-  else if(content_type.compare("application/json") != 0)
+  else if(path.endsWith(ListFilterParametersController::EndPoint()))
   {
-    QJsonObject rootObj;
-    QString msg;
-    QTextStream ss(&msg);
-    ss << "The content-type was not set to 'application/json'.";
-    
-    rootObj["ErrorCode"] = -2;
-    rootObj["ErrorMessage"] = msg;
-    QJsonDocument jdoc(rootObj);
-    response.write(jdoc.toJson(), true);
+    ListFilterParametersController().service(request, response);
   }
+  else if(path.endsWith(LoadedPluginsController::EndPoint()))
+  {
+    LoadedPluginsController().service(request, response);
+  }
+  else if(path.endsWith(NamesOfFiltersController::EndPoint()))
+  {
+    NamesOfFiltersController().service(request, response);
+  }
+  else if(path.endsWith(NumFiltersController::EndPoint()))
+  {
+    NumFiltersController().service(request, response);
+  }
+  else if(path.endsWith(PluginInfoController::EndPoint()))
+  {
+    PluginInfoController().service(request, response);
+  }
+  else if(path.endsWith(PreflightPipelineController::EndPoint()))
+  {
+    PreflightPipelineController().service(request, response);
+  }
+  // All other pathes are mapped to the static file controller.
+  // In this case, a single instance is used for multiple requests.
   else
-  { 
-    QJsonObject rootObj;
-    QString msg;
-    QTextStream ss(&msg);
-    ss << "The end point '" << path << "' is not valid for this server. Please check your request settings.";
-    
-    rootObj["ErrorCode"] = -1;
-    rootObj["ErrorMessage"] = msg;
-    QJsonDocument jdoc(rootObj);
-    response.write(jdoc.toJson(), true);
+  {
+    ApiNotFoundController().service(request, response);
   }
-  
-  qDebug("SIMPLRequestMapper: finished request");
-  
+
+  qDebug("V1RequestMapper: finished request");
+
   // Clear the log buffer
   //    if (logger)
   //    {

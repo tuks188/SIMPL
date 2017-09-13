@@ -29,20 +29,23 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#ifndef NumFiltersController_H_
-#define NumFiltersController_H_
+#ifndef PluginInfoController_H_
+#define PluginInfoController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
 #include "QtWebApp/httpserver/httpresponse.h"
 
+
+class ISIMPLibPlugin;
+
 /**
-  @brief This class responds to REST API endpoint NumFilters
+  @brief This class responds to REST API endpoint LoadedPlugins
 
   The returned JSON is the following on success
 
   {
-    "NumFilters": 45
+    "PluginNames": ["Name1", "Name2"....],
   }
 
   On Error the following JSON is returned.
@@ -51,22 +54,28 @@
   }
 */
 
-class NumFiltersController : public HttpRequestHandler
+class PluginInfoController : public HttpRequestHandler
 {
   Q_OBJECT
-  Q_DISABLE_COPY(NumFiltersController)
+  Q_DISABLE_COPY(PluginInfoController)
 public:
   /** Constructor */
-  NumFiltersController();
+  PluginInfoController();
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);
 
   /**
+   * @brief createPluginJson
+   * @param rootObject
+   */
+  void createPluginJson(ISIMPLibPlugin* plugin, QJsonObject &rootObject);
+
+  /**
    * @brief Returns the name of the end point that is controller uses
    * @return
    */
-  static QString getEndPoint();
+  static QString EndPoint();
 };
 
-#endif // NumFiltersController_H_
+#endif // PluginInfoController_H_

@@ -128,6 +128,13 @@ int main(int argc, char* argv[])
   app.setApplicationName("SIMPLRestServer");
   app.setOrganizationName("BlueQuartz Software");
 
+  //
+  // Register all the filters including trying to load those from Plugins
+  FilterManager* fm = FilterManager::Instance();
+  SIMPLibPluginLoader::LoadPluginFilters(fm);
+  //
+  QMetaObjectUtilities::RegisterMetaTypes();
+
   // Find the configuration file
   QString configFileName = searchConfigFile();
 
@@ -159,11 +166,6 @@ int main(int argc, char* argv[])
   listenerSettings->beginGroup("listener");
   new HttpListener(listenerSettings, new SIMPLRequestMapper(&app), &app);
 
-  //
-  // Register all the filters including trying to load those from Plugins
-  FilterManager* fm = FilterManager::Instance();
-  SIMPLibPluginLoader::LoadPluginFilters(fm);
-  //
 
   qWarning("Application has started");
 

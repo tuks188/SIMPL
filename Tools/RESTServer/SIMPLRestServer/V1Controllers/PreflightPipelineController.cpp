@@ -29,7 +29,7 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#include "NumFiltersController.h"
+#include "PreflightPipelineController.h"
 
 #include "SIMPLib/Common/FilterManager.h"
 #include "SIMPLib/Plugin/PluginManager.h"
@@ -44,50 +44,51 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-NumFiltersController::NumFiltersController()
+PreflightPipelineController::PreflightPipelineController()
 {
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void NumFiltersController::service(HttpRequest& request, HttpResponse& response)
+void PreflightPipelineController::service(HttpRequest& request, HttpResponse& response)
 {
-
+  
   QString content_type = request.getHeader(QByteArray("content-type"));
-
+  
   QJsonObject rootObj;
-
+  
   response.setHeader("Content-Type", "application/json");
-
+  
   if(content_type.compare("application/json") != 0)
   {
     // Form Error response
-    rootObj["Error"] = "Content Type is not application/json";
+    rootObj["ErrorMessage"] = EndPoint() + ": Content Type is not application/json";
+    rootObj["ErrorCode"]= -20;
     QJsonDocument jdoc(rootObj);
-
+    
     response.write(jdoc.toJson(), true);
     return;
   }
-
+  
   //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
   //   response.setCookie(HttpCookie("secondCookie","world",600));
-
+  
   // Register all the filters including trying to load those from Plugins
   FilterManager* fm = FilterManager::Instance();
-
+  
   FilterManager::Collection factories = fm->getFactories();
-
-  rootObj["NumFilters"] = factories.size();
+  
+  rootObj["ERROR"] = "THIS API IS NOT IMPLEMENTED";
   QJsonDocument jdoc(rootObj);
-
+  
   response.write(jdoc.toJson(), true);
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QString NumFiltersController::getEndPoint()
+QString PreflightPipelineController::EndPoint()
 {
-  return QString("NumFilters");
+  return QString("PreflightPipeline");
 }

@@ -29,84 +29,69 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#include "SIMPLRequestMapper.h"
+#include "LoadedPluginsController.h"
 
+#include "SIMPLib/Common/FilterManager.h"
+#include "SIMPLib/Plugin/PluginManager.h"
+#include "SIMPLib/Plugin/SIMPLibPluginLoader.h"
 
-#include <QtCore/QCoreApplication>
+#include <QtCore/QDateTime>
+#include <QtCore/QVariant>
+
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 
-#include "QtWebApp/logging/filelogger.h"
-
-#include "SIMPLRestServer/V1Controllers/V1RequestMapper.h"
-
-/** Redirects log messages to a file */
-extern FileLogger* logger;
-
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-SIMPLRequestMapper::SIMPLRequestMapper(QObject* parent)
-  : HttpRequestHandler(parent)
+LoadedPluginsController::LoadedPluginsController()
 {
-  qDebug("SIMPLRequestMapper: created");
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-SIMPLRequestMapper::~SIMPLRequestMapper()
+void LoadedPluginsController::service(HttpRequest& request, HttpResponse& response)
 {
-  qDebug("SIMPLRequestMapper: deleted");
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void SIMPLRequestMapper::service(HttpRequest& request, HttpResponse& response)
-{
-  QMultiMap<QByteArray, QByteArray> headerMap = request.getHeaderMap();
+  
   QString content_type = request.getHeader(QByteArray("content-type"));
+  
+  QJsonObject rootObj;
+  
+  response.setHeader("Content-Type", "application/json");
+  
+  if(content_type.compare("application/json") != 0)
+  {
+    // Form Error response
+    rootObj["ErrorMessage"] = EndPoint() + ": Content Type is not application/json";
+    rootObj["ErrorCode"]= -20;
+    QJsonDocument jdoc(rootObj);
+    response.write(jdoc.toJson(), true);
+    return;
+  }
+  
+  //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
+  //   response.setCookie(HttpCookie("secondCookie","world",600));
+  
+  PluginManager* pm = PluginManager::Instance();
+  
+  QJsonArray pluginNames;
+  QVector<ISIMPLibPlugin*> plugins = pm->getPluginsVector();
+  foreach(ISIMPLibPlugin* plugin, plugins)
+  {
+    pluginNames.append(plugin->getPluginName());
+  }
+  rootObj["PluginNames"] = pluginNames;
+  
+  QJsonDocument jdoc(rootObj);
+  
+  response.write(jdoc.toJson(), true);
+}
 
-  QByteArray path = request.getPath();
-  qDebug("SIMPLRequestMapper: path=%s", path.data());
-  
-  // For the following pathes, each request gets its own new instance of the related controller.
-  if(path.startsWith("/api/v1"))
-  {
-    V1RequestMapper v1RequestMapper;
-    v1RequestMapper.service(request, response);
-  }
-  else if(content_type.compare("application/json") != 0)
-  {
-    QJsonObject rootObj;
-    QString msg;
-    QTextStream ss(&msg);
-    ss << "The content-type was not set to 'application/json'.";
-    
-    rootObj["ErrorCode"] = -2;
-    rootObj["ErrorMessage"] = msg;
-    QJsonDocument jdoc(rootObj);
-    response.write(jdoc.toJson(), true);
-  }
-  else
-  { 
-    QJsonObject rootObj;
-    QString msg;
-    QTextStream ss(&msg);
-    ss << "The end point '" << path << "' is not valid for this server. Please check your request settings.";
-    
-    rootObj["ErrorCode"] = -1;
-    rootObj["ErrorMessage"] = msg;
-    QJsonDocument jdoc(rootObj);
-    response.write(jdoc.toJson(), true);
-  }
-  
-  qDebug("SIMPLRequestMapper: finished request");
-  
-  // Clear the log buffer
-  //    if (logger)
-  //    {
-  //       logger->clear();
-  //    }
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QString LoadedPluginsController::EndPoint()
+{
+  return QString("LoadedPlugins");
 }

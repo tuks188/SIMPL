@@ -29,21 +29,20 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#ifndef NamesOfFiltersController_H_
-#define NamesOfFiltersController_H_
+#ifndef LoadedPluginsController_H_
+#define LoadedPluginsController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
 #include "QtWebApp/httpserver/httpresponse.h"
 
 /**
-  @brief This class responds to REST API endpoint NamesOfFilters
+  @brief This class responds to REST API endpoint LoadedPlugins
 
   The returned JSON is the following on success
 
   {
-    "FilterClassNames": ["Name1", "Name2"....],
-    "FilterHumanLabels": ["Name1", "Name2"....]
+    "PluginNames": ["Name1", "Name2"....]
   }
 
   On Error the following JSON is returned.
@@ -52,13 +51,13 @@
   }
 */
 
-class NamesOfFiltersController : public HttpRequestHandler
+class LoadedPluginsController : public HttpRequestHandler
 {
   Q_OBJECT
-  Q_DISABLE_COPY(NamesOfFiltersController)
+  Q_DISABLE_COPY(LoadedPluginsController)
 public:
   /** Constructor */
-  NamesOfFiltersController();
+  LoadedPluginsController();
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);
@@ -67,7 +66,7 @@ public:
    * @brief Returns the name of the end point that is controller uses
    * @return
    */
-  static QString getEndPoint();
+  static QString EndPoint();
 };
 
-#endif // NamesOfFiltersController_H_
+#endif // LoadedPluginsController_H_

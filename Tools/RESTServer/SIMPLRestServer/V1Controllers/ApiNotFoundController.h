@@ -29,8 +29,8 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#ifndef ListFilterParametersController_H_
-#define ListFilterParametersController_H_
+#ifndef ApiNotFoundController_H_
+#define ApiNotFoundController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
@@ -40,13 +40,13 @@
   @brief This class responds to REST API endpoint
 */
 
-class ListFilterParametersController : public HttpRequestHandler
+class ApiNotFoundController : public HttpRequestHandler
 {
   Q_OBJECT
-  Q_DISABLE_COPY(ListFilterParametersController)
+  Q_DISABLE_COPY(ApiNotFoundController)
 public:
   /** Constructor */
-  ListFilterParametersController();
+  ApiNotFoundController();
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);
@@ -55,7 +55,7 @@ public:
    * @brief Returns the name of the end point that is controller uses
    * @return
    */
-  static QString getEndPoint();
+  static QString EndPoint();
 };
 
-#endif // ListFilterParametersController_H_
+#endif // ApiNotFoundController_H_

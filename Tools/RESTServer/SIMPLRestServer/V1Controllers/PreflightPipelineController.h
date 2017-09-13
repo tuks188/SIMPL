@@ -29,35 +29,24 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#ifndef PluginInfoController_H_
-#define PluginInfoController_H_
+#ifndef PreflightPipelineController_H_
+#define PreflightPipelineController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
 #include "QtWebApp/httpserver/httpresponse.h"
 
 /**
-  @brief This class responds to REST API endpoint LoadedPlugins
-
-  The returned JSON is the following on success
-
-  {
-    "PluginNames": ["Name1", "Name2"....],
-  }
-
-  On Error the following JSON is returned.
-  {
-    "Error": "Error Message ...."
-  }
+  @brief This class responds to REST API endpoint
 */
 
-class PluginInfoController : public HttpRequestHandler
+class PreflightPipelineController : public HttpRequestHandler
 {
   Q_OBJECT
-  Q_DISABLE_COPY(PluginInfoController)
+  Q_DISABLE_COPY(PreflightPipelineController)
 public:
   /** Constructor */
-  PluginInfoController();
+  PreflightPipelineController();
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);
@@ -66,7 +55,7 @@ public:
    * @brief Returns the name of the end point that is controller uses
    * @return
    */
-  static QString getEndPoint();
+  static QString EndPoint();
 };
 
-#endif // PluginInfoController_H_
+#endif // PreflightPipelineController_H_

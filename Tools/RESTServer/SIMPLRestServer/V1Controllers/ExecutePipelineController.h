@@ -29,60 +29,33 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#include "LoadedPluginsController.h"
+#ifndef ExecutePipelineController_H_
+#define ExecutePipelineController_H_
 
-#include "SIMPLib/Common/FilterManager.h"
-#include "SIMPLib/Plugin/PluginManager.h"
-#include "SIMPLib/Plugin/SIMPLibPluginLoader.h"
+#include "QtWebApp/httpserver/httprequest.h"
+#include "QtWebApp/httpserver/httprequesthandler.h"
+#include "QtWebApp/httpserver/httpresponse.h"
 
-#include <QtCore/QDateTime>
-#include <QtCore/QVariant>
+/**
+  @brief This class responds to REST API endpoint
+*/
 
-#include <QtCore/QJsonDocument>
-#include <QtCore/QJsonObject>
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-LoadedPluginsController::LoadedPluginsController()
+class ExecutePipelineController : public HttpRequestHandler
 {
-}
+  Q_OBJECT
+  Q_DISABLE_COPY(ExecutePipelineController)
+public:
+  /** Constructor */
+  ExecutePipelineController();
 
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void LoadedPluginsController::service(HttpRequest& request, HttpResponse& response)
-{
+  /** Generates the response */
+  void service(HttpRequest& request, HttpResponse& response);
 
-  QString content_type = request.getHeader(QByteArray("content-type"));
+  /**
+   * @brief Returns the name of the end point that is controller uses
+   * @return
+   */
+  static QString EndPoint();
+};
 
-  QJsonObject rootObj;
-
-  response.setHeader("Content-Type", "application/json");
-
-  if(content_type.compare("application/json") != 0)
-  {
-    // Form Error response
-    rootObj["Error"] = "Content Type is not application/json";
-    QJsonDocument jdoc(rootObj);
-    response.write(jdoc.toJson(), true);
-    return;
-  }
-
-  //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
-  //   response.setCookie(HttpCookie("secondCookie","world",600));
-
-  PluginManager* pm = PluginManager::Instance();
-
-  QJsonArray pluginNames;
-  QVector<ISIMPLibPlugin*> plugins = pm->getPluginsVector();
-  foreach(ISIMPLibPlugin* plugin, plugins)
-  {
-    pluginNames.append(plugin->getPluginName());
-  }
-  rootObj["PluginNames"] = pluginNames;
-
-  QJsonDocument jdoc(rootObj);
-
-  response.write(jdoc.toJson(), true);
-}
+#endif // ExecutePipelineController_H_

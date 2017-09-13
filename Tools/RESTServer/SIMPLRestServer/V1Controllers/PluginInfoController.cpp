@@ -29,10 +29,11 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#include "PreflightPipelineController.h"
+#include "PluginInfoController.h"
 
 #include "SIMPLib/Common/FilterManager.h"
 #include "SIMPLib/Plugin/PluginManager.h"
+#include "SIMPLib/Plugin/ISIMPLibPlugin.h"
 #include "SIMPLib/Plugin/SIMPLibPluginLoader.h"
 
 #include <QtCore/QDateTime>
@@ -44,50 +45,88 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-PreflightPipelineController::PreflightPipelineController()
+PluginInfoController::PluginInfoController()
 {
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void PreflightPipelineController::service(HttpRequest& request, HttpResponse& response)
+void PluginInfoController::createPluginJson(ISIMPLibPlugin* plugin, QJsonObject &rootObject)
 {
+  rootObject["PluginName"] = plugin->getPluginName();
+  rootObject["Version"] = plugin->getVersion();
+  rootObject["CompatibilityVersion"] = plugin->getCompatibilityVersion();
+  rootObject["Vendor"] = plugin->getVendor();
+  rootObject["URL"] = plugin->getURL();
+  rootObject["Location"] = plugin->getLocation();
+  rootObject["Description"] = plugin->getDescription();
+  rootObject["Copyright"] = plugin->getCopyright();
+  rootObject["License"] = plugin->getLicense();
+}
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PluginInfoController::service(HttpRequest& request, HttpResponse& response)
+{
   QString content_type = request.getHeader(QByteArray("content-type"));
-
-  QJsonObject rootObj;
-
+  
+  QJsonObject responseJsonRootObj;
   response.setHeader("Content-Type", "application/json");
-
+  
   if(content_type.compare("application/json") != 0)
   {
     // Form Error response
-    rootObj["Error"] = "Content Type is not application/json";
+    QJsonObject rootObj;
+    rootObj["ErrorMessage"] = EndPoint() + ": Content Type is not application/json";
+    rootObj["ErrorCode"]= -20;
     QJsonDocument jdoc(rootObj);
-
     response.write(jdoc.toJson(), true);
     return;
   }
-
+  
+  QString pluginName;
+  
+  {
+    QJsonObject rootObj;
+    QJsonParseError jsonParseError;
+    QByteArray jsonBytes = request.getBody();
+    QJsonDocument requestJsonDoc = QJsonDocument::fromJson(jsonBytes, &jsonParseError);
+    QJsonObject rootObject = requestJsonDoc.object();
+    QJsonValue nameValue = rootObj["PluginName"];
+    if(nameValue.isString())
+    {
+      pluginName = nameValue.toString();
+    }
+  }
+  
   //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
   //   response.setCookie(HttpCookie("secondCookie","world",600));
-
+  
   // Register all the filters including trying to load those from Plugins
-  FilterManager* fm = FilterManager::Instance();
-
-  FilterManager::Collection factories = fm->getFactories();
-
-  rootObj["ERROR"] = "THIS API IS NOT IMPLEMENTED";
-  QJsonDocument jdoc(rootObj);
-
+  PluginManager* pm = PluginManager::Instance();
+  ISIMPLibPlugin* plugin = pm->findPlugin(pluginName);
+  
+  if(nullptr == plugin)
+  {
+    responseJsonRootObj["ErrorCode"] = -30;
+    responseJsonRootObj["ErrorMessage"] = "Plugin with name " + pluginName + " was not loaded or does not exist";  
+  }
+  else
+  {
+    createPluginJson(plugin, responseJsonRootObj);
+  }
+  
+  QJsonDocument jdoc(responseJsonRootObj);
+  
   response.write(jdoc.toJson(), true);
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QString PreflightPipelineController::getEndPoint()
+QString PluginInfoController::EndPoint()
 {
-  return QString("PreflightPipeline");
+  return QString("PluginInfo");
 }

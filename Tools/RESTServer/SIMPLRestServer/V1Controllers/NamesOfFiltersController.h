@@ -29,24 +29,39 @@
  *
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-#ifndef ExecutePipelineController_H_
-#define ExecutePipelineController_H_
+#ifndef NamesOfFiltersController_H_
+#define NamesOfFiltersController_H_
 
 #include "QtWebApp/httpserver/httprequest.h"
 #include "QtWebApp/httpserver/httprequesthandler.h"
 #include "QtWebApp/httpserver/httpresponse.h"
 
 /**
-  @brief This class responds to REST API endpoint
+  @brief This class responds to REST API endpoint NamesOfFilters
+
+  The returned JSON is the following on success
+
+{
+  "ErrorCode": 0,
+  "Filters":[
+  {"ClassName":"ArrayCalculator","HumanLabel":"Attribute Array Calculator"},
+  {"ClassName":"ArraySelectionExample","HumanLabel":"DataContainerArrayProxy Example"},
+  ....
+  ]
+  }
+  On Error the following JSON is returned.
+  {
+    "ErrorMessage": "Error Message ...."
+  }
 */
 
-class ExecutePipelineController : public HttpRequestHandler
+class NamesOfFiltersController : public HttpRequestHandler
 {
   Q_OBJECT
-  Q_DISABLE_COPY(ExecutePipelineController)
+  Q_DISABLE_COPY(NamesOfFiltersController)
 public:
   /** Constructor */
-  ExecutePipelineController();
+  NamesOfFiltersController();
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);
@@ -55,7 +70,7 @@ public:
    * @brief Returns the name of the end point that is controller uses
    * @return
    */
-  static QString getEndPoint();
+  static QString EndPoint();
 };
 
-#endif // ExecutePipelineController_H_
+#endif // NamesOfFiltersController_H_
