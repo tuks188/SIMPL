@@ -6,7 +6,7 @@ set(RESTClient_MOC_HDRS
   ${RESTClient_SOURCE_DIR}/Core/mrestrequestmanager.h
   ${RESTClient_SOURCE_DIR}/Core/mrestrequestptr.h
   ${RESTClient_SOURCE_DIR}/Core/mrestrequestqueue.h
-  ${RESTClient_SOURCE_DIR}/Core/restapiclient.h
+  ${RESTClient_SOURCE_DIR}/Core/SIMPLRestClient.h
   ${RESTClient_SOURCE_DIR}/Core/userptr.h
 
   ${RESTClient_SOURCE_DIR}/SIMPLRestClient/SIMPLClientRequest.h
@@ -23,7 +23,7 @@ set(RESTClient_SRCS
   ${RESTClient_SOURCE_DIR}/Core/mrestrequest.cpp
   ${RESTClient_SOURCE_DIR}/Core/mrestrequestmanager.cpp
   ${RESTClient_SOURCE_DIR}/Core/mrestrequestqueue.cpp
-  ${RESTClient_SOURCE_DIR}/Core/restapiclient.cpp
+  ${RESTClient_SOURCE_DIR}/Core/SIMPLRestClient.cpp
   ${RESTClient_SOURCE_DIR}/Core/config.cpp
 
   ${RESTClient_SOURCE_DIR}/SIMPLRestClient/SIMPLClientRequest.cpp

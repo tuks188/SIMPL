@@ -22,18 +22,49 @@ SOFTWARE.
 *******************************************************************************/
 
 
-#ifndef RESTAPICLIENT_H
-#define RESTAPICLIENT_H
+#ifndef simplrestclient_h
+#define simplrestclient_h
 
 #include "Core/mrestrequestmanager.h"
 
+#include <QtCore/QJsonObject>
+
 #include <QObject>
 
-class RestAPIClient : public MRestRequestManager
+class SIMPLClientRequest;
+
+class SIMPLRestClient : public MRestRequestManager
 {
     Q_OBJECT
 public:
-    explicit RestAPIClient(QObject *parent = nullptr);
+    explicit SIMPLRestClient(QUrl serverUrl, QObject *parent = nullptr);
+
+    QJsonObject extractPipelineFromFile(const QString &filePath);
+
+    void sendAPINotFoundRequest(int timeout = 5000);
+
+    void sendExecutePipelineRequest(QJsonObject pipelineObject, int timeout = 5000);
+
+    void sendListFilterParametersRequest(QJsonObject filterObject, int timeout = 5000);
+
+    void sendLoadedPluginsRequest(int timeout = 5000);
+
+    void sendNamesOfFiltersRequest(int timeout = 5000);
+
+    void sendNumberOfFiltersRequest(int timeout = 5000);
+
+    void sendPluginInformationRequest(QJsonObject pluginObject, int timeout = 5000);
+
+    void sendPreflightPipelineRequest(QJsonObject pipelineObject, int timeout = 5000);
+
+  signals:
+    void finished();
+
+private:
+    QUrl                          m_ServerUrl;
+    int                             m_NumOfActiveRequests = 0;
+
+    QSharedPointer<SIMPLClientRequest> createRequest(MRestRequest::Command cmd, MRestRequest::Type requestType, QJsonObject requestObj = QJsonObject());
 };
 
-#endif // RESTAPICLIENT_H
+#endif // simplrestclient_h

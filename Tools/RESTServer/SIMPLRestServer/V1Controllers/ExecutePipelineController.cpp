@@ -35,6 +35,10 @@
 #include "SIMPLib/Common/FilterPipeline.h"
 #include "SIMPLib/Plugin/PluginManager.h"
 #include "SIMPLib/Plugin/SIMPLibPluginLoader.h"
+#include "SIMPLib/FilterParameters/OutputFileFilterParameter.h"
+#include "SIMPLib/FilterParameters/OutputPathFilterParameter.h"
+#include "SIMPLib/FilterParameters/InputFileFilterParameter.h"
+#include "SIMPLib/FilterParameters/InputPathFilterParameter.h"
 
 #include <QtCore/QDateTime>
 #include <QtCore/QVariant>
@@ -80,11 +84,48 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
 
   QJsonObject pipelineObj = requestObj["Pipeline"].toObject();
   FilterPipeline::Pointer pipeline = FilterPipeline::FromJson(pipelineObj);
+
+  // Look through the pipeline to find any input or output filter parameters.  Replace
+  // the file paths in these filter parameters with session-id specific paths.
+  QList<AbstractFilter::Pointer> filters = pipeline->getFilterContainer();
+  for (int i = 0; i < filters.size(); i++)
+  {
+    AbstractFilter::Pointer filter = filters[i];
+    QVector<FilterParameter::Pointer> filterParams = filter->getFilterParameters();
+
+    for(QVector<FilterParameter::Pointer>::iterator iter = filterParams.begin(); iter != filterParams.end(); ++iter)
+    {
+      FilterParameter* parameter = (*iter).get();
+      OutputFileFilterParameter* outFileParam = dynamic_cast<OutputFileFilterParameter*>(parameter);
+      OutputPathFilterParameter* outPathParam = dynamic_cast<OutputPathFilterParameter*>(parameter);
+      InputFileFilterParameter* inFileParam = dynamic_cast<InputFileFilterParameter*>(parameter);
+      InputPathFilterParameter* inPathParam = dynamic_cast<InputPathFilterParameter*>(parameter);
+
+      QString newFilePath = "Foo";
+      if(outFileParam != nullptr)
+      {
+        outFileParam->getSetterCallback()(newFilePath);
+      }
+      else if(outPathParam != nullptr)
+      {
+        outPathParam->getSetterCallback()(newFilePath);
+      }
+      else if(inFileParam != nullptr)
+      {
+        inFileParam->getSetterCallback()(newFilePath);
+      }
+      else if(inPathParam != nullptr)
+      {
+        inPathParam->getSetterCallback()(newFilePath);
+      }
+    }
+  }
+
   PipelineListener* listener = new PipelineListener(nullptr);
   pipeline->addMessageReceiver(listener);
   pipeline->execute();
   
-  //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
+     response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
   //   response.setCookie(HttpCookie("secondCookie","world",600));
 
   std::vector<PipelineMessage> errorMessages = listener->getErrorMessages();

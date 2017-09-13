@@ -25,12 +25,15 @@ SOFTWARE.
 #include <QCoreApplication>
 #include <QLoggingCategory>
 
-#include "Core/restapiclient.h"
+#include <QtCore/QFile>
+
+#include "Core/SIMPLRestClient.h"
 
 #include "SIMPLRestClient/SIMPLClientRequest.h"
 
-Q_LOGGING_CATEGORY(coreMain, "core.main")
-
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
@@ -38,95 +41,61 @@ int main(int argc, char *argv[])
     app.setOrganizationName("BlueQuartz Software");
     app.setApplicationName("REST API Communication");
 
-    qCInfo(coreMain) << "Application data set."
-                 << "\n\tName:" << app.applicationName()
-                 << "\n\tOrganisation:" << app.organizationName()
-                 << "\n\tDomain:" << app.organizationDomain()
-                 << "\n\tVersion:" << app.applicationVersion();
+    QUrl mikeUrl = QUrl("http://10.0.1.142:8080/");
+    QUrl matthewUrl = QUrl("http://10.0.1.109:8080/");
 
-    // Crate rest api client.
-    RestAPIClient client;
+    // Create the SIMPL Rest client
+    SIMPLRestClient* client = new SIMPLRestClient(matthewUrl);
 
+    auto finishedLambda = [&app] {
+        app.quit();
+    };
 
-    // [1] ########  Simple example of usage, based on MrBabuQt project. ########.
-
-//    Session session;
-//    session.setClient(&client);
-
-    // This is only example - we do not send any request here but we can see how use this classes.
-    // session.registerUser(...);
-    // session.login(...);
-    // session.getUserInfo();
-
-    // [1] ######################################################################
+    QObject::connect(client, &SIMPLRestClient::finished, finishedLambda);
 
 
-//    Weather weatherInLublin;
-
-//    auto replyErrorLambda = [](const QString &error) {
-//        // Do something with data
-//        qCInfo(coreMain) << "Print error msg: " << error;
-//    };
-
-//    auto replyInfoLambda = [/*&weatherInLublin*/](const QString &cityName,
-//            int humidity, int pressure, int temp) {
-
-//        // do something with data
-////        weatherInLublin.setCityName(cityName);
-////        weatherInLublin.setHumidity(humidity);
-////        weatherInLublin.setPressure(pressure);
-////        weatherInLublin.setTemp(temp);
-//    };
-
-    QUrl serverUrl = QUrl("http://10.0.1.142:8080/");
-
+//    // "API Not Found" Test
 //    {
-//      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::APINotFound;
-//      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
-//      client.send(clientRequest);
+//      client->sendAPINotFoundRequest(30000);
 //    }
 
+    // "Execute Pipeline" Test
+    {
+      QJsonObject pipelineObj = client->extractPipelineFromFile("/Users/joeykleingers/Desktop/Granta_Synthetic_Pipeline.json");
+      client->sendExecutePipelineRequest(pipelineObj, 30000);
+    }
+
+//    // "List Filter Parameters" Test
 //    {
-//      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::ExecutePipeline;
-//      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
-//      client.send(clientRequest);
+//      QJsonObject filterNameObj;
+//      filterNameObj.insert("ClassName", "DataContainerReader");
+//      client->sendListFilterParametersRequest(filterNameObj, 30000);
 //    }
 
+//    // "Loaded Plugins" Test
 //    {
-//      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::ListFilterParameters;
-//      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
-//      client.send(clientRequest);
+//      client->sendLoadedPluginsRequest(30000);
 //    }
 
-    {
-      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::LoadedPlugins;
-      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
-      client.send(clientRequest);
-    }
+//    // "Names of Filters" Test
+//    {
+//      client->sendNamesOfFiltersRequest(30000);
+//    }
 
-    {
-      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::NamesOfFilters;
-      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
-      client.send(clientRequest);
-    }
+//    // "Number Of Filters" Test
+//    {
+//      client->sendNumberOfFiltersRequest(30000);
+//    }
 
-    {
-      SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::NumFilters;
-      auto clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
-      client.send(clientRequest);
-    }
+//    // "Plugin Information" Test
+//    {
+//      client->sendPluginInformationRequest(30000);
+//    }
 
-//    SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::PluginInfo;
-//    clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
-//    client.send(clientRequest);
-
-//    SIMPLClientRequest::Command cmd = SIMPLClientRequest::Command::PreflightPipeline;
-//    clientRequest = QSharedPointer<SIMPLClientRequest>::create(serverUrl, cmd, SIMPLClientRequest::Type::Put);
-//    client.send(clientRequest);
-
-
-//    QObject::connect(clientRequest.data(), &SIMPLClientRequest::replyError, replyErrorLambda);
-//    QObject::connect(clientRequest.data(), &SIMPLClientRequest::replyInfo, replyInfoLambda);
+//    // "Preflight Pipeline" Test
+//    {
+//      client->sendPreflightPipelineRequest(30000);
+//    }
 
     return app.exec();
 }
