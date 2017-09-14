@@ -101,9 +101,9 @@ void PreflightPipelineController::service(HttpRequest& request, HttpResponse& re
   //   response.setCookie(HttpCookie("secondCookie","world",600));
 
   // Log Files
-  bool createErrorLog = true;
-  bool createWarningLog = true;
-  bool createStatusLog = true;
+  bool createErrorLog = requestObj["ErrorLog"].toBool(false);
+  bool createWarningLog = requestObj["WarningLog"].toBool(false);
+  bool createStatusLog = requestObj["StatusLog"].toBool(false);
 
   QJsonArray outputLinks;
   QString newFilePath = docRoot + QDir::separator() + QString(session.getId()) + QDir::separator();

@@ -165,9 +165,9 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
   qDebug() << "Pipeline Done Executing...." << pipeline->getErrorCondition();
 
   // Log Files
-  bool createErrorLog = true;
-  bool createWarningLog = true;
-  bool createStatusLog = true;
+  bool createErrorLog = requestObj["ErrorLog"].toBool(false);
+  bool createWarningLog = requestObj["WarningLog"].toBool(false);
+  bool createStatusLog = requestObj["StatusLog"].toBool(false);
 
   QDir docRootDir(docRoot);
   docRootDir.mkpath(newFilePath);
