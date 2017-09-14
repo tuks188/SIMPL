@@ -37,6 +37,7 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QDir>
+#include <QtNetwork/QNetworkInterface>
 
 #include "SIMPLib/Common/FilterManager.h"
 #include "SIMPLib/Common/FilterPipeline.h"
@@ -60,8 +61,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-ExecutePipelineController::ExecutePipelineController()
+ExecutePipelineController::ExecutePipelineController(const QHostAddress &hostAddress)
 {
+  setListenHost(hostAddress);
 }
 
 // -----------------------------------------------------------------------------
@@ -69,8 +71,7 @@ ExecutePipelineController::ExecutePipelineController()
 // -----------------------------------------------------------------------------
 void ExecutePipelineController::service(HttpRequest& request, HttpResponse& response)
 {
-  
-    // Get current session, or create a new one
+  // Get current session, or create a new one
   HttpSessionStore* sessionStore = HttpSessionStore::Instance();
   HttpSession session = sessionStore->getSession(request, response);
   
@@ -90,16 +91,21 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
     response.write(jdoc.toJson(), true);
     return;
   }
-
-
-    
+  
   QString requestBody = request.getBody();
   QJsonDocument requestDoc = QJsonDocument::fromJson(requestBody.toUtf8());
   QJsonObject requestObj = requestDoc.object();
-
+  
   QJsonObject pipelineObj = requestObj["Pipeline"].toObject();
   FilterPipeline::Pointer pipeline = FilterPipeline::FromJson(pipelineObj);
-
+  qDebug() << "Number of Filters in Pipeline: " << pipeline->size();
+  
+  QString linkAddress = "http://" +  getListenHost().toString() + QDir::separator() + QString(session.getId()) + QDir::separator();
+  SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
+  QString docRoot = staticFileController->getDocRoot();
+  
+  QString newFilePath = docRoot + QDir::separator() + QString(session.getId()) + QDir::separator();
+  QJsonArray outputLinks;
   // Look through the pipeline to find any input or output filter parameters.  Replace
   // the file paths in these filter parameters with session-id specific paths.
   QList<AbstractFilter::Pointer> filters = pipeline->getFilterContainer();
@@ -107,7 +113,7 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
   {
     AbstractFilter::Pointer filter = filters[i];
     QVector<FilterParameter::Pointer> filterParams = filter->getFilterParameters();
-
+    
     for(QVector<FilterParameter::Pointer>::iterator iter = filterParams.begin(); iter != filterParams.end(); ++iter)
     {
       FilterParameter* parameter = (*iter).get();
@@ -115,75 +121,94 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
       OutputPathFilterParameter* outPathParam = dynamic_cast<OutputPathFilterParameter*>(parameter);
       InputFileFilterParameter* inFileParam = dynamic_cast<InputFileFilterParameter*>(parameter);
       InputPathFilterParameter* inPathParam = dynamic_cast<InputPathFilterParameter*>(parameter);
-
-      QString newFilePath = "Foo";
-      SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
-      QString docRoot = staticFileController->getDocRoot();
+      
       if(outFileParam != nullptr)
       {
         QString existingPath = outFileParam->getGetterCallback()();
-        existingPath = docRoot + QDir::separator() + QString(session.getId()) + QDir::separator() + existingPath; 
-        outFileParam->getSetterCallback()(existingPath);
+        outFileParam->getSetterCallback()(newFilePath + existingPath);
+        outputLinks.append(linkAddress + existingPath);
       }
       else if(outPathParam != nullptr)
       {
-        outPathParam->getSetterCallback()(newFilePath);
+        QString existingPath = outPathParam->getGetterCallback()();
+        outPathParam->getSetterCallback()(newFilePath + existingPath);
+        outputLinks.append(linkAddress + existingPath);
       }
       else if(inFileParam != nullptr)
       {
-        inFileParam->getSetterCallback()(newFilePath);
+        QString existingPath = inFileParam->getGetterCallback()();
+        inFileParam->getSetterCallback()(newFilePath + existingPath);
+        outputLinks.append(linkAddress + existingPath);
       }
       else if(inPathParam != nullptr)
       {
-        inPathParam->getSetterCallback()(newFilePath);
+        QString existingPath = inPathParam->getGetterCallback()();
+        inPathParam->getSetterCallback()(newFilePath + existingPath);
+        outputLinks.append(linkAddress + existingPath);
       }
     }
   }
-
-  PipelineListener* listener = new PipelineListener(nullptr);
-  pipeline->addMessageReceiver(listener);
+  // Append to the json response payload all the output links
+  rootObj["OutputLinks"] = outputLinks;
+  
+  // Execute the pipeline
+  PipelineListener listener(nullptr);
+  Observer obs; // Create an Observer to report errors/progress from the executing pipeline
+  pipeline->addMessageReceiver(&obs);
+  pipeline->addMessageReceiver(&listener);
+  
+  int err = pipeline->preflightPipeline();
+  qDebug() << "Preflight Error: " << err;
+  
+  qDebug() << "Pipeline About to Execute....";
   pipeline->execute();
   
-   //  response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
-  //   response.setCookie(HttpCookie("secondCookie","world",600));
-
-  std::vector<PipelineMessage> errorMessages = listener->getErrorMessages();
+  qDebug() << "Pipeline Done Executing...." << pipeline->getErrorCondition();
+  
+  std::vector<PipelineMessage> errorMessages = listener.getErrorMessages();
   bool completed = (errorMessages.size() == 0);
   if(!completed)
   {
-      QJsonArray errors;
-      int numErrors = errorMessages.size();
-      for(int i = 0; i < numErrors; i++)
-      {
-          QJsonObject error;
-          error["Code"] = errorMessages[i].generateErrorString();
-          error["Message"] = errorMessages[i].getText();
-          error["FilterHumanLabel"] = errorMessages[i].getFilterHumanLabel();
-          error["FilterIndex"] = errorMessages[i].getPipelineIndex();
-
-          errors.push_back(error);
-      }
-
-      rootObj["Errors"] = errors;
+    QJsonArray errors;
+    size_t numErrors = errorMessages.size();
+    for(size_t i = 0; i < numErrors; i++)
+    {
+      QJsonObject error;
+      error["Code"] = errorMessages[i].generateErrorString();
+      error["Message"] = errorMessages[i].getText();
+      error["FilterHumanLabel"] = errorMessages[i].getFilterHumanLabel();
+      error["FilterIndex"] = errorMessages[i].getPipelineIndex();
+      
+      errors.push_back(error);
+    }
+    rootObj["Errors"] = errors;
   }
-
-  std::vector<PipelineMessage> warningMessages = listener->getWarningMessages();
+  
+  std::vector<PipelineMessage> warningMessages = listener.getWarningMessages();
   QJsonArray warnings;
-  int numWarnings = warningMessages.size();
-  for(int i = 0; i < numWarnings; i++)
+  size_t numWarnings = warningMessages.size();
+  for(size_t i = 0; i < numWarnings; i++)
   {
     QJsonObject warning;
     warning["Code"] = warningMessages[i].generateWarningString();
     warning["Message"] = warningMessages[i].getText();
     warning["FilterHumanLabel"] = warningMessages[i].getFilterHumanLabel();
     warning["FilterIndex"] = warningMessages[i].getPipelineIndex();
-
+    
     warnings.push_back(warning);
   }
+  
+  std::vector<PipelineMessage> statusMessages = listener.getStatusMessages();
+  QJsonArray statusMsgs;
+  size_t numStatusMsgs = statusMessages.size();
+  for(size_t i = 0; i < numStatusMsgs; i++)
+  {
+    QJsonObject msg;
+    msg["Message"] = statusMessages[i].generateStatusString();   
+    statusMsgs.push_back(msg);
+  }
+  rootObj["StatusMessages"] = statusMsgs;
   rootObj["Warnings"] = warnings;
-
-  delete listener;
-
   rootObj["Completed"] = completed;
   
   

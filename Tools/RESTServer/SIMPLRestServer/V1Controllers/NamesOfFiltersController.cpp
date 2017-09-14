@@ -45,8 +45,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-NamesOfFiltersController::NamesOfFiltersController()
+NamesOfFiltersController::NamesOfFiltersController(const QHostAddress &hostAddress)
 {
+  setListenHost(hostAddress);
 }
 
 // -----------------------------------------------------------------------------

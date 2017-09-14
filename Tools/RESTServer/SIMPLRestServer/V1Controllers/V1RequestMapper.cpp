@@ -57,7 +57,7 @@ extern FileLogger* logger;
 V1RequestMapper::V1RequestMapper(QObject* parent)
 : HttpRequestHandler(parent)
 {
-  qDebug("V1RequestMapper: created");
+ // qDebug() <<"V1RequestMapper: created";
 }
 
 // -----------------------------------------------------------------------------
@@ -65,7 +65,7 @@ V1RequestMapper::V1RequestMapper(QObject* parent)
 // -----------------------------------------------------------------------------
 V1RequestMapper::~V1RequestMapper()
 {
-  qDebug("V1RequestMapper: deleted");
+  // qDebug() << "V1RequestMapper: deleted";
 }
 
 // -----------------------------------------------------------------------------
@@ -78,45 +78,46 @@ void V1RequestMapper::service(HttpRequest& request, HttpResponse& response)
   QString path(request.getPath());
   qDebug() << "V1RequestMapper: path=" << path.data();
 
-  // For the following pathes, each request gets its own new instance of the related controller.
+  // For the following paths, each request gets its own new instance of the related controller.
 
   if(path.endsWith(ExecutePipelineController::EndPoint()))
   {
-    ExecutePipelineController().service(request, response);
+    ExecutePipelineController(getListenHost()).service(request, response);
   }
   else if(path.endsWith(ListFilterParametersController::EndPoint()))
   {
-    ListFilterParametersController().service(request, response);
+    ListFilterParametersController(getListenHost()).service(request, response);
   }
   else if(path.endsWith(LoadedPluginsController::EndPoint()))
   {
-    LoadedPluginsController().service(request, response);
+    LoadedPluginsController(getListenHost()).service(request, response);
   }
   else if(path.endsWith(NamesOfFiltersController::EndPoint()))
   {
-    NamesOfFiltersController().service(request, response);
+    NamesOfFiltersController(getListenHost()).service(request, response);
   }
   else if(path.endsWith(NumFiltersController::EndPoint()))
   {
-    NumFiltersController().service(request, response);
+    NumFiltersController(getListenHost()).service(request, response);
   }
   else if(path.endsWith(PluginInfoController::EndPoint()))
   {
-    PluginInfoController().service(request, response);
+    PluginInfoController(getListenHost()).service(request, response);
   }
   else if(path.endsWith(PreflightPipelineController::EndPoint()))
   {
-    PreflightPipelineController().service(request, response);
+    PreflightPipelineController(getListenHost()).service(request, response);
   }
   // All other pathes are mapped to the static file controller.
   // In this case, a single instance is used for multiple requests.
   else
   {
-    SIMPLStaticFileController::Instance()->service(request, response);
-    //ApiNotFoundController().service(request, response);
+    SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
+    staticFileController->setListenHost(getListenHost());
+    staticFileController->service(request, response);
   }
 
-  qDebug("V1RequestMapper: finished request");
+  qDebug() << "V1RequestMapper: finished request";
 
   // Clear the log buffer
   //    if (logger)

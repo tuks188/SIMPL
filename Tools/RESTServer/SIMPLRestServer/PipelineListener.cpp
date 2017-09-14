@@ -32,8 +32,8 @@ std::vector<PipelineMessage> PipelineListener::getErrorMessages()
 {
     std::vector<PipelineMessage> errorMessages;
 
-    int numMessages = m_Messages.size();
-    for(int i = 0; i < numMessages; i++)
+    size_t numMessages = m_Messages.size();
+    for(size_t i = 0; i < numMessages; i++)
     {
         if(m_Messages[i].getType() == PipelineMessage::MessageType::Error)
         {
@@ -51,8 +51,8 @@ std::vector<PipelineMessage> PipelineListener::getWarningMessages()
 {
     std::vector<PipelineMessage> warningMessages;
 
-    int numMessages = m_Messages.size();
-    for(int i = 0; i < numMessages; i++)
+    size_t numMessages = m_Messages.size();
+    for(size_t i = 0; i < numMessages; i++)
     {
         if(m_Messages[i].getType() == PipelineMessage::MessageType::Warning)
         {
@@ -70,8 +70,8 @@ std::vector<PipelineMessage> PipelineListener::getStatusMessages()
 {
   std::vector<PipelineMessage> statusMessages;
 
-  int numMessages = m_Messages.size();
-  for(int i = 0; i < numMessages; i++)
+  size_t numMessages = m_Messages.size();
+  for(size_t i = 0; i < numMessages; i++)
   {
     if(m_Messages[i].getType() == PipelineMessage::MessageType::StatusMessage)
     {
@@ -89,8 +89,8 @@ std::vector<PipelineMessage> PipelineListener::getStandardOutputMessages()
 {
   std::vector<PipelineMessage> stdOutMessages;
 
-  int numMessages = m_Messages.size();
-  for(int i = 0; i < numMessages; i++)
+  size_t numMessages = m_Messages.size();
+  for(size_t i = 0; i < numMessages; i++)
   {
     if(m_Messages[i].getType() == PipelineMessage::MessageType::StandardOutputMessage)
     {
@@ -104,12 +104,12 @@ std::vector<PipelineMessage> PipelineListener::getStandardOutputMessages()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void PipelineListener::processPipelineMessage(const PipelineMessage& message)
+void PipelineListener::processPipelineMessage(const PipelineMessage& pm)
 {
-    m_Messages.push_back(message);
+    m_Messages.push_back(pm);
 
-    if(message.getType() == PipelineMessage::MessageType::StandardOutputMessage)
+    if(pm.getType() == PipelineMessage::MessageType::StandardOutputMessage)
     {
-        qDebug() << message.getText();
+        qDebug() << pm.getText();
     }
 }

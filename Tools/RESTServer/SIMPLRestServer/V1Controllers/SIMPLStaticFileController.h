@@ -36,7 +36,8 @@
   received a related HTTP request.
 */
 
-class DECLSPEC SIMPLStaticFileController : public HttpRequestHandler  {
+class DECLSPEC SIMPLStaticFileController : public HttpRequestHandler  
+{
     Q_OBJECT
     Q_DISABLE_COPY(SIMPLStaticFileController)
 public:

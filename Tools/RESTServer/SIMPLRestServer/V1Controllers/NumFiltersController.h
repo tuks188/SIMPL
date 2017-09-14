@@ -57,7 +57,7 @@ class NumFiltersController : public HttpRequestHandler
   Q_DISABLE_COPY(NumFiltersController)
 public:
   /** Constructor */
-  NumFiltersController();
+  NumFiltersController(const QHostAddress& hostAddress);
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);

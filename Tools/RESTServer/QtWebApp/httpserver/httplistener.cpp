@@ -4,16 +4,22 @@
 */
 
 #include "httplistener.h"
+
+#include <QtCore/QCoreApplication>
+#include <QtNetwork/QNetworkInterface>
+
 #include "httpconnectionhandler.h"
 #include "httpconnectionhandlerpool.h"
-#include <QCoreApplication>
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpListener::HttpListener(QSettings* settings, HttpRequestHandler* requestHandler, QObject* parent)
 : QTcpServer(parent)
 {
-  Q_ASSERT(settings != 0);
-  Q_ASSERT(requestHandler != 0);
-  pool = NULL;
+  Q_ASSERT(settings != nullptr);
+  Q_ASSERT(requestHandler != nullptr);
+  pool = nullptr;
   this->settings = settings;
   this->requestHandler = requestHandler;
   // Reqister type of socketDescriptor for signal/slot handling
@@ -22,12 +28,18 @@ HttpListener::HttpListener(QSettings* settings, HttpRequestHandler* requestHandl
   listen();
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpListener::~HttpListener()
 {
   close();
-  qDebug("HttpListener: destroyed");
+  qDebug() << "HttpListener: destroyed";
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void HttpListener::listen()
 {
   if(!pool)
@@ -35,36 +47,64 @@ void HttpListener::listen()
     pool = new HttpConnectionHandlerPool(settings, requestHandler);
   }
   QString host = settings->value("host").toString();
+  QHostAddress hostAddress(host);
+  if(hostAddress.isNull())
+  {
+    foreach (const QNetworkInterface &netInterface, QNetworkInterface::allInterfaces()) 
+    {
+      QNetworkInterface::InterfaceFlags flags = netInterface.flags();
+      if( static_cast<bool>(flags & QNetworkInterface::IsRunning) && !static_cast<bool>(flags & QNetworkInterface::IsLoopBack))
+      {
+        foreach (const QNetworkAddressEntry &address, netInterface.addressEntries()) 
+        {
+          if(address.ip().protocol() == QAbstractSocket::IPv4Protocol)
+          {
+            hostAddress = QHostAddress(address.ip());
+          }
+        }
+      }
+    }
+  }
   int port = settings->value("port").toInt();
-  QTcpServer::listen(host.isEmpty() ? QHostAddress::Any : QHostAddress(host), port);
+   
+  QTcpServer::listen(hostAddress, static_cast<quint16>(port));
   if(!isListening())
   {
-    qCritical("HttpListener: Cannot bind on port %i: %s", port, qPrintable(errorString()));
+    qCritical() << "HttpListener: Cannot bind on port " << port << ": "<< qPrintable(errorString());
   }
   else
   {
-    qDebug("HttpListener: Listening on port %i", port);
+    qDebug() << "HttpListener: Listening on " << hostAddress.toString() << ":" << port;
   }
+  
+  // Pass the IPv4 address into the request handler so it has this proper information
+  this->requestHandler->setListenHost(hostAddress);
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void HttpListener::close()
 {
   QTcpServer::close();
-  qDebug("HttpListener: closed");
+  qDebug() << "HttpListener: closed";
   if(pool)
   {
     delete pool;
-    pool = NULL;
+    pool = nullptr;
   }
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void HttpListener::incomingConnection(tSocketDescriptor socketDescriptor)
 {
 #ifdef SUPERVERBOSE
-  qDebug("HttpListener: New connection");
+  qDebug() << "HttpListener: New connection";
 #endif
 
-  HttpConnectionHandler* freeHandler = NULL;
+  HttpConnectionHandler* freeHandler = nullptr;
   if(pool)
   {
     freeHandler = pool->getConnectionHandler();
@@ -79,7 +119,7 @@ void HttpListener::incomingConnection(tSocketDescriptor socketDescriptor)
   else
   {
     // Reject the connection
-    qDebug("HttpListener: Too many incoming connections");
+    qDebug() << "HttpListener: Too many incoming connections";
     QTcpSocket* socket = new QTcpSocket(this);
     socket->setSocketDescriptor(socketDescriptor);
     connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));

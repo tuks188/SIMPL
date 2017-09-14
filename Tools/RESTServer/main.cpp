@@ -69,7 +69,9 @@
 #include "SIMPLRestServer/SIMPLRequestMapper.h"
 #include "SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h"
 
-/** Search the configuration file */
+// -----------------------------------------------------------------------------
+// Search the configuration file
+// -----------------------------------------------------------------------------
 QString searchConfigFile()
 {
   QString binDir = QCoreApplication::applicationDirPath();
@@ -78,16 +80,6 @@ QString searchConfigFile()
 
   QStringList searchList;
   searchList.append(binDir);
-//  searchList.append(binDir + "/etc");
-//  searchList.append(binDir + "/../etc");
-//  searchList.append(binDir + "/../../etc");                          // for development without shadow build
-//  searchList.append(binDir + "/../" + appName + "/etc");             // for development with shadow build
-//  searchList.append(binDir + "/../../" + appName + "/etc");          // for development with shadow build
-//  searchList.append(binDir + "/../../../" + appName + "/etc");       // for development with shadow build
-//  searchList.append(binDir + "/../../../../" + appName + "/etc");    // for development with shadow build
-//  searchList.append(binDir + "/../../../../../" + appName + "/etc"); // for development with shadow build
-//  searchList.append(QDir::rootPath() + "etc/opt");
-//  searchList.append(QDir::rootPath() + "etc");
 
   foreach(QString dir, searchList)
   {
@@ -110,6 +102,9 @@ QString searchConfigFile()
   return 0;
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
   QCoreApplication app(argc, argv);
@@ -154,17 +149,15 @@ int main(int argc, char* argv[])
   // Configure and start the TCP listener
   QSettings* listenerSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
   listenerSettings->beginGroup("listener");
-  new HttpListener(listenerSettings, new SIMPLRequestMapper(&app), &app);
+  QSharedPointer<HttpListener> httpListener = QSharedPointer<HttpListener>(new HttpListener(listenerSettings, new SIMPLRequestMapper(&app), &app));
 
 
-  qWarning("Application has started");
+  qWarning() << "Application has started";
 
   app.exec();
 
-  qWarning("Application has stopped");
+  qWarning() << "Application has stopped";
 
   ////////
-
-  qDebug() << "Goodbye World";
   return 0;
 }

@@ -45,8 +45,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-PluginInfoController::PluginInfoController()
+PluginInfoController::PluginInfoController(const QHostAddress &hostAddress)
 {
+  setListenHost(hostAddress);
 }
 
 // -----------------------------------------------------------------------------

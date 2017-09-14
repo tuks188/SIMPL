@@ -46,6 +46,7 @@ class SIMPLRequestMapper : public HttpRequestHandler
 {
   Q_OBJECT
   Q_DISABLE_COPY(SIMPLRequestMapper)
+  
 public:
   /**
     Constructor.

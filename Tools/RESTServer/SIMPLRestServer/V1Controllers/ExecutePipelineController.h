@@ -46,7 +46,7 @@ class ExecutePipelineController : public HttpRequestHandler
   Q_DISABLE_COPY(ExecutePipelineController)
 public:
   /** Constructor */
-  ExecutePipelineController();
+  ExecutePipelineController(const QHostAddress& hostAddress);
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);

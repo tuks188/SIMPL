@@ -47,8 +47,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-PreflightPipelineController::PreflightPipelineController()
+PreflightPipelineController::PreflightPipelineController(const QHostAddress &hostAddress)
 {
+  setListenHost(hostAddress);
 }
 
 // -----------------------------------------------------------------------------

@@ -133,7 +133,7 @@ void DataContainerWriter::dataCheck()
   if(parentPath.exists() == false)
   {
     setWarningCondition(-10001);
-    ss = QObject::tr("The directory path for the output file does not exist. The application will attempt to create this path during execution of the filter");
+    ss = QObject::tr("The directory path '%1' for the output file does not exist. The application will attempt to create this path during execution of the filter").arg(fi.path());
     notifyWarningMessage(getHumanLabel(), ss, getWarningCondition());
   }
   if(fi.suffix().compare("") == 0)

@@ -44,8 +44,27 @@
 class SIMPLDirectoryListing
 {
 public:
-    static void ParseDir(QDir directory, QVector<QString>& fileNames, QVector<QDateTime>& dates);
-    static QString CreateHTMLTable(QVector<QString> fileNames, QVector<QDateTime> dates);
+    /**
+     * @brief ParseDir
+     * @param directory
+     * @param fileNames
+     * @param dates
+     */
+    static void ParseDir(QDir directory, QVector<QFileInfo> &fileNames);
+    
+    /**
+     * @brief CreateHTMLTable
+     * @param fileNames
+     * @param dates
+     * @return 
+     */
+    static QString CreateHTMLTable(QVector<QFileInfo> &fileInfos);
+    
+    /**
+     * @brief ParseDirForTable
+     * @param directory
+     * @return 
+     */
     static QString ParseDirForTable(QDir directory);
 };
 

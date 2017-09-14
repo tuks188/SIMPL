@@ -44,8 +44,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-LoadedPluginsController::LoadedPluginsController()
+LoadedPluginsController::LoadedPluginsController(const QHostAddress &hostAddress)
 {
+  setListenHost(hostAddress);
 }
 
 // -----------------------------------------------------------------------------

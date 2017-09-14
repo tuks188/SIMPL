@@ -57,7 +57,7 @@ class LoadedPluginsController : public HttpRequestHandler
   Q_DISABLE_COPY(LoadedPluginsController)
 public:
   /** Constructor */
-  LoadedPluginsController();
+  LoadedPluginsController(const QHostAddress& hostAddress);
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);

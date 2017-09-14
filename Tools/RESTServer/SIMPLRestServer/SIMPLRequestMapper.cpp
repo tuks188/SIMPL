@@ -41,8 +41,6 @@
 #include "SIMPLRestServer/V1Controllers/V1RequestMapper.h"
 #include "SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h"
 
-/** Redirects log messages to a file */
-extern FileLogger* logger;
 
 // -----------------------------------------------------------------------------
 //
@@ -50,7 +48,7 @@ extern FileLogger* logger;
 SIMPLRequestMapper::SIMPLRequestMapper(QObject* parent)
   : HttpRequestHandler(parent)
 {
-  qDebug("SIMPLRequestMapper: created");
+  //qDebug() << "SIMPLRequestMapper: created";
 }
 
 // -----------------------------------------------------------------------------
@@ -58,7 +56,7 @@ SIMPLRequestMapper::SIMPLRequestMapper(QObject* parent)
 // -----------------------------------------------------------------------------
 SIMPLRequestMapper::~SIMPLRequestMapper()
 {
-  qDebug("SIMPLRequestMapper: deleted");
+  //qDebug() << "SIMPLRequestMapper: deleted";
 }
 
 // -----------------------------------------------------------------------------
@@ -66,31 +64,23 @@ SIMPLRequestMapper::~SIMPLRequestMapper()
 // -----------------------------------------------------------------------------
 void SIMPLRequestMapper::service(HttpRequest& request, HttpResponse& response)
 {
-  QMultiMap<QByteArray, QByteArray> headerMap = request.getHeaderMap();
   QString content_type = request.getHeader(QByteArray("content-type"));
 
   QByteArray path = request.getPath();
-  qDebug("SIMPLRequestMapper: path=%s", path.data());
+  //qDebug() << "SIMPLRequestMapper: path=%s"<< path.data();
   
   // For the following pathes, each request gets its own new instance of the related controller.
   if(path.startsWith("/api/v1"))
   {
     V1RequestMapper v1RequestMapper;
+    v1RequestMapper.setListenHost(getListenHost());
     v1RequestMapper.service(request, response);
   }
   else if(content_type.compare("application/json") != 0)
   {
-    SIMPLStaticFileController::Instance()->service(request, response);
-
-//    QJsonObject rootObj;
-//    QString msg;
-//    QTextStream ss(&msg);
-//    ss << "The content-type was not set to 'application/json'.";
-    
-//    rootObj["ErrorCode"] = -2;
-//    rootObj["ErrorMessage"] = msg;
-//    QJsonDocument jdoc(rootObj);
-//    response.write(jdoc.toJson(), true);
+    SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
+    staticFileController->setListenHost(getListenHost());
+    staticFileController->service(request, response);
   }
   else
   { 
@@ -105,7 +95,7 @@ void SIMPLRequestMapper::service(HttpRequest& request, HttpResponse& response)
     response.write(jdoc.toJson(), true);
   }
   
-  qDebug("SIMPLRequestMapper: finished request");
+  qDebug() << "SIMPLRequestMapper: finished request";
   
   // Clear the log buffer
   //    if (logger)

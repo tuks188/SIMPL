@@ -36,65 +36,91 @@
 #include "SIMPLDirectoryListing.h"
 
 #include <QtCore/QTextStream>
+#include <QtCore/QFileInfoList>
 
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void SIMPLDirectoryListing::ParseDir(QDir directory, QVector<QString>& fileNames, QVector<QDateTime>& dates)
-{
-  QFileInfoList fiList = directory.entryInfoList();
+#include "SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h"
 
-  int count = fiList.size();
-  for(int i = 0; i < count; i++)
-  {
-    QFileInfo fi = fiList[i];
-    fileNames.push_back(fi.fileName());
-    dates.push_back(fi.lastModified());
-  }
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-QString SIMPLDirectoryListing::CreateHTMLTable(QVector<QString> fileNames, QVector<QDateTime> dates)
-{
-  if (fileNames.size() != dates.size())
-  {
-    return QString();
-  }
-
-  QString html;
-  QTextStream ss(&html);
-
-  ss << "<table>\n";
-  ss << "<tr>\n";
-  ss << "<th>File</th>\n";
-  ss << "<th>Date</th>\n";
-  ss << "</tr>\n";
-
-  for (int i = 0; i < fileNames.size(); i++)
-  {
-    QString fileName = fileNames[i];
-    QDateTime date = dates[i];
-
-    ss << "<tr>\n";
-    ss << QObject::tr("<td>%1</td>").arg(fileName);
-    ss << QObject::tr("<td>%1</td>").arg(date.toString());
-    ss << "</tr>\n";
-  }
-
-  ss << "</table>\n";
-
-  return html;
-}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 QString SIMPLDirectoryListing::ParseDirForTable(QDir directory)
 {
-  QVector<QString> fileNames;
-  QVector<QDateTime> dates;
-  ParseDir(directory, fileNames, dates);
-  return CreateHTMLTable(fileNames, dates);
+  QVector<QFileInfo> fileNames;
+  ParseDir(directory, fileNames);
+  return CreateHTMLTable(fileNames);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void SIMPLDirectoryListing::ParseDir(QDir directory, QVector<QFileInfo>& fileNames)
+{
+  QFileInfoList fiList = directory.entryInfoList();
+  fileNames.clear();
+  int count = fiList.size();
+  for(int i = 0; i < count; i++)
+  {
+    fileNames.push_back(fiList[i]);
+  }
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QString SIMPLDirectoryListing::CreateHTMLTable(QVector<QFileInfo> &fileInfos)
+{
+  SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
+
+  QString docRoot = staticFileController->getDocRoot();
+  
+  QString html;
+  QTextStream ss(&html);
+
+  ss << "<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" width=\"300px\">\n";
+  ss << "<tbody>\n";
+  ss << "<tr>\n";
+  ss << "<th align=\"right\">File</th>\n";
+  ss << "<th align=\"right\">Date</th>\n";
+  ss << "</tr>\n";
+
+  char rowColor = 0;
+  QString red("#FFAAAA");
+  QString odd("#FFFFFF");
+  QString even("#B0E4FF");
+  QString color = odd;  
+  
+  for (int i = 0; i < fileInfos.size(); i++)
+  {
+   if(rowColor == 0)
+    {
+      rowColor = 1;
+      color = odd;
+    }
+    else
+    {
+      rowColor = 0;
+      color = even;
+    }
+    
+    QFileInfo fi = fileInfos[i];
+    
+    QString link;
+    QTextStream linkSSlink(&link);
+    
+    QString absFilePath = fi.absoluteFilePath();
+    
+    // Verify that the absolute path begins with the docRoot path
+    if(absFilePath.startsWith(docRoot) )
+    {
+      QString webPath = absFilePath.mid(docRoot.size());
+      linkSSlink << "<a href=\"" << webPath << "\">" << fi.fileName() << "</a>";
+    }
+
+    ss << "<tr bgcolor=\"" << color << "\"><td>" << link << "</td><td>" << fi.lastModified().toString() << "</td></tr>\n";
+  }
+
+  ss << "</tbody></table>\n";
+
+  return html;
 }

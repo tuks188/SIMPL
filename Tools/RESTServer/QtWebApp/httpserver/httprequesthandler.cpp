@@ -5,15 +5,24 @@
 
 #include "httprequesthandler.h"
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpRequestHandler::HttpRequestHandler(QObject* parent)
-: QObject(parent)
+  : QObject(parent)
 {
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 HttpRequestHandler::~HttpRequestHandler()
 {
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void HttpRequestHandler::service(HttpRequest& request, HttpResponse& response)
 {
   qCritical("HttpRequestHandler: you need to override the service() function");
@@ -21,3 +30,20 @@ void HttpRequestHandler::service(HttpRequest& request, HttpResponse& response)
   response.setStatus(501, "not implemented");
   response.write("501 not implemented", true);
 }
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void HttpRequestHandler::setListenHost(const QHostAddress& hostAddress)
+{
+  m_HostAddress = hostAddress;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QHostAddress HttpRequestHandler::getListenHost() const
+{
+  return m_HostAddress;
+}
+

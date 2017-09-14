@@ -3,14 +3,19 @@
 
 #include <vector>
 
+#include "SIMPLib/Common/SIMPLibSetGetMacros.h"
+#include "SIMPLib/Common/IObserver.h"
 #include "SIMPLib/Common/PipelineMessage.h"
 
-class PipelineListener : public QObject
+class PipelineListener : public QObject, public IObserver
 {
     Q_OBJECT
 public:
+    SIMPL_TYPE_MACRO_SUPER(PipelineListener, IObserver)
+
+    
     PipelineListener(QObject* parent);
-    ~PipelineListener();
+    virtual ~PipelineListener();
 
     std::vector<PipelineMessage> getMessages();
     std::vector<PipelineMessage> getErrorMessages();
@@ -19,7 +24,7 @@ public:
     std::vector<PipelineMessage> getStandardOutputMessages();
 
 public slots:
-    void processPipelineMessage(const PipelineMessage&);
+    void processPipelineMessage(const PipelineMessage& pm);
 
 private:
     std::vector<PipelineMessage> m_Messages;
