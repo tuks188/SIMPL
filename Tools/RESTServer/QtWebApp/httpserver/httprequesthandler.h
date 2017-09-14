@@ -48,16 +48,23 @@ class DECLSPEC HttpRequestHandler : public QObject
    * @brief setListenHost
    * @param hostAddress
    */
-    void setListenHost(const QHostAddress& hostAddress);
+    void setListenHost(const QHostAddress& hostAddress, const int port);
     
     /**
    * @brief getListenHost
    * @return 
    */
     QHostAddress getListenHost() const;
+
+    /**
+    * @brief getListenPort
+    * @return
+    */
+    int getListenPort() const;
     
   private:
     QHostAddress m_HostAddress;
+    int m_Port;
 };
 
 #endif // HTTPREQUESTHANDLER_H

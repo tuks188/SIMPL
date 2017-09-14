@@ -34,9 +34,10 @@ void HttpRequestHandler::service(HttpRequest& request, HttpResponse& response)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void HttpRequestHandler::setListenHost(const QHostAddress& hostAddress)
+void HttpRequestHandler::setListenHost(const QHostAddress& hostAddress, const int port)
 {
   m_HostAddress = hostAddress;
+  m_Port = port;
 }
 
 // -----------------------------------------------------------------------------
@@ -45,5 +46,13 @@ void HttpRequestHandler::setListenHost(const QHostAddress& hostAddress)
 QHostAddress HttpRequestHandler::getListenHost() const
 {
   return m_HostAddress;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+int HttpRequestHandler::getListenPort() const
+{
+  return m_Port;
 }
 

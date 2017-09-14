@@ -82,38 +82,38 @@ void V1RequestMapper::service(HttpRequest& request, HttpResponse& response)
 
   if(path.endsWith(ExecutePipelineController::EndPoint()))
   {
-    ExecutePipelineController(getListenHost()).service(request, response);
+    ExecutePipelineController(getListenHost(), getListenPort()).service(request, response);
   }
   else if(path.endsWith(ListFilterParametersController::EndPoint()))
   {
-    ListFilterParametersController(getListenHost()).service(request, response);
+    ListFilterParametersController(getListenHost(), getListenPort()).service(request, response);
   }
   else if(path.endsWith(LoadedPluginsController::EndPoint()))
   {
-    LoadedPluginsController(getListenHost()).service(request, response);
+    LoadedPluginsController(getListenHost(), getListenPort()).service(request, response);
   }
   else if(path.endsWith(NamesOfFiltersController::EndPoint()))
   {
-    NamesOfFiltersController(getListenHost()).service(request, response);
+    NamesOfFiltersController(getListenHost(), getListenPort()).service(request, response);
   }
   else if(path.endsWith(NumFiltersController::EndPoint()))
   {
-    NumFiltersController(getListenHost()).service(request, response);
+    NumFiltersController(getListenHost(), getListenPort()).service(request, response);
   }
   else if(path.endsWith(PluginInfoController::EndPoint()))
   {
-    PluginInfoController(getListenHost()).service(request, response);
+    PluginInfoController(getListenHost(), getListenPort()).service(request, response);
   }
   else if(path.endsWith(PreflightPipelineController::EndPoint()))
   {
-    PreflightPipelineController(getListenHost()).service(request, response);
+    PreflightPipelineController(getListenHost(), getListenPort()).service(request, response);
   }
   // All other pathes are mapped to the static file controller.
   // In this case, a single instance is used for multiple requests.
   else
   {
     SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
-    staticFileController->setListenHost(getListenHost());
+    staticFileController->setListenHost(getListenHost(), getListenPort());
     staticFileController->service(request, response);
   }
 

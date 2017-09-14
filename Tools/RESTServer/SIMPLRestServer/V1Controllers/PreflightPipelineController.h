@@ -46,7 +46,7 @@ class PreflightPipelineController : public HttpRequestHandler
   Q_DISABLE_COPY(PreflightPipelineController)
 public:
   /** Constructor */
-  PreflightPipelineController(const QHostAddress& hostAddress);
+  PreflightPipelineController(const QHostAddress& hostAddress, const int hostPort);
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);

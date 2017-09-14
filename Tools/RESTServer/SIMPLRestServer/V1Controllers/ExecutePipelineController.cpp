@@ -62,9 +62,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-ExecutePipelineController::ExecutePipelineController(const QHostAddress &hostAddress)
+ExecutePipelineController::ExecutePipelineController(const QHostAddress &hostAddress, const int hostPort)
 {
-  setListenHost(hostAddress);
+  setListenHost(hostAddress, hostPort);
 }
 
 // -----------------------------------------------------------------------------
@@ -101,7 +101,7 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
   FilterPipeline::Pointer pipeline = FilterPipeline::FromJson(pipelineObj);
   qDebug() << "Number of Filters in Pipeline: " << pipeline->size();
   
-  QString linkAddress = "http://" +  getListenHost().toString() + ":" + QString::number(HttpListener::Instance()->getPort()) + QDir::separator() + QString(session.getId()) + QDir::separator();
+  QString linkAddress = "http://" +  getListenHost().toString() + ":" + QString::number(getListenPort()) + QDir::separator() + QString(session.getId()) + QDir::separator();
   SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
   QString docRoot = staticFileController->getDocRoot();
   

@@ -47,7 +47,7 @@ class ListFilterParametersController : public HttpRequestHandler
   Q_DISABLE_COPY(ListFilterParametersController)
 public:
   /** Constructor */
-  ListFilterParametersController(const QHostAddress& hostAddress);
+  ListFilterParametersController(const QHostAddress& hostAddress, const int hostPort);
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);

@@ -44,9 +44,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-NumFiltersController::NumFiltersController(const QHostAddress &hostAddress)
+NumFiltersController::NumFiltersController(const QHostAddress &hostAddress, const int hostPort)
 {
-  setListenHost(hostAddress);
+  setListenHost(hostAddress, hostPort);
 }
 
 // -----------------------------------------------------------------------------

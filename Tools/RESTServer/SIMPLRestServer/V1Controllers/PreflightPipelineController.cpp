@@ -51,9 +51,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-PreflightPipelineController::PreflightPipelineController(const QHostAddress &hostAddress)
+PreflightPipelineController::PreflightPipelineController(const QHostAddress &hostAddress, const int hostPort)
 {
-  setListenHost(hostAddress);
+  setListenHost(hostAddress, hostPort);
 }
 
 // -----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ void PreflightPipelineController::service(HttpRequest& request, HttpResponse& re
   QJsonDocument requestDoc = QJsonDocument::fromJson(requestBody.toUtf8());
   QJsonObject requestObj = requestDoc.object();
 
-  QString linkAddress = "http://" +  getListenHost().toString() + ":" + QString::number(HttpListener::Instance()->getPort()) + QDir::separator() + QString(session.getId()) + QDir::separator();
+  QString linkAddress = "http://" +  getListenHost().toString() + ":" + QString::number(getListenPort()) + QDir::separator() + QString(session.getId()) + QDir::separator();
   SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
   QString docRoot = staticFileController->getDocRoot();
 

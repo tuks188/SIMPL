@@ -44,9 +44,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-ListFilterParametersController::ListFilterParametersController(const QHostAddress &hostAddress)
+ListFilterParametersController::ListFilterParametersController(const QHostAddress &hostAddress, const int hostPort)
 {
-  setListenHost(hostAddress);
+  setListenHost(hostAddress, hostPort);
 }
 
 // -----------------------------------------------------------------------------

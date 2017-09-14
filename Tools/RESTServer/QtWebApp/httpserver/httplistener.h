@@ -44,8 +44,15 @@ class DECLSPEC HttpListener : public QTcpServer
   Q_OBJECT
   Q_DISABLE_COPY(HttpListener)
 public:
-  static HttpListener* CreateInstance(QSettings* settings, HttpRequestHandler* requestHandler, QObject* parent = NULL);
-  static HttpListener* Instance();
+  /**
+    Constructor.
+    Creates a connection pool and starts listening on the configured host and port.
+    @param settings Configuration settings for the HTTP server. Must not be 0.
+    @param requestHandler Processes each received HTTP request, usually by dispatching to controller classes.
+    @param parent Parent object.
+    @warning Ensure to close or delete the listener before deleting the request handler.
+  */
+  HttpListener(QSettings* settings, HttpRequestHandler* requestHandler, QObject* parent = NULL);
 
   /** Destructor */
   virtual ~HttpListener();
@@ -64,22 +71,10 @@ public:
   int getPort();
 
 protected:
-  /**
-    Constructor.
-    Creates a connection pool and starts listening on the configured host and port.
-    @param settings Configuration settings for the HTTP server. Must not be 0.
-    @param requestHandler Processes each received HTTP request, usually by dispatching to controller classes.
-    @param parent Parent object.
-    @warning Ensure to close or delete the listener before deleting the request handler.
-  */
-  HttpListener(QSettings* settings, HttpRequestHandler* requestHandler, QObject* parent = NULL);
-
   /** Serves new incoming connection requests */
   void incomingConnection(tSocketDescriptor socketDescriptor);
 
 private:
-  static HttpListener* self;
-
   /** Configuration settings for the HTTP server */
   QSettings* settings;
 

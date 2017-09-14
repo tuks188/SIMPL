@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
   // Configure and start the TCP listener
   QSettings* listenerSettings = new QSettings(configFileName, QSettings::IniFormat, &app);
   listenerSettings->beginGroup("listener");
-  QSharedPointer<HttpListener> httpListener = QSharedPointer<HttpListener>(HttpListener::CreateInstance(listenerSettings, new SIMPLRequestMapper(&app), &app));
+  QSharedPointer<HttpListener> httpListener = QSharedPointer<HttpListener>(new HttpListener(listenerSettings, new SIMPLRequestMapper(&app), &app));
 
 
   qWarning() << "Application has started";

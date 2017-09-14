@@ -73,13 +73,13 @@ void SIMPLRequestMapper::service(HttpRequest& request, HttpResponse& response)
   if(path.startsWith("/api/v1"))
   {
     V1RequestMapper v1RequestMapper;
-    v1RequestMapper.setListenHost(getListenHost());
+    v1RequestMapper.setListenHost(getListenHost(), getListenPort());
     v1RequestMapper.service(request, response);
   }
   else if(content_type.compare("application/json") != 0)
   {
     SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
-    staticFileController->setListenHost(getListenHost());
+    staticFileController->setListenHost(getListenHost(), getListenPort());
     staticFileController->service(request, response);
   }
   else

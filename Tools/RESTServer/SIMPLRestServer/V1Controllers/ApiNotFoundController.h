@@ -46,7 +46,7 @@ class ApiNotFoundController : public HttpRequestHandler
   Q_DISABLE_COPY(ApiNotFoundController)
 public:
   /** Constructor */
-  ApiNotFoundController(const QHostAddress& hostAddress);
+  ApiNotFoundController(const QHostAddress& hostAddress, const int hostPort);
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);

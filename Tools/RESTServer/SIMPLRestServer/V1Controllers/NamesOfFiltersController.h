@@ -61,7 +61,7 @@ class NamesOfFiltersController : public HttpRequestHandler
   Q_DISABLE_COPY(NamesOfFiltersController)
 public:
   /** Constructor */
-  NamesOfFiltersController(const QHostAddress& hostAddress);
+  NamesOfFiltersController(const QHostAddress& hostAddress, const int hostPort);
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);

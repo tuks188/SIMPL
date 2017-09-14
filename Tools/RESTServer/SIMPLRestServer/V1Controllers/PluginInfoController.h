@@ -60,7 +60,7 @@ class PluginInfoController : public HttpRequestHandler
   Q_DISABLE_COPY(PluginInfoController)
 public:
   /** Constructor */
-  PluginInfoController(const QHostAddress& hostAddress);
+  PluginInfoController(const QHostAddress& hostAddress, const int hostPort);
 
   /** Generates the response */
   void service(HttpRequest& request, HttpResponse& response);

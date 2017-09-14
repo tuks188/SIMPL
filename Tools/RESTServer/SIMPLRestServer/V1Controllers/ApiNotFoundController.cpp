@@ -45,9 +45,9 @@
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-ApiNotFoundController::ApiNotFoundController(const QHostAddress &hostAddress)
+ApiNotFoundController::ApiNotFoundController(const QHostAddress &hostAddress, const int hostPort)
 {
-  setListenHost(hostAddress);
+  setListenHost(hostAddress, hostPort);
 }
 
 // -----------------------------------------------------------------------------
