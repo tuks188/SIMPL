@@ -90,23 +90,19 @@ void PreflightPipelineController::service(HttpRequest& request, HttpResponse& re
   QString linkAddress = "http://" +  getListenHost().toString() + ":" + QString::number(getListenPort()) + QDir::separator() + QString(session.getId()) + QDir::separator();
   SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
   QString docRoot = staticFileController->getDocRoot();
+  QString newFilePath = docRoot + QDir::separator() + QString(session.getId()) + QDir::separator();
+  QJsonArray outputLinks;
 
+  // Pipeline
   QJsonObject pipelineObj = requestObj["Pipeline"].toObject();
   FilterPipeline::Pointer pipeline = FilterPipeline::FromJson(pipelineObj);
   PipelineListener listener(nullptr);
   pipeline->addMessageReceiver(&listener);
-  pipeline->preflightPipeline();
-  
-  //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
-  //   response.setCookie(HttpCookie("secondCookie","world",600));
 
   // Log Files
   bool createErrorLog = requestObj["ErrorLog"].toBool(false);
   bool createWarningLog = requestObj["WarningLog"].toBool(false);
   bool createStatusLog = requestObj["StatusLog"].toBool(false);
-
-  QJsonArray outputLinks;
-  QString newFilePath = docRoot + QDir::separator() + QString(session.getId()) + QDir::separator();
 
   QDir docRootDir(docRoot);
   docRootDir.mkpath(newFilePath);
@@ -115,13 +111,7 @@ void PreflightPipelineController::service(HttpRequest& request, HttpResponse& re
   {
     QString filename = pipeline->getName() + "-err.log";
     QString filepath = newFilePath + QDir::separator() + filename;
-    QFile file(filepath);
-    if (file.open(QIODevice::ReadWrite))
-    {
-      QTextStream stream(&file);
-      stream << listener.getErrorLog() << endl;
-    }
-    file.close();
+    listener.createErrorLogFile(filepath);
 
     outputLinks.append(linkAddress + filename);
   }
@@ -130,13 +120,7 @@ void PreflightPipelineController::service(HttpRequest& request, HttpResponse& re
   {
     QString filename = pipeline->getName() + "-warning.log";
     QString filepath = newFilePath + QDir::separator() + filename;
-    QFile file(filepath);
-    if (file.open(QIODevice::ReadWrite))
-    {
-      QTextStream stream(&file);
-      stream << listener.getWarningLog() << endl;
-    }
-    file.close();
+    listener.createWarningLogFile(filepath);
 
     outputLinks.append(linkAddress + filename);
   }
@@ -145,19 +129,19 @@ void PreflightPipelineController::service(HttpRequest& request, HttpResponse& re
   {
     QString filename = pipeline->getName() + "-status.log";
     QString filepath = newFilePath + QDir::separator() + filename;
-    QFile file(filepath);
-    if (file.open(QIODevice::ReadWrite))
-    {
-      QTextStream stream(&file);
-      stream << listener.getStatusLog() << endl;
-    }
-    file.close();
+    listener.createStatusLogFile(filepath);
 
     outputLinks.append(linkAddress + filename);
   }
 
   // Append to the json response payload all the output links
   rootObj["OutputLinks"] = outputLinks;
+
+  // Preflight
+  pipeline->preflightPipeline();
+  
+  //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
+  //   response.setCookie(HttpCookie("secondCookie","world",600));
 
   // Return messages
   std::vector<PipelineMessage> errorMessages = listener.getErrorMessages();

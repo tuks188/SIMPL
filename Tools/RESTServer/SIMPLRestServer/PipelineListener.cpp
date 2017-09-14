@@ -5,6 +5,10 @@
 // -----------------------------------------------------------------------------
 PipelineListener::PipelineListener(QObject* parent)
   : QObject(parent)
+  , m_ErrorLog(nullptr)
+  , m_WarningLog(nullptr)
+  , m_StatusLog(nullptr)
+  , m_StandardOutputLog(nullptr)
 {
 
 }
@@ -14,7 +18,7 @@ PipelineListener::PipelineListener(QObject* parent)
 // -----------------------------------------------------------------------------
 PipelineListener::~PipelineListener()
 {
-
+  closeFiles();
 }
 
 // -----------------------------------------------------------------------------
@@ -108,6 +112,50 @@ void PipelineListener::processPipelineMessage(const PipelineMessage& pm)
 {
   m_Messages.push_back(pm);
 
+  switch(pm.getType())
+  {
+  case PipelineMessage::MessageType::Error:
+    if(m_ErrorLog && m_ErrorLog->open(QIODevice::ReadWrite))
+    {
+      QTextStream stream(m_ErrorLog);
+      stream.readAll();
+      stream << pm.generateErrorString() << endl;
+      m_ErrorLog->close();
+    }
+    break;
+  case PipelineMessage::MessageType::Warning:
+    if(m_WarningLog && m_WarningLog->open(QIODevice::ReadWrite))
+    {
+      QTextStream stream(m_WarningLog);
+      stream.readAll();
+      stream << pm.generateWarningString() << endl;
+      m_WarningLog->close();
+    }
+    break;
+  case PipelineMessage::MessageType::StatusMessage:
+    if(m_StatusLog && m_StatusLog->open(QIODevice::ReadWrite))
+    {
+      QTextStream stream(m_StatusLog);
+      stream.readAll();
+      stream << pm.generateStatusString() << endl;
+      m_StatusLog->close();
+    }
+
+    qDebug() << pm.getText();
+    break;
+  case PipelineMessage::MessageType::StandardOutputMessage:
+    if(m_StandardOutputLog && m_StandardOutputLog->open(QIODevice::ReadWrite))
+    {
+      QTextStream stream(m_StandardOutputLog);
+      stream.readAll();
+      stream << pm.generateStandardOutputString() << endl;
+      m_StandardOutputLog->close();
+    }
+    break;
+  default:
+    break;
+  }
+
   if(pm.getType() == PipelineMessage::MessageType::StandardOutputMessage)
   {
     qDebug() << pm.getText();
@@ -180,4 +228,86 @@ QString PipelineListener::getStandardOutputLog()
   }
 
   return log;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PipelineListener::createErrorLogFile(QString path)
+{
+  if(m_ErrorLog)
+  {
+    m_ErrorLog->close();
+    delete m_ErrorLog;
+  }
+
+  m_ErrorLog = new QFile(path);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PipelineListener::createWarningLogFile(QString path)
+{
+  if(m_WarningLog)
+  {
+    m_WarningLog->close();
+    delete m_WarningLog;
+  }
+
+  m_WarningLog = new QFile(path);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PipelineListener::createStatusLogFile(QString path)
+{
+  if(m_StatusLog)
+  {
+    m_StatusLog->close();
+    delete m_StatusLog;
+  }
+
+  m_StatusLog = new QFile(path);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PipelineListener::createStandardOutputLogFile(QString path)
+{
+  if(m_StandardOutputLog)
+  {
+    m_StandardOutputLog->close();
+    delete m_StandardOutputLog;
+  }
+
+  m_StandardOutputLog = new QFile(path);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PipelineListener::closeFiles()
+{
+  if(m_ErrorLog)
+  {
+    m_ErrorLog->close();
+  }
+
+  if(m_WarningLog)
+  {
+    m_WarningLog->close();
+  }
+
+  if(m_StatusLog)
+  {
+    m_StatusLog->close();
+  }
+
+  if(m_StandardOutputLog)
+  {
+    m_StandardOutputLog->close();
+  }
 }

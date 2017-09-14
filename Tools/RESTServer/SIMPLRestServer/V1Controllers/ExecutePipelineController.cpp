@@ -150,21 +150,8 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
     }
   }
 
-  // Execute the pipeline
-  PipelineListener listener(nullptr);
-  Observer obs; // Create an Observer to report errors/progress from the executing pipeline
-  pipeline->addMessageReceiver(&obs);
-  pipeline->addMessageReceiver(&listener);
-  
-  int err = pipeline->preflightPipeline();
-  qDebug() << "Preflight Error: " << err;
-  
-  qDebug() << "Pipeline About to Execute....";
-  pipeline->execute();
-  
-  qDebug() << "Pipeline Done Executing...." << pipeline->getErrorCondition();
-
   // Log Files
+  PipelineListener listener(nullptr);
   bool createErrorLog = requestObj["ErrorLog"].toBool(false);
   bool createWarningLog = requestObj["WarningLog"].toBool(false);
   bool createStatusLog = requestObj["StatusLog"].toBool(false);
@@ -176,13 +163,7 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
   {
     QString filename = pipeline->getName() + "-err.log";
     QString filepath = newFilePath + QDir::separator() + filename;
-    QFile file(filepath);
-    if (file.open(QIODevice::ReadWrite))
-    {
-      QTextStream stream(&file);
-      stream << listener.getErrorLog() << endl;
-    }
-    file.close();
+    listener.createErrorLogFile(filepath);
 
     outputLinks.append(linkAddress + filename);
   }
@@ -191,13 +172,7 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
   {
     QString filename = pipeline->getName() + "-warning.log";
     QString filepath = newFilePath + QDir::separator() + filename;
-    QFile file(filepath);
-    if (file.open(QIODevice::ReadWrite))
-    {
-      QTextStream stream(&file);
-      stream << listener.getWarningLog() << endl;
-    }
-    file.close();
+    listener.createWarningLogFile(filepath);
 
     outputLinks.append(linkAddress + filename);
   }
@@ -206,19 +181,26 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
   {
     QString filename = pipeline->getName() + "-status.log";
     QString filepath = newFilePath + QDir::separator() + filename;
-    QFile file(filepath);
-    if (file.open(QIODevice::ReadWrite))
-    {
-      QTextStream stream(&file);
-      stream << listener.getStatusLog() << endl;
-    }
-    file.close();
+    listener.createStatusLogFile(filepath);
 
     outputLinks.append(linkAddress + filename);
   }
 
   // Append to the json response payload all the output links
   rootObj["OutputLinks"] = outputLinks;
+
+  // Execute the pipeline
+  Observer obs; // Create an Observer to report errors/progress from the executing pipeline
+  pipeline->addMessageReceiver(&obs);
+  pipeline->addMessageReceiver(&listener);
+  
+  int err = pipeline->preflightPipeline();
+  qDebug() << "Preflight Error: " << err;
+  
+  qDebug() << "Pipeline About to Execute....";
+  pipeline->execute();
+  
+  qDebug() << "Pipeline Done Executing...." << pipeline->getErrorCondition();
 
   // Return messages
   std::vector<PipelineMessage> errorMessages = listener.getErrorMessages();

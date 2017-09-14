@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include <QtCore/QFile>
+
 #include "SIMPLib/Common/SIMPLibSetGetMacros.h"
 #include "SIMPLib/Common/IObserver.h"
 #include "SIMPLib/Common/PipelineMessage.h"
@@ -13,9 +15,14 @@ class PipelineListener : public QObject, public IObserver
 public:
     SIMPL_TYPE_MACRO_SUPER(PipelineListener, IObserver)
 
-    
     PipelineListener(QObject* parent);
     virtual ~PipelineListener();
+
+    void createErrorLogFile(QString path);
+    void createWarningLogFile(QString path);
+    void createStatusLogFile(QString path);
+    void createStandardOutputLogFile(QString path);
+    void closeFiles();
 
     std::vector<PipelineMessage> getMessages();
     std::vector<PipelineMessage> getErrorMessages();
@@ -33,6 +40,11 @@ public slots:
 
 private:
     std::vector<PipelineMessage> m_Messages;
+
+    QFile* m_ErrorLog;
+    QFile* m_WarningLog;
+    QFile* m_StatusLog;
+    QFile* m_StandardOutputLog;
 };
 
 #endif
