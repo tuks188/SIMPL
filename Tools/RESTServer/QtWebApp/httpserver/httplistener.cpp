@@ -11,6 +11,8 @@
 #include "httpconnectionhandler.h"
 #include "httpconnectionhandlerpool.h"
 
+HttpListener* HttpListener::self = nullptr;
+
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
@@ -26,6 +28,26 @@ HttpListener::HttpListener(QSettings* settings, HttpRequestHandler* requestHandl
   qRegisterMetaType<tSocketDescriptor>("tSocketDescriptor");
   // Start listening
   listen();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+HttpListener* HttpListener::CreateInstance(QSettings* settings, HttpRequestHandler* requestHandler, QObject* parent)
+{
+  if(self == nullptr)
+  {
+    self = new HttpListener(settings, requestHandler, parent);
+  }
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+HttpListener* HttpListener::Instance()
+{
+  return self;
 }
 
 // -----------------------------------------------------------------------------
@@ -93,6 +115,14 @@ void HttpListener::close()
     delete pool;
     pool = nullptr;
   }
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+int HttpListener::getPort()
+{
+  return settings->value("port").toInt();
 }
 
 // -----------------------------------------------------------------------------

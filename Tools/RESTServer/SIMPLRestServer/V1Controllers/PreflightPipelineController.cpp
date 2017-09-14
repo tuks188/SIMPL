@@ -37,12 +37,16 @@
 #include "SIMPLib/Plugin/SIMPLibPluginLoader.h"
 
 #include <QtCore/QDateTime>
+#include <QtCore/QDir>
 #include <QtCore/QVariant>
 
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 
 #include "SIMPLRestServer/PipelineListener.h"
+#include "SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h"
+#include "QtWebApp/httpserver/httpsessionstore.h"
+#include "QtWebApp/httpserver/httplistener.h"
 
 // -----------------------------------------------------------------------------
 //
@@ -57,10 +61,14 @@ PreflightPipelineController::PreflightPipelineController(const QHostAddress &hos
 // -----------------------------------------------------------------------------
 void PreflightPipelineController::service(HttpRequest& request, HttpResponse& response)
 {
-  
+  // Get current session, or create a new one
+  HttpSessionStore* sessionStore = HttpSessionStore::Instance();
+  HttpSession session = sessionStore->getSession(request, response);
+
   QString content_type = request.getHeader(QByteArray("content-type"));
   
   QJsonObject rootObj;
+  rootObj["SessionID"] = QString(session.getId());
   
   response.setHeader("Content-Type", "application/json");
   
@@ -79,16 +87,80 @@ void PreflightPipelineController::service(HttpRequest& request, HttpResponse& re
   QJsonDocument requestDoc = QJsonDocument::fromJson(requestBody.toUtf8());
   QJsonObject requestObj = requestDoc.object();
 
+  QString linkAddress = "http://" +  getListenHost().toString() + ":" + QString::number(HttpListener::Instance()->getPort()) + QDir::separator() + QString(session.getId()) + QDir::separator();
+  SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
+  QString docRoot = staticFileController->getDocRoot();
+
   QJsonObject pipelineObj = requestObj["Pipeline"].toObject();
   FilterPipeline::Pointer pipeline = FilterPipeline::FromJson(pipelineObj);
-  PipelineListener* listener = new PipelineListener(nullptr);
-  pipeline->addMessageReceiver(listener);
+  PipelineListener listener(nullptr);
+  pipeline->addMessageReceiver(&listener);
   pipeline->preflightPipeline();
   
   //   response.setCookie(HttpCookie("firstCookie","hello",600,QByteArray(),QByteArray(),QByteArray(),false,true));
   //   response.setCookie(HttpCookie("secondCookie","world",600));
 
-  std::vector<PipelineMessage> errorMessages = listener->getErrorMessages();
+  // Log Files
+  bool createErrorLog = true;
+  bool createWarningLog = true;
+  bool createStatusLog = true;
+
+  QJsonArray outputLinks;
+  QString newFilePath = docRoot + QDir::separator() + QString(session.getId()) + QDir::separator();
+
+  QDir docRootDir(docRoot);
+  docRootDir.mkpath(newFilePath);
+
+  if(createErrorLog)
+  {
+    QString filename = pipeline->getName() + "-err.log";
+    QString filepath = newFilePath + QDir::separator() + filename;
+    QFile file(filepath);
+    if (file.open(QIODevice::ReadWrite))
+    {
+      QTextStream stream(&file);
+      stream << listener.getErrorLog() << endl;
+    }
+    file.close();
+
+    outputLinks.append(linkAddress + filename);
+  }
+
+  if(createWarningLog)
+  {
+    QString filename = pipeline->getName() + "-warning.log";
+    QString filepath = newFilePath + QDir::separator() + filename;
+    QFile file(filepath);
+    if (file.open(QIODevice::ReadWrite))
+    {
+      QTextStream stream(&file);
+      stream << listener.getWarningLog() << endl;
+    }
+    file.close();
+
+    outputLinks.append(linkAddress + filename);
+  }
+
+  if(createStatusLog)
+  {
+    QString filename = pipeline->getName() + "-status.log";
+    QString filepath = newFilePath + QDir::separator() + filename;
+    QFile file(filepath);
+    if (file.open(QIODevice::ReadWrite))
+    {
+      QTextStream stream(&file);
+      stream << listener.getStatusLog() << endl;
+    }
+    file.close();
+
+    outputLinks.append(linkAddress + filename);
+  }
+
+  // Append to the json response payload all the output links
+  rootObj["OutputLinks"] = outputLinks;
+
+  // Return messages
+  std::vector<PipelineMessage> errorMessages = listener.getErrorMessages();
   bool completed = (errorMessages.size() == 0);
   if(!completed)
   {
@@ -107,7 +179,7 @@ void PreflightPipelineController::service(HttpRequest& request, HttpResponse& re
     rootObj["Errors"] = errors;
   }
 
-  std::vector<PipelineMessage> warningMessages = listener->getWarningMessages();
+  std::vector<PipelineMessage> warningMessages = listener.getWarningMessages();
   QJsonArray warnings;
   int numWarnings = warningMessages.size();
   for(int i = 0; i < numWarnings; i++)
@@ -121,8 +193,6 @@ void PreflightPipelineController::service(HttpRequest& request, HttpResponse& re
     warnings.push_back(warning);
   }
   rootObj["Warnings"] = warnings;
-
-  delete listener;
 
   rootObj["Completed"] = completed;
   QJsonDocument jdoc(rootObj);

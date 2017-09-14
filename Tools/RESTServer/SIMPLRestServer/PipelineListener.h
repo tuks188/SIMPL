@@ -23,6 +23,11 @@ public:
     std::vector<PipelineMessage> getStatusMessages();
     std::vector<PipelineMessage> getStandardOutputMessages();
 
+    QString getErrorLog();
+    QString getWarningLog();
+    QString getStatusLog();
+    QString getStandardOutputLog();
+
 public slots:
     void processPipelineMessage(const PipelineMessage& pm);
 

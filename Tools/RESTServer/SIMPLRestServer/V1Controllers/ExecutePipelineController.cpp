@@ -31,13 +31,13 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 #include "ExecutePipelineController.h"
 
-
 #include <QtCore/QDateTime>
 #include <QtCore/QVariant>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QDir>
 #include <QtNetwork/QNetworkInterface>
+#include <QtWidgets/QApplication>
 
 #include "SIMPLib/Common/FilterManager.h"
 #include "SIMPLib/Common/FilterPipeline.h"
@@ -56,6 +56,7 @@
 #include "SIMPLRestServer/V1Controllers/SIMPLStaticFileController.h"
 #include "SIMPLRestServer/PipelineListener.h"
 #include "QtWebApp/httpserver/httpsessionstore.h"
+#include "QtWebApp/httpserver/httplistener.h"
 
 
 // -----------------------------------------------------------------------------
@@ -100,7 +101,7 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
   FilterPipeline::Pointer pipeline = FilterPipeline::FromJson(pipelineObj);
   qDebug() << "Number of Filters in Pipeline: " << pipeline->size();
   
-  QString linkAddress = "http://" +  getListenHost().toString() + QDir::separator() + QString(session.getId()) + QDir::separator();
+  QString linkAddress = "http://" +  getListenHost().toString() + ":" + QString::number(HttpListener::Instance()->getPort()) + QDir::separator() + QString(session.getId()) + QDir::separator();
   SIMPLStaticFileController* staticFileController = SIMPLStaticFileController::Instance();
   QString docRoot = staticFileController->getDocRoot();
   
@@ -148,9 +149,7 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
       }
     }
   }
-  // Append to the json response payload all the output links
-  rootObj["OutputLinks"] = outputLinks;
-  
+
   // Execute the pipeline
   PipelineListener listener(nullptr);
   Observer obs; // Create an Observer to report errors/progress from the executing pipeline
@@ -164,7 +163,64 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
   pipeline->execute();
   
   qDebug() << "Pipeline Done Executing...." << pipeline->getErrorCondition();
-  
+
+  // Log Files
+  bool createErrorLog = true;
+  bool createWarningLog = true;
+  bool createStatusLog = true;
+
+  QDir docRootDir(docRoot);
+  docRootDir.mkpath(newFilePath);
+
+  if(createErrorLog)
+  {
+    QString filename = pipeline->getName() + "-err.log";
+    QString filepath = newFilePath + QDir::separator() + filename;
+    QFile file(filepath);
+    if (file.open(QIODevice::ReadWrite))
+    {
+      QTextStream stream(&file);
+      stream << listener.getErrorLog() << endl;
+    }
+    file.close();
+
+    outputLinks.append(linkAddress + filename);
+  }
+
+  if(createWarningLog)
+  {
+    QString filename = pipeline->getName() + "-warning.log";
+    QString filepath = newFilePath + QDir::separator() + filename;
+    QFile file(filepath);
+    if (file.open(QIODevice::ReadWrite))
+    {
+      QTextStream stream(&file);
+      stream << listener.getWarningLog() << endl;
+    }
+    file.close();
+
+    outputLinks.append(linkAddress + filename);
+  }
+
+  if(createStatusLog)
+  {
+    QString filename = pipeline->getName() + "-status.log";
+    QString filepath = newFilePath + QDir::separator() + filename;
+    QFile file(filepath);
+    if (file.open(QIODevice::ReadWrite))
+    {
+      QTextStream stream(&file);
+      stream << listener.getStatusLog() << endl;
+    }
+    file.close();
+
+    outputLinks.append(linkAddress + filename);
+  }
+
+  // Append to the json response payload all the output links
+  rootObj["OutputLinks"] = outputLinks;
+
+  // Return messages
   std::vector<PipelineMessage> errorMessages = listener.getErrorMessages();
   bool completed = (errorMessages.size() == 0);
   if(!completed)
