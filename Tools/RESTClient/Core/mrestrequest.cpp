@@ -23,16 +23,13 @@ SOFTWARE.
 
 
 #include "mrestrequest.h"
+#include <QtCore/QString>
 #include <QTimer>
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QJsonParseError>
-#include <QDebug>
-#include <QLoggingCategory>
-
-Q_LOGGING_CATEGORY(crequest, "request")
 
 /*!
  * \defgroup Network Network communication with Web API
@@ -55,18 +52,18 @@ Q_LOGGING_CATEGORY(crequest, "request")
  * MRestRequest::Send() is used.
  */
 MRestRequest::MRestRequest(Type msgType) :
-    QObject(),
-    mPriority(Priority::Normal),
-    mType(msgType)
+  QObject(),
+  mPriority(Priority::Normal),
+  mType(msgType)
 {
-    mRequestTimeout = 5000;
-    mRequestTimer = new QTimer(this);
-    mRequestTimer->setSingleShot(true);
-    mRequestTimer->setInterval(mRequestTimeout);
-    connect(mRequestTimer, &QTimer::timeout,
-            this, &MRestRequest::retry);
+  mRequestTimeout = 5000;
+  mRequestTimer = new QTimer(this);
+  mRequestTimer->setSingleShot(true);
+  mRequestTimer->setInterval(mRequestTimeout);
+  connect(mRequestTimer, &QTimer::timeout,
+          this, &MRestRequest::retry);
 
-    createCommandMap();
+  createCommandMap();
 }
 
 MRestRequest::~MRestRequest()
@@ -94,7 +91,7 @@ void MRestRequest::createCommandMap()
  */
 void MRestRequest::setAddress(const QUrl &url)
 {
-    m_RequestUrl = url;
+  m_RequestUrl = url;
 }
 
 /*!
@@ -103,8 +100,8 @@ void MRestRequest::setAddress(const QUrl &url)
  */
 void MRestRequest::setRequestTimeout(quint32 msec)
 {
-    mRequestTimeout = msec;
-    mRequestTimer->setInterval(mRequestTimeout);
+  mRequestTimeout = msec;
+  mRequestTimer->setInterval(mRequestTimeout);
 }
 
 /*!
@@ -112,7 +109,7 @@ void MRestRequest::setRequestTimeout(quint32 msec)
  */
 QUrl MRestRequest::address() const
 {
-    return m_RequestUrl;
+  return m_RequestUrl;
 }
 
 /*!
@@ -120,7 +117,7 @@ QUrl MRestRequest::address() const
  */
 void MRestRequest::setPriority(MRestRequest::Priority priority)
 {
-    mPriority = priority;
+  mPriority = priority;
 }
 
 /*!
@@ -130,7 +127,7 @@ void MRestRequest::setPriority(MRestRequest::Priority priority)
  */
 bool MRestRequest::isHigherPriority(const MRestRequest& request)
 {
-    return mPriority > request.mPriority;
+  return mPriority > request.mPriority;
 }
 
 /*!
@@ -139,10 +136,10 @@ bool MRestRequest::isHigherPriority(const MRestRequest& request)
  */
 void MRestRequest::sendWith(QNetworkAccessManager* manager)
 {
-    mNetworkManager = manager;
-    mRequestRetryCounter = 1;
-    send();
-    mReplyData.clear();
+  mNetworkManager = manager;
+  mRequestRetryCounter = 1;
+  send();
+  mReplyData.clear();
 }
 
 /*!
@@ -150,7 +147,7 @@ void MRestRequest::sendWith(QNetworkAccessManager* manager)
  */
 QJsonDocument MRestRequest::document() const
 {
-    return mReplyDocument;
+  return mReplyDocument;
 }
 
 /*!
@@ -158,7 +155,7 @@ QJsonDocument MRestRequest::document() const
  */
 QString MRestRequest::lastError() const
 {
-    return mLastError;
+  return mLastError;
 }
 
 /*!
@@ -166,7 +163,7 @@ QString MRestRequest::lastError() const
  */
 QByteArray MRestRequest::rawData() const
 {
-    return mReplyData;
+  return mReplyData;
 }
 
 /*!
@@ -176,43 +173,50 @@ QByteArray MRestRequest::rawData() const
  */
 void MRestRequest::send()
 {
-    Q_ASSERT(mNetworkManager);
-    qCInfo(crequest) << mType << m_RequestUrl.toDisplayString() << mRequestRetryCounter;
-    mReplyData.clear();
-    QNetworkRequest request(m_RequestUrl);
-    request.setOriginatingObject(this);
+  Q_ASSERT(mNetworkManager);
+  QString msg = tr("%1 - Try %2").arg(m_RequestUrl.toDisplayString()).arg(QString::number(mRequestRetryCounter));
+  emit notifyStatusMessage(msg);
+  mReplyData.clear();
+  QNetworkRequest request(m_RequestUrl);
+  request.setOriginatingObject(this);
 
-    switch (mType) {
-    case Type::None:
-        qCDebug(crequest) << "Request type is set to None - can't send. Please"
-                          << "set request type to Put, Post, Get or Delete";
-        return;
-    case Type::Put:
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        mActiveReply = mNetworkManager->put(request, mRequestDocument.toJson());
-        break;
-    case Type::Get:
-        mActiveReply = mNetworkManager->get(request);
-        break;
-    case Type::Post:
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        mActiveReply = mNetworkManager->post(request, mRequestDocument.toJson());
-        break;
-    case Type::Delete:
-        mActiveReply = mNetworkManager->deleteResource(request);
-        break;
-    default: Q_UNREACHABLE(); break;
-    }
+  if (mType == Type::None)
+  {
+    QString errMsg = "Request type is set to None - can't send. Please set request type to Put, Post, Get or Delete";
+    emit notifyErrorMessage(errMsg);
+  }
+  else if (mType == Type::Put)
+  {
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    mActiveReply = mNetworkManager->put(request, mRequestDocument.toJson());
+  }
+  else if (mType == Type::Get)
+  {
+    mActiveReply = mNetworkManager->get(request);
+  }
+  else if (mType == Type::Post)
+  {
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    mActiveReply = mNetworkManager->post(request, mRequestDocument.toJson());
+  }
+  else if (mType == Type::Delete)
+  {
+    mActiveReply = mNetworkManager->deleteResource(request);
+  }
+  else
+  {
+    Q_UNREACHABLE();
+  }
 
-    connect(mActiveReply, &QNetworkReply::finished,
-            this, &MRestRequest::onReplyFinished);
-    connect(mActiveReply, &QNetworkReply::readyRead,
-            mRequestTimer, static_cast<void(QTimer::*)()>(&QTimer::start));
-    connect(mActiveReply, &QNetworkReply::readyRead,
-            this, &MRestRequest::onReadyRead);
-    connect(mActiveReply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
-            this, &MRestRequest::onReplyError);
-    mRequestTimer->start();
+  connect(mActiveReply, &QNetworkReply::finished,
+          this, &MRestRequest::onReplyFinished);
+  connect(mActiveReply, &QNetworkReply::readyRead,
+          mRequestTimer, static_cast<void(QTimer::*)()>(&QTimer::start));
+  connect(mActiveReply, &QNetworkReply::readyRead,
+          this, &MRestRequest::onReadyRead);
+  connect(mActiveReply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+          this, &MRestRequest::onReplyError);
+  mRequestTimer->start();
 }
 
 /*!
@@ -220,16 +224,19 @@ void MRestRequest::send()
  */
 void MRestRequest::retry()
 {
-    mActiveReply->abort();
-    mActiveReply->deleteLater();
-    if (++mRequestRetryCounter > mMaxRequestRetryCount) {
-        qCCritical(crequest, "Request retry limit reached - operation aborted!");
-    } else {
-        if (mActiveReply->bytesAvailable())
-            qCInfo(crequest, "Retrying request, %lldB lost.",
-                   mActiveReply->bytesAvailable());
-        send();
+  mActiveReply->abort();
+  mActiveReply->deleteLater();
+  if (++mRequestRetryCounter > mMaxRequestRetryCount) {
+    QString errMsg = "Request retry limit reached - operation aborted!";
+    notifyErrorMessage(errMsg);
+  } else {
+    if (mActiveReply->bytesAvailable())
+    {
+      QString msg = QObject::tr("Retrying request, %1 bytes lost.").arg(mActiveReply->bytesAvailable());
+      emit notifyStatusMessage(msg);
+      send();
     }
+  }
 }
 
 /*!
@@ -238,14 +245,13 @@ void MRestRequest::retry()
  */
 void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
 {
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
-    if (reply != Q_NULLPTR && code != QNetworkReply::NoError) {
-        reply->deleteLater();
-        mRequestTimer->stop();
-        mLastError = reply->errorString();
-        qCCritical(crequest) << mLastError;
-        emit replyError(mLastError);
-    }
+  QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
+  if (reply != Q_NULLPTR && code != QNetworkReply::NoError) {
+    reply->deleteLater();
+    mRequestTimer->stop();
+    mLastError = reply->errorString();
+    emit notifyErrorMessage(mLastError);
+  }
 }
 
 /*!
@@ -253,10 +259,10 @@ void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
  */
 void MRestRequest::onReadyRead()
 {
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
-    if (reply != nullptr) {
-        mReplyData += reply->readAll();
-    }
+  QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
+  if (reply != nullptr) {
+    mReplyData += reply->readAll();
+  }
 }
 
 /*!
@@ -264,49 +270,46 @@ void MRestRequest::onReadyRead()
  */
 void MRestRequest::onReplyFinished()
 {
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
-    if (reply == nullptr) {
-        return;
-    }
+  QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
+  if (reply == nullptr) {
+    return;
+  }
 
-    mRequestTimer->stop();
-    reply->deleteLater();
+  mRequestTimer->stop();
+  reply->deleteLater();
 
-    const QString requestName(metaObject()->className());
-    QJsonParseError parseError;
+  const QString requestName(metaObject()->className());
+  QJsonParseError parseError;
 
-    const QString status(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
-                         .toString());
+  const QString status(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
+                       .toString());
 
-    if (mReplyData.isEmpty()) {
-        qCDebug(crequest) << requestName << status << "Request reply is empty";
-        emit finished();
-        return;
-    }
-
-    // rawData can still be parsed in another formats
-    mReplyDocument = QJsonDocument::fromJson(mReplyData, &parseError);
-    if (parseError.error != QJsonParseError::NoError) {
-        qCWarning(crequest) << requestName << status
-                            << "Error while parsing json document:"
-                            << parseError.errorString();
-
-       emit finished();
-       return;
-    }
-
-    qCDebug(crequest) << requestName << "request response received";
-
-    if (mReplyDocument.isNull()) {
-        mLastError = "JSON document is invalid";
-        qCDebug(crequest) << requestName << mLastError;
-        emit finished(); // rawData can still be parsed in another formats
-        return;
-    }
-
-    //parse json document according to specific request reply format
-    parseReplyData();
+  if (mReplyData.isEmpty()) {
+    emit notifyErrorMessage(tr("%1 - %2 - Request reply is empty").arg(requestName).arg(status));
     emit finished();
+    return;
+  }
+
+  // rawData can still be parsed in another formats
+  mReplyDocument = QJsonDocument::fromJson(mReplyData, &parseError);
+  if (parseError.error != QJsonParseError::NoError) {
+    emit notifyWarningMessage(tr("%1 - %2 - Error while parsing json document: %3").arg(requestName).arg(status).arg(parseError.errorString()));
+    emit finished();
+    return;
+  }
+
+  emit notifyStatusMessage(tr("%1 - request response received").arg(requestName));
+
+  if (mReplyDocument.isNull()) {
+    mLastError = "JSON document is invalid";
+    emit notifyStatusMessage(tr("%1 - %2").arg(requestName).arg(mLastError));
+    emit finished(); // rawData can still be parsed in another formats
+    return;
+  }
+
+  //parse json document according to specific request reply format
+  parseReplyData();
+  emit finished();
 }
 
 /*!

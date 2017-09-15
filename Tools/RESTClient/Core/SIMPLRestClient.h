@@ -37,7 +37,8 @@ class SIMPLRestClient : public MRestRequestManager
 {
     Q_OBJECT
 public:
-    explicit SIMPLRestClient(QUrl serverUrl, QObject *parent = nullptr);
+    SIMPLRestClient(QObject *parent = nullptr);
+    SIMPLRestClient(QUrl serverUrl, QObject *parent = nullptr);
 
     QJsonObject extractPipelineFromFile(const QString &filePath);
 
@@ -57,7 +58,13 @@ public:
 
     void sendPreflightPipelineRequest(QJsonObject pipelineObject, int timeout = 5000);
 
+    void setServerUrl(QUrl url);
+
   signals:
+    void notifyErrorMessage(const QString &msg);
+    void notifyWarningMessage(const QString &msg);
+    void notifyStatusMessage(const QString &msg);
+
     void finished();
 
 private:

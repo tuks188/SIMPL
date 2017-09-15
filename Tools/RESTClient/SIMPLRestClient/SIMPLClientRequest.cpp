@@ -69,8 +69,7 @@ void SIMPLClientRequest::parseReplyData()
     const QJsonObject object(mReplyDocument.object());
 
     QByteArray out = mReplyDocument.toJson(QJsonDocument::Indented);
-   // qDebug() << out;
-    std::cout << out.data() << std::endl;
+    emit notifyStatusMessage(out.data());
 
     emit finished();
 

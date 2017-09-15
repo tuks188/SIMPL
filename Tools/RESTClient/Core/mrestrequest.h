@@ -55,6 +55,10 @@ public:
     QByteArray rawData() const;
 
 signals:
+    void notifyStatusMessage(const QString &msg);
+    void notifyErrorMessage(const QString &msg);
+    void notifyWarningMessage(const QString &msg);
+
     void finished() const;
     void replyError(const QString &msgs) const;
 

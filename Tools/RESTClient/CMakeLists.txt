@@ -11,6 +11,7 @@ set(RESTClient_MOC_HDRS
 
   ${RESTClient_SOURCE_DIR}/SIMPLRestClient/SIMPLClientRequest.h
 
+  ${RESTClient_SOURCE_DIR}/SIMPLRestClient_UI.h
 )
 
 set(RESTClient_HDRS
@@ -27,25 +28,37 @@ set(RESTClient_SRCS
   ${RESTClient_SOURCE_DIR}/Core/config.cpp
 
   ${RESTClient_SOURCE_DIR}/SIMPLRestClient/SIMPLClientRequest.cpp
+
+  ${RESTClient_SOURCE_DIR}/SIMPLRestClient_UI.cpp
 )
 
+set(RESTClient_UIS
+  ${RESTClient_SOURCE_DIR}/UI_Files/SIMPLRestClient_UI.ui
+  )
+
 cmp_IDE_SOURCE_PROPERTIES( "RestClient" "${RESTClient_MOC_HDRS};${RESTClient_HDRS}" "${RESTClient_SRCS}" "0")
+
+cmp_IDE_GENERATED_PROPERTIES("RestClient/UI_Files" "${RESTClient_UIS}" "")
 
 # --------------------------------------------------------------------
 # and finally this will run moc:
 QT5_WRAP_CPP( RESTClient_Generated_MOC_SRCS ${RESTClient_MOC_HDRS} )
+QT5_WRAP_UI( RESTClient_Generated_UI_HDRS ${RESTClient_UIS} )
 set_source_files_properties( ${RESTClient_Generated_MOC_SRCS} PROPERTIES GENERATED TRUE)
 # set_source_files_properties( ${RESTClient_Generated_MOC_SRCS} PROPERTIES HEADER_FILE_ONLY TRUE)
 
 # --------------------------------------------------------------------
 #-- Put the Qt generated files into their own group for IDEs
 cmp_IDE_SOURCE_PROPERTIES( "Generated/Qt_Moc" "" "${RESTClient_Generated_MOC_SRCS}" "0")
+cmp_IDE_SOURCE_PROPERTIES( "Generated/Qt_Uic" "${RESTClient_Generated_UI_HDRS}" "" "0")
+
 
 set(RESTClient_SRCS_Compiled
   ${RESTClient_MOC_HDRS}
   ${RESTClient_SRCS}
   ${RESTClient_HDRS}
   ${RESTClient_Generated_MOC_SRCS}
+  ${RESTClient_Generated_UI_HDRS}
   )
 
 set(install_dir "bin")
@@ -69,7 +82,7 @@ BuildToolBundle(
     VERSION_MINOR ${SIMPL_VER_MINOR}
     VERSION_PATCH ${SIMPL_VER_PATCH}
     BINARY_DIR    ${${PROJECT_NAME}_BINARY_DIR}
-    LINK_LIBRARIES Qt5::Core Qt5::Network SIMPLib
+    LINK_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Network SIMPLib
     LIB_SEARCH_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
     COMPONENT     Tools
     INSTALL_DEST  "${install_dir}"

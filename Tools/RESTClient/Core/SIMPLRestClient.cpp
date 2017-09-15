@@ -33,6 +33,15 @@ SOFTWARE.
 
 Q_LOGGING_CATEGORY(mrbrequest, "request")
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+SIMPLRestClient::SIMPLRestClient(QObject *parent)
+    : MRestRequestManager(parent),
+      m_ServerUrl(QUrl())
+{
+
+}
 
 // -----------------------------------------------------------------------------
 //
@@ -139,6 +148,10 @@ QSharedPointer<SIMPLClientRequest> SIMPLRestClient::createRequest(SIMPLClientReq
     }
   });
 
+  QObject::connect(clientRequest.data(), &SIMPLClientRequest::notifyErrorMessage, this, &SIMPLRestClient::notifyErrorMessage);
+  QObject::connect(clientRequest.data(), &SIMPLClientRequest::notifyWarningMessage, this, &SIMPLRestClient::notifyWarningMessage);
+  QObject::connect(clientRequest.data(), &SIMPLClientRequest::notifyStatusMessage, this, &SIMPLRestClient::notifyStatusMessage);
+
   return clientRequest;
 }
 
@@ -160,4 +173,12 @@ QJsonObject SIMPLRestClient::extractPipelineFromFile(const QString &filePath)
   pipelineObject["Pipeline"] = doc.object();
 
   return pipelineObject;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void SIMPLRestClient::setServerUrl(QUrl url)
+{
+  m_ServerUrl = url;
 }

@@ -27,75 +27,26 @@ SOFTWARE.
 
 #include <QtCore/QFile>
 
-#include "Core/SIMPLRestClient.h"
-
-#include "SIMPLRestClient/SIMPLClientRequest.h"
+#include "SIMPLRestClient_UI.h"
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-    QCoreApplication app(argc, argv);
+    QApplication app(argc, argv);
     app.setApplicationVersion("1.0.0");
     app.setOrganizationName("BlueQuartz Software");
     app.setApplicationName("REST API Communication");
 
-    QUrl mikeUrl = QUrl("http://10.0.1.142:8080/");
-    QUrl matthewUrl = QUrl("http://10.0.1.109:8080/");
+    #if defined (Q_OS_MAC)
+      QGuiApplication::setQuitOnLastWindowClosed(false);
+    #endif
 
-    // Create the SIMPL Rest client
-    SIMPLRestClient* client = new SIMPLRestClient(matthewUrl);
+    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
-    auto finishedLambda = [&app] {
-        app.quit();
-    };
-
-    QObject::connect(client, &SIMPLRestClient::finished, finishedLambda);
-
-
-//    // "API Not Found" Test
-//    {
-//      client->sendAPINotFoundRequest(30000);
-//    }
-
-    // "Execute Pipeline" Test
-    {
-      QJsonObject pipelineObj = client->extractPipelineFromFile("/Users/joeykleingers/Desktop/Granta_Synthetic_Pipeline.json");
-      client->sendExecutePipelineRequest(pipelineObj, 30000);
-    }
-
-//    // "List Filter Parameters" Test
-//    {
-//      QJsonObject filterNameObj;
-//      filterNameObj.insert("ClassName", "DataContainerReader");
-//      client->sendListFilterParametersRequest(filterNameObj, 30000);
-//    }
-
-//    // "Loaded Plugins" Test
-//    {
-//      client->sendLoadedPluginsRequest(30000);
-//    }
-
-//    // "Names of Filters" Test
-//    {
-//      client->sendNamesOfFiltersRequest(30000);
-//    }
-
-//    // "Number Of Filters" Test
-//    {
-//      client->sendNumberOfFiltersRequest(30000);
-//    }
-
-//    // "Plugin Information" Test
-//    {
-//      client->sendPluginInformationRequest(30000);
-//    }
-
-//    // "Preflight Pipeline" Test
-//    {
-//      client->sendPreflightPipelineRequest(30000);
-//    }
+    SIMPLRestClient_UI* ui = new SIMPLRestClient_UI(nullptr);
+    ui->show();
 
     return app.exec();
 }
