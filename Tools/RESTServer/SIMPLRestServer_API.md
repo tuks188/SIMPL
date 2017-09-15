@@ -36,7 +36,7 @@ Static web pages and files can be served up by using:
 | PluginInfo   | v1 | YES |
 | PreflightPipeline | v1 | YES |
 
-## ExecutePipeline ##
+## /api/v1/ExecutePipeline ##
 
 **Input JSON**
 
@@ -60,7 +60,7 @@ Static web pages and files can be served up by using:
 | Errors | Array | Error messages generated during the execution of the pipeline |
 
 
-## ListFilerParameters ##
+## /api/v1/ListFilerParameters ##
 
 **Input JSON**
 
@@ -89,7 +89,7 @@ Static web pages and files can be served up by using:
 | FilterParameterReadOnly | BOOL | Is the filter parameter read-only.  |
 
 
-## LoadedPlugins ##
+## /api/v1/LoadedPlugins ##
 
 **Input JSON**
 
@@ -104,7 +104,7 @@ Static web pages and files can be served up by using:
 
 
 
-## NamesOfFilters ##
+## /api/v1/NamesOfFilters ##
 
 **Input JSON**
 
@@ -118,10 +118,9 @@ Static web pages and files can be served up by using:
 |-----|-------|-------|
 | ErrorCode | int | 0=No error, Negative=Error |
 | Filters | Array of Objects | Each object has the "ClassName" and "HumanLabel" keys |
- 
 
 
-## NumFilters ##
+## /api/v1/NumFilters ##
 
 **Input JSON**
 
@@ -134,7 +133,7 @@ Static web pages and files can be served up by using:
 |-----|-------|-------|
 | NumFilters | int | The number of filters available in the running instance |
 
-## PluginInfo ##
+## /api/v1/PluginInfo ##
 
 **Input JSON**
 
@@ -158,7 +157,7 @@ Static web pages and files can be served up by using:
 | License | String |  |
 
 
-## PreflightPipeline ##
+## /api/v1/PreflightPipeline ##
 
 **Input JSON**
 
