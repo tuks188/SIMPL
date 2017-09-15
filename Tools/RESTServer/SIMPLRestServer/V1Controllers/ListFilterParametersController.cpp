@@ -71,7 +71,6 @@ void ListFilterParametersController::createFilterParametersJson(const QString &f
     filterObj["FilterParameterWidget"] = parameter->getWidgetType();
     filterObj["FilterParameterCategory"] = parameter->getCategory();
     filterObj["FilterParameterGroupIndex"] = parameter->getGroupIndex();
-    filterObj["FilterParameterWidget"] = parameter->getWidgetType();
     filterObj["FilterParameterHumanLabel"] = parameter->getHumanLabel();
     filterObj["FilterParameterPropertyName"] = parameter->getPropertyName();
     filterObj["FilterParameterReadOnly"] = parameter->getReadOnly();
