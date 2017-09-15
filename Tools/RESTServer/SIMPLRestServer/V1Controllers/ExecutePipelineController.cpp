@@ -36,6 +36,7 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QDir>
+#include <QtCore/QProcess>
 #include <QtNetwork/QNetworkInterface>
 #include <QtWidgets/QApplication>
 
@@ -245,13 +246,40 @@ void ExecutePipelineController::service(HttpRequest& request, HttpResponse& resp
     msg["Message"] = statusMessages[i].generateStatusString();   
     statusMsgs.push_back(msg);
   }
-  rootObj["StatusMessages"] = statusMsgs;
+ // rootObj["StatusMessages"] = statusMsgs;
   rootObj["Warnings"] = warnings;
   rootObj["Completed"] = completed;
   
   
-  QJsonDocument jdoc(rootObj);
+  // **************************************************************************
+  // This section archives the working directory for this session
+  QProcess tar;
+  tar.setWorkingDirectory(docRoot);
+  std::cout << "Working Directory from Process: " <<tar.workingDirectory().toStdString() << std::endl;
+  tar.start("/usr/bin/tar", QStringList() << "-cvf" << QString(session.getId() + ".tar.gz") << QString(session.getId()));
+  if (!tar.waitForStarted())
+  {
   
+  }
+
+  if (!tar.waitForFinished())
+  {
+  
+  }
+  
+  QByteArray result = tar.readAllStandardError();
+  std::cout << result.data() << std::endl;
+  result = tar.readAllStandardOutput();
+  std::cout << result.data() << std::endl;
+  
+  outputLinks.append("http://" + getListenHost().toString() + ":8080" + QDir::separator() + QString(session.getId()) + ".tar.gz");
+  // **************************************************************************
+  
+  // Append to the json response payload all the output links
+  rootObj["OutputLinks"] = outputLinks;
+  
+  
+  QJsonDocument jdoc(rootObj);
   response.write(jdoc.toJson(), true);
 }
 

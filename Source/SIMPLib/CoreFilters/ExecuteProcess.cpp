@@ -163,7 +163,10 @@ void ExecuteProcess::execute()
   connect(m_ProcessPtr.data(), SIGNAL(error(QProcess::ProcessError)), this, SLOT(processHasErroredOut(QProcess::ProcessError)), Qt::QueuedConnection);
   connect(m_ProcessPtr.data(), SIGNAL(readyReadStandardError()), this, SLOT(sendErrorOutput()), Qt::QueuedConnection);
   connect(m_ProcessPtr.data(), SIGNAL(readyReadStandardOutput()), this, SLOT(sendStandardOutput()), Qt::QueuedConnection);
-  m_ProcessPtr->start(command, arguments);
+  
+  
+  
+  m_ProcessPtr->start(getArguments());
   m_ProcessPtr->waitForStarted(2000);
 
   m_Mutex.lock();
