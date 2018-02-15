@@ -627,6 +627,7 @@ namespace SIMPL
     const QString ODFWeights("ODF-Weights");
 
     const QString ParentPhase("Parent Phase");
+	const QString ParetoDistribution("Pareto Distribution");
     const QString PhaseFraction("PhaseFraction");
     const QString PhaseType("PhaseType");
     const QString PipelineGroupName("Pipeline");
@@ -722,7 +723,8 @@ namespace SIMPL
     const unsigned int RDFFrequency = 3; //!<
     const unsigned int RDFMaxMin = 4; //!<
     const unsigned int UnknownDistributionType = 5;    //!<
-    const unsigned int Count = 6; //!<
+	const unsigned int Count = 6; //!<
+	const unsigned int Pareto = 7; //!<
 
     enum ColumnCount
     {
@@ -730,8 +732,9 @@ namespace SIMPL
       LogNormalColumnCount = 2,  //!<
       PowerLawColumnCount = 2,   //!<
       RawDistDataColumnCount = 1,   //!<
-      UnknownColumCount = 0      //!<
-    };
+	  UnknownColumCount = 0,      //!<
+	  ParetoColumnCount = 2      //!<
+	};
 
 
   }
