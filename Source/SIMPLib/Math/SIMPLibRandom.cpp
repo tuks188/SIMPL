@@ -452,3 +452,18 @@ double SIMPLibRandom::genrand_norm(double m, double s)
   }
   return (m + s * z);
 }
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+double SIMPLibRandom::genrand_pareto(double m, double s, double x)
+{
+	double u, z, expTerm;
+
+	u = genrand_res53();
+	expTerm = pow(u, -x);
+	z = m + ((s * (expTerm - 1.0)) / x);
+
+	return z;
+}
+

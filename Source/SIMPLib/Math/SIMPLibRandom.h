@@ -175,6 +175,8 @@ public:
 
   double genrand_norm(double a, double b);
 
+  double genrand_pareto(double a, double b, double c);
+
 private:
   unsigned long mt[MERSENNNE_TWISTER_N]; /* the array for the state vector  */
   int mti;                               // =N+1; /* mti==N+1 means mt[N] is not initialized */

@@ -578,6 +578,8 @@ namespace SIMPL
     const QString Euler3("Euler 3");
     const QString Exp_k("K");
 
+	const QString Location("Location");
+
     const QString FaceNeighbors("FaceNeighbors");
     const QString FacesContainingVert("FacesContainingVert");
     const QString FacesName("Faces");
@@ -645,8 +647,10 @@ namespace SIMPL
     const QString RdfBoxDims("BoxDims");
     const QString RdfBoxRes("BoxRes");
 
-    const QString Sigma("Sigma");
-    const QString StandardDeviation("Standard Deviation");
+	const QString Scale("Scale");
+	const QString Shape("Shape");
+	const QString Sigma("Sigma");
+	const QString StandardDeviation("Standard Deviation");
     const QString Statistics("Statistics");
     const QString Stats("Stats");
     const QString StatsData("StatsData");
