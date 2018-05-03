@@ -122,6 +122,9 @@ class SVWidgetsLib_EXPORT DataArraySelectionWidget : public FilterParameterWidge
      */
     void createSelectionMenu();
 
+  protected slots:
+    void updateDataArrayPath(QString propertyName, DataArrayPath::RenameType renamePath);
+
   signals:
     void errorSettingFilterParameter(const QString& msg);
     void parametersChanged();
@@ -138,7 +141,7 @@ class SVWidgetsLib_EXPORT DataArraySelectionWidget : public FilterParameterWidge
     void setSelectedPath(DataArrayPath path);
 
     DataArraySelectionWidget(const DataArraySelectionWidget&) = delete; // Copy Constructor Not Implemented
-    void operator=(const DataArraySelectionWidget&) = delete;           // Operator '=' Not Implemented
+    void operator=(const DataArraySelectionWidget&) = delete;           // Move assignment Not Implemented
 };
 
 #endif /* _DataArraySelectionWidget_H_ */

@@ -244,25 +244,16 @@ void DataContainerArrayProxy::print(const QString header)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void DataContainerArrayProxy::setAllFlags(Qt::CheckState state)
+void DataContainerArrayProxy::setFlags(uint8_t flag, DataContainerProxy::DCGeometryTypeFlags dcGeoms, AttributeMatrixProxy::AMTypeFlags amTypes,
+                                       DataArrayProxy::PrimitiveTypeFlags primitiveTypes, DataArrayProxy::CompDimsVector compDimsVector)
 {
   for(QMap<QString, DataContainerProxy>::iterator dcIter = dataContainers.begin(); dcIter != dataContainers.end(); ++dcIter) // DataContainer Level
   {
     DataContainerProxy& dcProxy = dcIter.value();
-    dcProxy.flag = state;
-
-    QMap<QString, AttributeMatrixProxy>& amProxies = dcProxy.attributeMatricies;
-    for(QMap<QString, AttributeMatrixProxy>::iterator amIter = amProxies.begin(); amIter != amProxies.end(); ++amIter) // AttributeMatrix Level
+    DataContainerProxy::DCGeometryTypeFlag dcGeomFlag = DataContainerProxy::GeometryTypeToFlag(static_cast<IGeometry::Type>(dcProxy.dcType));
+    if ((dcGeoms & dcGeomFlag) > 0 || dcGeoms == DataContainerProxy::DCGeometryTypeFlag::Any_DCGeomType)
     {
-      AttributeMatrixProxy& amProxy = amIter.value();
-      amProxy.flag = state;
-
-      QMap<QString, DataArrayProxy>& daProxies = amProxy.dataArrays;
-      for(QMap<QString, DataArrayProxy>::iterator daIter = daProxies.begin(); daIter != daProxies.end(); ++daIter) // DataArray Level
-      {
-        DataArrayProxy& daProxy = daIter.value();
-        daProxy.flag = state;
-      }
+      dcProxy.setFlags(flag, amTypes, primitiveTypes, compDimsVector);
     }
   }
 }
@@ -492,6 +483,23 @@ DataContainerProxy& DataContainerArrayProxy::getDataContainerProxy(const QString
   DataContainerProxy proxy(name);
   dataContainers.insert(proxy.name, proxy);
   return dataContainers[name];
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void DataContainerArrayProxy::updatePath(DataArrayPath::RenameType renamePath)
+{
+  DataArrayPath oldPath;
+  DataArrayPath newPath;
+  std::tie(oldPath, newPath) = renamePath;
+
+  if(dataContainers.contains(oldPath.getDataContainerName()))
+  {
+    DataContainerProxy dcProxy = dataContainers.take(oldPath.getDataContainerName());
+    dcProxy.updatePath(renamePath);
+    dataContainers.insert(newPath.getDataContainerName(), dcProxy);
+  }
 }
 
 // -----------------------------------------------------------------------------

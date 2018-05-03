@@ -138,6 +138,13 @@ class SIMPLib_EXPORT ComparisonSelectionFilterParameter : public FilterParameter
     */
     SIMPL_INSTANCE_PROPERTY(GetterCallbackType, GetterCallback)
 
+    /**
+     * @brief Handle DataArrayPath changes if necessary
+     * @param filter
+     * @param renamePath
+     */
+    void dataArrayPathRenamed(AbstractFilter* filter, DataArrayPath::RenameType renamePath) override;
+
   protected:
       /**
        * @brief ComparisonSelectionFilterParameter The default constructor.  It is protected because this
@@ -147,7 +154,7 @@ class SIMPLib_EXPORT ComparisonSelectionFilterParameter : public FilterParameter
 
   private:
     ComparisonSelectionFilterParameter(const ComparisonSelectionFilterParameter&) = delete; // Copy Constructor Not Implemented
-    void operator=(const ComparisonSelectionFilterParameter&) = delete;                     // Operator '=' Not Implemented
+    void operator=(const ComparisonSelectionFilterParameter&) = delete;                     // Move assignment Not Implemented
 };
 
 #endif /* _ComparisonSelectionFilterParameter_H_ */

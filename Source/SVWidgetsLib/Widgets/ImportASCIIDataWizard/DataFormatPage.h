@@ -194,6 +194,12 @@ class DataFormatPage : public AbstractWizardPage, private Ui::DataFormatPage
      */
     bool eventFilter(QObject* obj, QEvent* event);
 
+    /**
+    * @brief Handle DataArrayPath changes if necessary
+    * @param renamePath
+    */
+    void updateDataArrayPath(DataArrayPath::RenameType renamePath);
+
   public slots:
     /**
      * @brief dcaItemSelected
@@ -290,7 +296,7 @@ class DataFormatPage : public AbstractWizardPage, private Ui::DataFormatPage
     bool validateTupleDimensions(QVector<size_t> tupleDims);
 
     DataFormatPage(const DataFormatPage&) = delete; // Copy Constructor Not Implemented
-    void operator=(const DataFormatPage&) = delete; // Operator '=' Not Implemented
+    void operator=(const DataFormatPage&) = delete; // Move assignment Not Implemented
 };
 
 #endif /* DataFormatPage_H_ */

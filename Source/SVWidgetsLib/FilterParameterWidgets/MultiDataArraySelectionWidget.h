@@ -134,6 +134,8 @@ class SVWidgetsLib_EXPORT MultiDataArraySelectionWidget : public FilterParameter
     void on_availableArraysListWidget_itemDoubleClicked(QListWidgetItem* item);
     void on_selectedArraysListWidget_itemDoubleClicked(QListWidgetItem* item);
 
+    void updateDataArrayPath(QString propertyName, DataArrayPath::RenameType renamePath);
+
   signals:
     void errorSettingFilterParameter(const QString& msg);
     void parametersChanged();
@@ -154,7 +156,7 @@ class SVWidgetsLib_EXPORT MultiDataArraySelectionWidget : public FilterParameter
     void selectionChanged();
 
     MultiDataArraySelectionWidget(const MultiDataArraySelectionWidget&) = delete; // Copy Constructor Not Implemented
-    void operator=(const MultiDataArraySelectionWidget&) = delete;                // Operator '=' Not Implemented
+    void operator=(const MultiDataArraySelectionWidget&) = delete;                // Move assignment Not Implemented
 };
 
 #endif /* _MultiDataArraySelectionWidget_H_ */

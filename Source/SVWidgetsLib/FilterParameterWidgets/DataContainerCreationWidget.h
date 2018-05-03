@@ -90,11 +90,14 @@ class SVWidgetsLib_EXPORT DataContainerCreationWidget : public FilterParameterWi
     void errorSettingFilterParameter(const QString& msg);
     void parametersChanged();
 
+  protected slots:
+    void updateDataArrayPath(QString propertyName, DataArrayPath::RenameType renamePath);
+
   private:
     DataContainerCreationFilterParameter*                 m_FilterParameter;
 
     DataContainerCreationWidget(const DataContainerCreationWidget&) = delete; // Copy Constructor Not Implemented
-    void operator=(const DataContainerCreationWidget&) = delete;              // Operator '=' Not Implemented
+    void operator=(const DataContainerCreationWidget&) = delete;              // Move assignment Not Implemented
 };
 
 #endif /* _DataContainerCreationWidget_H_ */

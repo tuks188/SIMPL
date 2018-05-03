@@ -40,6 +40,7 @@
 
 #include "SIMPLib/DataContainers/AttributeMatrix.h"
 #include "SIMPLib/FilterParameters/FilterParameter.h"
+#include "SIMPLib/Filtering/AbstractComparison.h"
 #include "SIMPLib/Filtering/ComparisonInputsAdvanced.h"
 #include "SIMPLib/Geometry/IGeometry.h"
 
@@ -138,16 +139,23 @@ class SIMPLib_EXPORT ComparisonSelectionAdvancedFilterParameter : public FilterP
     */
     SIMPL_INSTANCE_PROPERTY(GetterCallbackType, GetterCallback)
 
+    /**
+     * @brief Handle DataArrayPath changes if necessary
+     * @param filter
+     * @param renamePath
+     */
+    void dataArrayPathRenamed(AbstractFilter* filter, DataArrayPath::RenameType renamePath) override;
+
   protected:
-      /**
-       * @brief ComparisonSelectionAdvancedFilterParameter The default constructor.  It is protected because this
-       * filter parameter should only be instantiated using its New(...) function or short-form macro.
-       */
+    /**
+     * @brief ComparisonSelectionAdvancedFilterParameter The default constructor.  It is protected because this
+     * filter parameter should only be instantiated using its New(...) function or short-form macro.
+     */
     ComparisonSelectionAdvancedFilterParameter();
 
   private:
     ComparisonSelectionAdvancedFilterParameter(const ComparisonSelectionAdvancedFilterParameter&) = delete; // Copy Constructor Not Implemented
-    void operator=(const ComparisonSelectionAdvancedFilterParameter&) = delete;                             // Operator '=' Not Implemented
+    void operator=(const ComparisonSelectionAdvancedFilterParameter&) = delete;                             // Move assignment Not Implemented
 };
 
 #endif /* _ComparisonSelectionAdvancedFilterParameter_H_ */

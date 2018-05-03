@@ -237,6 +237,12 @@ class SIMPLib_EXPORT DataContainerArray : public QObject
     void removeDataContainerFromBundles(const QString& name);
 
     /**
+    * @brief renameDataArrayPaths
+    * @param renamePaths
+    */
+    void renameDataArrayPaths(DataArrayPath::RenameContainer renamePaths);
+
+    /**
      * @brief getPrereqDataContainer
      * @param name
      * @param createIfNotExists
@@ -721,7 +727,7 @@ class SIMPLib_EXPORT DataContainerArray : public QObject
     QMap<QString, IDataContainerBundle::Pointer> m_DataContainerBundles;
 
     DataContainerArray(const DataContainerArray&) = delete; // Copy Constructor Not Implemented
-    void operator=(const DataContainerArray&) = delete;     // Operator '=' Not Implemented
+    void operator=(const DataContainerArray&) = delete;     // Move assignment Not Implemented
 };
 
 #endif /* DATACONTAINERARRAY_H_ */

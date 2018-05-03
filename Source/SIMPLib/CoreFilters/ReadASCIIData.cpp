@@ -22,9 +22,7 @@
 //
 // -----------------------------------------------------------------------------
 ReadASCIIData::ReadASCIIData()
-: AbstractFilter()
 {
-  setupFilterParameters();
 }
 
 // -----------------------------------------------------------------------------
@@ -213,6 +211,16 @@ void ReadASCIIData::writeFilterParameters(QJsonObject& obj)
     }
     obj[prefix + "TupleDims"] = jsonArray;
   }
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void ReadASCIIData::renameDataArrayPath(DataArrayPath::RenameType renamePath)
+{
+  getWizardData().updateDataArrayPath(renamePath);
+
+  AbstractFilter::renameDataArrayPath(renamePath);
 }
 
 // -----------------------------------------------------------------------------

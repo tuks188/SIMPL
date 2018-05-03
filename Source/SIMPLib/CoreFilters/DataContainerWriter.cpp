@@ -61,15 +61,13 @@ extern Q_CORE_EXPORT int qt_ntfs_permission_lookup;
 //
 // -----------------------------------------------------------------------------
 DataContainerWriter::DataContainerWriter()
-: AbstractFilter()
-, m_OutputFile(QDir::toNativeSeparators(QDir::homePath() + "/Desktop/Untitled.dream3d"))
+: m_OutputFile(QDir::toNativeSeparators(QDir::homePath() + "/Desktop/Untitled.dream3d"))
 , m_WritePipeline(true)
 , m_WriteXdmfFile(true)
 , m_WriteTimeSeries(false)
 , m_AppendToExisting(false)
 , m_FileId(-1)
 {
-  setupFilterParameters();
 }
 
 // -----------------------------------------------------------------------------
@@ -150,9 +148,9 @@ void DataContainerWriter::dataCheck()
 
 #ifdef _WIN32
   // Turn file permission checking on, if requested
-  #ifdef SIMPLib_NTFS_FILE_CHECK
-  //qt_ntfs_permission_lookup++;
-  #endif
+#ifdef SIMPL_NTFS_FILE_CHECK
+// qt_ntfs_permission_lookup++;
+#endif
 #endif
 
   QFileInfo dirInfo(fi.path());
@@ -166,9 +164,9 @@ void DataContainerWriter::dataCheck()
 
 #ifdef _WIN32
   // Turn file permission checking off, if requested
-  #ifdef SIMPLib_NTFS_FILE_CHECK
-  //qt_ntfs_permission_lookup--;
-  #endif
+#ifdef SIMPL_NTFS_FILE_CHECK
+// qt_ntfs_permission_lookup--;
+#endif
 #endif
 }
 

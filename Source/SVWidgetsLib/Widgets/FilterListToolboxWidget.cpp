@@ -241,24 +241,12 @@ void FilterListToolboxWidget::updateFilterList(bool sortItems)
 // -----------------------------------------------------------------------------
 void FilterListToolboxWidget::addItemToList(AbstractFilter::Pointer filter)
 {
-
   QString humanName = filter->getHumanLabel();
   QString iconName(":/Groups/");
   iconName.append(filter->getGroupName());
 
   QIcon icon = QtSStyles::IconForGroup(filter->getGroupName());
-#if 0
-  iconName.append("_Icon.png");
 
-  // Validate the icon is in the resource system
-  QFileInfo iconInfo(iconName);
-  if(iconInfo.exists() == false)
-  {
-    iconName = ":/Groups/Plugin_Icon.png"; // Switch to our generic icon for Plugins that do not provide their own
-  }
-
-  QIcon icon(iconName);
-#endif
   // Create the QListWidgetItem and add it to the filterList
   QListWidgetItem* filterItem = new QListWidgetItem(icon, humanName, filterList);
   // Set an "internal" QString that is the name of the filter. We need this value
@@ -268,21 +256,6 @@ void FilterListToolboxWidget::addItemToList(AbstractFilter::Pointer filter)
   // Allow a basic mouse hover tool tip that gives some summary information on the filter.
   filterItem->setToolTip(filter->generateHtmlSummary());
 
-#if 0
-  // This chunk of code would load up the html help file for the filter into the QToolTip
-  // This is a problem because everytime this function ran it would involve file IO and
-  // that is very bad. And the currently Doxygen generated html files do not look very
-  // good in the QToolTip, and there is no Scrolling in the QToolTip window. We really
-  // need a more custom solution for this
-  QUrl url = QtSHelpUrlGenerator::generateHTMLUrl( filter->getNameOfClass().toLower() );
-  QString filePath = url.toLocalFile();
-  QFileInfo fi(filePath);
-  QFile source(filePath);
-  source.open(QFile::ReadOnly);
-  QString html = source.readAll();
-  source.close();
-  filterItem->setToolTip(html);
-#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -342,18 +315,32 @@ void FilterListToolboxWidget::matchFilter(QMapIterator<QString, IFilterFactory::
   {
     iter.next();
     IFilterFactory::Pointer factory = iter.value();
-    if(nullptr == factory.get())
+    if(nullptr == factory)
     {
       continue;
     }
 
     AbstractFilter::Pointer filter = factory->create();
-    if(nullptr == filter.get())
+    if(nullptr == filter)
     {
       continue;
     }
 
     QString filterHumanLabel = filter->getHumanLabel();
+    QString filterClassName = filter->getNameOfClass();
+    QString filterGroupName = filter->getGroupName();
+    QString filterSubgroupName = filter->getSubGroupName();
+    QString filterBrandingName = filter->getBrandingString();
+    QString filterCompiledLibraryName = filter->getCompiledLibraryName();
+    
+    
+    QString filterAllSearchTerms = QString("%1 %2 %3 %4 %5 %6").arg(filterHumanLabel)
+        .arg(filterClassName)
+        .arg(filterGroupName)
+        .arg(filterSubgroupName)
+        .arg(filterBrandingName)
+        .arg(filterCompiledLibraryName);
+    
     QBitArray bitArray(wordList.size(), false);
 
     int consecutiveWordsCount = 0, maxConsecutiveWordsCount = 0, consecutiveWordsStartingIndex = 0;
@@ -361,7 +348,8 @@ void FilterListToolboxWidget::matchFilter(QMapIterator<QString, IFilterFactory::
     {
       QString keyword = wordList[i];
 
-      if(filterHumanLabel.contains(keyword, Qt::CaseInsensitive) == true && filterList->findItems(filterHumanLabel, Qt::MatchExactly).size() <= 0)
+      if(filterAllSearchTerms.contains(keyword, Qt::CaseInsensitive) 
+            && filterList->findItems(filterAllSearchTerms, Qt::MatchExactly).isEmpty())
       {
         bitArray.setBit(i, true);
 
@@ -372,7 +360,7 @@ void FilterListToolboxWidget::matchFilter(QMapIterator<QString, IFilterFactory::
         }
         QString phrase = deserializeString(phraseList, ' ');
 
-        if(filterHumanLabel.contains(phrase, Qt::CaseInsensitive) && consecutiveWordsCount < phraseList.size())
+        if(filterAllSearchTerms.contains(phrase, Qt::CaseInsensitive) && consecutiveWordsCount < phraseList.size())
         {
           consecutiveWordsCount++;
         }
@@ -393,7 +381,7 @@ void FilterListToolboxWidget::matchFilter(QMapIterator<QString, IFilterFactory::
       maxConsecutiveWordsCount = consecutiveWordsCount;
     }
 
-    if(wordCountMap.contains(filter) == false && bitArray.count(true) > 0)
+    if(!wordCountMap.contains(filter) && bitArray.count(true) > 0)
     {
       wordCountMap.insert(filter, bitArray.count(true));
       relevanceMap.insert(maxConsecutiveWordsCount, filter);
@@ -505,7 +493,7 @@ void FilterListToolboxWidget::keyPressEvent(QKeyEvent* event)
 
     if(event->key() == Qt::Key_Down)
     {
-      if(selectedList.size() == 0)
+      if(selectedList.isEmpty())
       {
         filterList->setItemSelected(filterList->item(0), true);
         filterList->setFocus();
@@ -529,7 +517,7 @@ void FilterListToolboxWidget::searchFieldsChanged(bool isChecked)
 {
   QAction* senderAction = qobject_cast<QAction*>(sender());
 
-  if(isChecked == true)
+  if(isChecked)
   {
     m_ActionExactPhrase->blockSignals(true);
     m_ActionAllWords->blockSignals(true);

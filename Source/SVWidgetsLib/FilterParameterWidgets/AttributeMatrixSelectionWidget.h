@@ -108,6 +108,9 @@ class SVWidgetsLib_EXPORT AttributeMatrixSelectionWidget : public FilterParamete
      */
     void createSelectionMenu();
 
+  protected slots:
+    void updateDataArrayPath(QString propertyName, DataArrayPath::RenameType renamePath);
+
   signals:
     void errorSettingFilterParameter(const QString& msg);
     void parametersChanged();
@@ -125,7 +128,7 @@ class SVWidgetsLib_EXPORT AttributeMatrixSelectionWidget : public FilterParamete
     void setSelectedPath(DataArrayPath amPath);
 
     AttributeMatrixSelectionWidget(const AttributeMatrixSelectionWidget&) = delete; // Copy Constructor Not Implemented
-    void operator=(const AttributeMatrixSelectionWidget&) = delete;                 // Operator '=' Not Implemented
+    void operator=(const AttributeMatrixSelectionWidget&) = delete;                 // Move assignment Not Implemented
 };
 
 #endif /* _AttributeMatrixSelectionWidget_H_ */

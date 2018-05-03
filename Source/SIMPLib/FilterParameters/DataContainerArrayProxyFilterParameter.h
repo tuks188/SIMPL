@@ -134,6 +134,10 @@ class SIMPLib_EXPORT DataContainerArrayProxyFilterParameter : public FilterParam
     */
     SIMPL_INSTANCE_PROPERTY(GetterCallbackType, GetterCallback)
 
+    /**
+     * @brief Handle DataArrayPath changes if necessary
+     */
+    void dataArrayPathRenamed(AbstractFilter* filter, DataArrayPath::RenameType renamePath) override;
 
   protected:
       /**
@@ -144,7 +148,7 @@ class SIMPLib_EXPORT DataContainerArrayProxyFilterParameter : public FilterParam
 
   private:
     DataContainerArrayProxyFilterParameter(const DataContainerArrayProxyFilterParameter&) = delete; // Copy Constructor Not Implemented
-    void operator=(const DataContainerArrayProxyFilterParameter&) = delete;                         // Operator '=' Not Implemented
+    void operator=(const DataContainerArrayProxyFilterParameter&) = delete;                         // Move assignment Not Implemented
 };
 
 #endif /* _DataContainerArrayProxyFilterParameter_H_ */

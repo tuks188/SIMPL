@@ -41,6 +41,8 @@
 
 #include <QtGui/QMovie>
 
+#include "SIMPLib/DataContainers/DataArrayPath.h"
+
 #include "SVWidgetsLib/FilterParameterWidgets/FilterParameterWidget.h"
 
 #include "ui_ReadASCIIDataWidget.h"
@@ -84,6 +86,8 @@ class SVWidgetsLib_EXPORT ReadASCIIDataWidget : public FilterParameterWidget, pr
     void lineCountDidFinish();
     void updateProgress(double percentage);
 
+    void updateDataArrayPath(QString propertyName, DataArrayPath::RenameType renamePath);
+
   signals:
     void errorSettingFilterParameter(const QString& msg);
     void parametersChanged();
@@ -101,7 +105,7 @@ class SVWidgetsLib_EXPORT ReadASCIIDataWidget : public FilterParameterWidget, pr
     LineCounterObject*                                m_LineCounter;
 
     ReadASCIIDataWidget(const ReadASCIIDataWidget&) = delete; // Copy Constructor Not Implemented
-    void operator=(const ReadASCIIDataWidget&) = delete;      // Operator '=' Not Implemented
+    void operator=(const ReadASCIIDataWidget&) = delete;      // Move assignment Not Implemented
 };
 
 #endif /* ImportASCIIDataWidget_H_ */

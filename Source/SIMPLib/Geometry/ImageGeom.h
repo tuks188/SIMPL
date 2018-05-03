@@ -44,6 +44,7 @@
  */
 class SIMPLib_EXPORT ImageGeom : public IGeometryGrid
 {
+
   public:
     SIMPL_SHARED_POINTERS(ImageGeom)
     SIMPL_STATIC_NEW_MACRO(ImageGeom)
@@ -71,12 +72,14 @@ class SIMPLib_EXPORT ImageGeom : public IGeometryGrid
      */
     static Pointer CreateGeometry(const QString& name);
 
+    /**
+    * @brief Sets/Gets the Resolution property
+    */
     SIMPL_INSTANCE_VEC3_PROPERTY(float, Resolution)
 
-    inline float getXRes() { return m_Resolution[0]; }
-    inline float getYRes() { return m_Resolution[1]; }
-    inline float getZRes() { return m_Resolution[2]; }
-
+    /**
+    * @brief Sets/Gets the Origin property
+    */
     SIMPL_INSTANCE_VEC3_PROPERTY(float, Origin)
 
     /**
@@ -247,19 +250,17 @@ class SIMPLib_EXPORT ImageGeom : public IGeometryGrid
 // -----------------------------------------------------------------------------
 // Inherited from IGeometryGrid
 // -----------------------------------------------------------------------------
+    
+    SIMPL_INSTANCE_VEC3_PROPERTY_VO(size_t, Dimensions)
 
-    virtual void setDimensions(size_t dims[3]) override;
-    virtual void setDimensions(size_t xDim, size_t yDim, size_t zDim) override;
-    virtual void getDimensions(size_t dims[3]) override;
-    virtual void getDimensions(size_t& xDim, size_t& yDim, size_t& zDim) override;
-
-    virtual size_t getXPoints() override;
-    virtual size_t getYPoints() override;
-    virtual size_t getZPoints() override;
+    size_t getXPoints() override;
+    size_t getYPoints() override;
+    size_t getZPoints() override;
 
     virtual void getPlaneCoords(size_t idx[3], float coords[3]) override;
     virtual void getPlaneCoords(size_t x, size_t y, size_t z, float coords[3]) override;
     virtual void getPlaneCoords(size_t idx, float coords[3]) override;
+    
     virtual void getPlaneCoords(size_t idx[3], double coords[3]) override;
     virtual void getPlaneCoords(size_t x, size_t y, size_t z, double coords[3]) override;
     virtual void getPlaneCoords(size_t idx, double coords[3]) override;
@@ -267,6 +268,7 @@ class SIMPLib_EXPORT ImageGeom : public IGeometryGrid
     virtual void getCoords(size_t idx[3], float coords[3]) override;
     virtual void getCoords(size_t x, size_t y, size_t z, float coords[3]) override;
     virtual void getCoords(size_t idx, float coords[3]) override;
+    
     virtual void getCoords(size_t idx[3], double coords[3]) override;
     virtual void getCoords(size_t x, size_t y, size_t z, double coords[3]) override;
     virtual void getCoords(size_t idx, double coords[3]) override;
@@ -278,7 +280,7 @@ class SIMPLib_EXPORT ImageGeom : public IGeometryGrid
      * @brief computeCellIndex This method will compute the X, Y & Z Index based
      * on a given set of coordinates.
      *
-     * @example If an ImageGeometry has dimensions 10x20x30 with a resolution of
+     * If an ImageGeometry has dimensions 10x20x30 with a resolution of
      * 0.5 x 0.5 x 0.5 and an Origin of 4.0, 6.0, 10.0 then following examples
      * are calculated:
      *
@@ -302,7 +304,7 @@ class SIMPLib_EXPORT ImageGeom : public IGeometryGrid
     * @brief computeCellIndex This method will compute the X, Y & Z Index based
     * on a given set of coordinates.
     *
-    * @example If an ImageGeometry has dimensions 10x20x30 with a resolution of
+    * If an ImageGeometry has dimensions 10x20x30 with a resolution of
     * 0.5 x 0.5 x 0.5 and an Origin of 4.0, 6.0, 10.0 then following examples
     * are calculated:
     *
@@ -364,13 +366,12 @@ class SIMPLib_EXPORT ImageGeom : public IGeometryGrid
     virtual void setElementSizes(FloatArrayType::Pointer elementSizes) override;
 
   private:
-    size_t m_Dimensions[3];
     FloatArrayType::Pointer m_VoxelSizes;
 
     friend class FindImageDerivativesImpl;
 
     ImageGeom(const ImageGeom&) = delete;      // Copy Constructor Not Implemented
-    void operator=(const ImageGeom&) = delete; // Operator '=' Not Implemented
+    void operator=(const ImageGeom&) = delete; // Move assignment Not Implemented
 };
 
 

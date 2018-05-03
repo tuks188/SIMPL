@@ -131,6 +131,8 @@ class SVWidgetsLib_EXPORT MultiAttributeMatrixSelectionWidget : public FilterPar
     void on_attributeMatricesSelectWidget_itemSelectionChanged();
     void on_attributeMatricesOrderWidget_itemSelectionChanged();
 
+    void updateDataArrayPath(QString propertyName, DataArrayPath::RenameType renamePath);
+
   signals:
     void errorSettingFilterParameter(const QString& msg);
     void parametersChanged();
@@ -151,7 +153,7 @@ class SVWidgetsLib_EXPORT MultiAttributeMatrixSelectionWidget : public FilterPar
     void selectionChanged();
 
     MultiAttributeMatrixSelectionWidget(const MultiAttributeMatrixSelectionWidget&) = delete; // Copy Constructor Not Implemented
-    void operator=(const MultiAttributeMatrixSelectionWidget&) = delete;                      // Operator '=' Not Implemented
+    void operator=(const MultiAttributeMatrixSelectionWidget&) = delete;                      // Move assignment Not Implemented
 };
 
 #endif /* _MultiAttributeMatrixSelectionWidget_H_ */

@@ -125,6 +125,12 @@ class ImportASCIIDataWizard : public QWizard
     */
     static void InsertLines(QStringList lines, int firstRowHeaderIndex, ASCIIDataModel* model);
 
+    /**
+    * @brief Updates the DataArrayPath used for importing data
+    * @param renamePath
+    */
+    void updateDataArrayPath(DataArrayPath::RenameType renamePath);
+
     QList<char> getDelimiters();
     bool getConsecutiveDelimiters();
     QStringList getHeaders();
@@ -154,7 +160,7 @@ class ImportASCIIDataWizard : public QWizard
     QSharedPointer<ASCIIDataModel> m_ASCIIDataModel;
 
     ImportASCIIDataWizard(const ImportASCIIDataWizard&) = delete; // Copy Constructor Not Implemented
-    void operator=(const ImportASCIIDataWizard&) = delete;        // Operator '=' Not Implemented
+    void operator=(const ImportASCIIDataWizard&) = delete;        // Move assignment Not Implemented
 };
 
 #endif /* ImportASCIIDataWizard_H_ */

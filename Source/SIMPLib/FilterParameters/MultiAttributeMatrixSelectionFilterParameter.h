@@ -174,6 +174,13 @@ class SIMPLib_EXPORT MultiAttributeMatrixSelectionFilterParameter : public Filte
     */
     SIMPL_INSTANCE_PROPERTY(GetterCallbackType, GetterCallback)
 
+    /**
+     * @brief Handle DataArrayPath changes if necessary
+     * @param filter
+     * @param renamePath
+     */
+    void dataArrayPathRenamed(AbstractFilter* filter, DataArrayPath::RenameType renamePath) override;
+
   protected:
       /**
        * @brief MultiAttributeMatrixSelectionFilterParameter The default constructor.  It is protected because this
@@ -183,7 +190,7 @@ class SIMPLib_EXPORT MultiAttributeMatrixSelectionFilterParameter : public Filte
 
   private:
     MultiAttributeMatrixSelectionFilterParameter(const MultiAttributeMatrixSelectionFilterParameter&) = delete; // Copy Constructor Not Implemented
-    void operator=(const MultiAttributeMatrixSelectionFilterParameter&) = delete;                               // Operator '=' Not Implemented
+    void operator=(const MultiAttributeMatrixSelectionFilterParameter&) = delete;                               // Move assignment Not Implemented
 };
 
 #endif /* _MultiAttributeMatrixSelectionFilterParameter_H_ */

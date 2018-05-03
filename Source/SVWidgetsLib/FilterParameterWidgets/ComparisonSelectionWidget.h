@@ -211,6 +211,13 @@ class ComparisonSelectionWidget : public FilterParameterWidget, private Ui::Comp
 
     void setSelectedPath(DataArrayPath amPath);
 
+    /**
+     * @brief Handles changes to an affected DataArrayPath
+     * @param propertyName
+     * @param renamePath
+     */
+    void updateDataArrayPath(QString propertyName, DataArrayPath::RenameType renamePath);
+
   private:
     DataContainerArrayProxy m_DcaProxy;
 
@@ -231,7 +238,7 @@ class ComparisonSelectionWidget : public FilterParameterWidget, private Ui::Comp
     ComparisonSelectionTableModel* createComparisonModel();
 
     ComparisonSelectionWidget(const ComparisonSelectionWidget&) = delete; // Copy Constructor Not Implemented
-    void operator=(const ComparisonSelectionWidget&) = delete;            // Operator '=' Not Implemented
+    void operator=(const ComparisonSelectionWidget&) = delete;            // Move assignment Not Implemented
 };
 
 

@@ -45,11 +45,9 @@
 //
 // -----------------------------------------------------------------------------
 RenameDataContainer::RenameDataContainer()
-: AbstractFilter()
-, m_SelectedDataContainerName("")
+: m_SelectedDataContainerName("")
 , m_NewDataContainerName("")
 {
-  setupFilterParameters();
 }
 
 // -----------------------------------------------------------------------------
@@ -221,4 +219,18 @@ const QString RenameDataContainer::getSubGroupName() const
 const QString RenameDataContainer::getHumanLabel() const
 {
   return "Rename Data Container";
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+DataArrayPath::RenameContainer RenameDataContainer::getRenamedPaths()
+{
+  DataArrayPath oldPath(getSelectedDataContainerName(), "", "");
+  DataArrayPath newPath(getNewDataContainerName(), "", "");
+
+  DataArrayPath::RenameContainer container;
+  container.push_back(DataArrayPath::RenameType(oldPath, newPath));
+
+  return container;
 }

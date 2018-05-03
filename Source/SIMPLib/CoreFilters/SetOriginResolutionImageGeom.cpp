@@ -35,7 +35,7 @@
 
 #include "SetOriginResolutionImageGeom.h"
 
-#ifdef SIMPLib_USE_PARALLEL_ALGORITHMS
+#ifdef SIMPL_USE_PARALLEL_ALGORITHMS
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_for.h>
 #include <tbb/partitioner.h>
@@ -82,7 +82,7 @@ public:
     }
   }
 
-#ifdef SIMPLib_USE_PARALLEL_ALGORITHMS
+#ifdef SIMPL_USE_PARALLEL_ALGORITHMS
   void operator()(const tbb::blocked_range<size_t>& r) const
   {
     generate(r.begin(), r.end());
@@ -94,8 +94,7 @@ public:
 //
 // -----------------------------------------------------------------------------
 SetOriginResolutionImageGeom::SetOriginResolutionImageGeom()
-: AbstractFilter()
-, m_DataContainerName("")
+: m_DataContainerName("")
 , m_ChangeOrigin(false)
 , m_ChangeResolution(false)
 {
@@ -107,7 +106,6 @@ SetOriginResolutionImageGeom::SetOriginResolutionImageGeom()
   m_Resolution.y = 1.0f;
   m_Resolution.z = 1.0f;
 
-  setupFilterParameters();
 }
 
 // -----------------------------------------------------------------------------
@@ -175,11 +173,11 @@ void SetOriginResolutionImageGeom::dataCheck()
   }
   if(getChangeOrigin())
   {
-    image->setOrigin(m_Origin.x, m_Origin.y, m_Origin.z);
+    image->setOrigin(std::make_tuple(m_Origin.x, m_Origin.y, m_Origin.z));
   }
   if(getChangeResolution())
   {
-    image->setResolution(m_Resolution.x, m_Resolution.y, m_Resolution.z);
+    image->setResolution(std::make_tuple(m_Resolution.x, m_Resolution.y, m_Resolution.z));
   }
 }
 

@@ -53,12 +53,19 @@ public:
 
     QString getWidgetType() const override;
 
+    /**
+     * @brief Handle DataArrayPath changes if necessary
+     * @param filter
+     * @param renamePath
+     */
+    void dataArrayPathRenamed(AbstractFilter* filter, DataArrayPath::RenameType renamePath) override;
+
   protected:
     ReadASCIIDataFilterParameter();
 
   private:
     ReadASCIIDataFilterParameter(const ReadASCIIDataFilterParameter&) = delete; // Copy Constructor Not Implemented
-    void operator=(const ReadASCIIDataFilterParameter&) = delete;               // Operator '=' Not Implemented
+    void operator=(const ReadASCIIDataFilterParameter&) = delete;               // Move assignment Not Implemented
 };
 
 #endif /* _ImportVectorImageStackFilterParameter_H_ */

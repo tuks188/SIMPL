@@ -75,7 +75,7 @@ public:
 
 private:
   DummyObserver(const DummyObserver&);  // Copy Constructor Not Implemented
-  void operator=(const DummyObserver&); // Operator '=' Not Implemented
+  void operator=(const DummyObserver&); // Move assignment Not Implemented
 };
 
 class ArrayCalculatorTest
@@ -189,6 +189,8 @@ public:
     propWasSet = filter->setProperty("Units", units);
     DREAM3D_REQUIRE_EQUAL(propWasSet, true);
     filter->execute();
+
+	std::cout << "Testing equation: " << equation.toStdString() << std::endl;
     DREAM3D_REQUIRE_EQUAL(filter->getErrorCondition(), static_cast<int>(expectedErrorCondition));
     DREAM3D_REQUIRE_EQUAL(filter->getWarningCondition(), static_cast<int>(expectedWarningCondition));
 
@@ -937,5 +939,5 @@ public:
 
 private:
   ArrayCalculatorTest(const ArrayCalculatorTest&); // Copy Constructor Not Implemented
-  void operator=(const ArrayCalculatorTest&);      // Operator '=' Not Implemented
+  void operator=(const ArrayCalculatorTest&);      // Move assignment Not Implemented
 };
