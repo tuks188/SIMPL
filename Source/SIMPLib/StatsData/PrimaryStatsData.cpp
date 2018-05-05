@@ -219,6 +219,7 @@ void PrimaryStatsData::writeJson(QJsonObject& json)
     avgSizeDist.insert(m_FeatureSizeDistribution[i]->getName(), m_FeatureSizeDistribution[i]->getValue(0));
   }
   json.insert(SIMPL::StringConstants::Feature_Size_Distribution, avgSizeDist);
+  json.insert(SIMPL::StringConstants::DistributionType, decodeDistributionType(getFeatureSize_DistType()));
 
   // Write the Bin Numbers
   if(nullptr == getBinNumbers().get())
@@ -280,6 +281,9 @@ void PrimaryStatsData::readJson(const QJsonObject& json)
     setPhaseFraction(jsonValue.toDouble(0.0));
   }
   // Read the Feature Diameter Info
+  jsonValue = json[SIMPL::StringConstants::DistributionType];
+  setDistributionTypeCombo(jsonValue.toString());
+
   float fVec3[3] = {0.0f, 0.0f, 0.0f};
   if(ParseFloat3Vec(json, SIMPL::StringConstants::Feature_Diameter_Info, fVec3, 0.0) == -1)
   {

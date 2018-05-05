@@ -231,6 +231,9 @@ QString StatsData::decodeDistributionType(int disType)
   case SIMPL::DistributionType::Beta:
     disTypeStr = SIMPL::StringConstants::BetaDistribution;
     break;
+  case SIMPL::DistributionType::Pareto:
+	  disTypeStr = SIMPL::StringConstants::ParetoDistribution;
+	  break;
   case SIMPL::DistributionType::LogNormal:
     disTypeStr = SIMPL::StringConstants::LogNormalDistribution;
     break;
@@ -260,6 +263,11 @@ int StatsData::EncodeDistributionType(QString distTypeName)
   {
     distType = SIMPL::DistributionType::LogNormal;
   }
+  else if(distTypeName == SIMPL::StringConstants::ParetoDistribution)
+  {
+	  distType = SIMPL::DistributionType::Pareto;
+  }
+
   else if(distTypeName == SIMPL::StringConstants::UnknownDistribution)
   {
     distType = SIMPL::DistributionType::UnknownDistributionType;

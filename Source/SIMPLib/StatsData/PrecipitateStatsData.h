@@ -131,6 +131,7 @@ class SIMPLib_EXPORT PrecipitateStatsData : public StatsData
     SIMPL_INSTANCE_PROPERTY(VectorOfFloatArray, FeatureSizeDistribution)
     SIMPL_INSTANCE_PROPERTY(uint32_t, FeatureSize_DistType)
     SIMPL_INSTANCE_PROPERTY(RdfData::Pointer, RadialDistFunction)
+	SIMPL_INSTANCE_PROPERTY(QString, DistributionTypeCombo)
 
     SIMPL_INSTANCE_PROPERTY(FloatArrayType::Pointer, BinNumbers)
 
